@@ -2508,136 +2508,419 @@
       }
     }
 
-    function toggle3DMode() {
-      state.is3D = !state.is3D;
-      const btn = document.getElementById('btn-3d-toggle');
-      const lbl = document.getElementById('label-3d-toggle');
-      if (state.is3D) {
-        btn.className = 'px-2.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold flex items-center gap-1.5 transition';
-        lbl.textContent = '3D View ON';
-        if (mapLoaded) {
-          map.setTerrain({ source: 'terrain-dem', exaggeration: state.exaggeration });
-          map.easeTo({ pitch: 58, duration: 700 });
-        }
-      } else {
-        btn.className = 'px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold flex items-center gap-1.5 transition';
-        lbl.textContent = '2D Top-Down';
-        if (mapLoaded) {
-          map.setTerrain(null);
-          map.easeTo({ pitch: 0, bearing: 0, duration: 700 });
-        }
-      }
-    }
-
-    function setExaggeration(val) {
-      state.exaggeration = val;
-      const mapIds = {
-        1.0: 'exag-100',
-        1.45: 'exag-145',
-        1.8: 'exag-180'
-      };
-      Object.entries(mapIds).forEach(([numStr, elId]) => {
-        const el = document.getElementById(elId);
-        if (el) {
-          el.className =
-            parseFloat(numStr) === val
-              ? 'px-1.5 py-1 rounded-lg bg-emerald-600 text-white transition'
-              : 'px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition';
-        }
-      });
-
-      // Automatically switch to 3D perspective if currently in 2D Top-Down so relief is visible
-      if (!state.is3D) {
-        toggle3DMode();
-      } else if (mapLoaded) {
-        map.setTerrain({ source: 'terrain-dem', exaggeration: val });
-      }
-      showToast(`3D Mountain Relief set to ${val}x`);
-    }
-        if (mobBtn) {
-          mobBtn.className =
-            key === mode
-              ? 'px-2 py-1 rounded-lg bg-sky-600 text-white'
-              : 'px-2 py-1 rounded-lg text-slate-300';
-        }
-      });
-
+    function rotateCamera(deltaDeg) {
       if (!mapLoaded) return;
-      map.setLayoutProperty('layer-satellite', 'visibility', mode === 'hybrid' ? 'visible' : 'none');
-      map.setLayoutProperty('layer-satellite-labels', 'visibility', mode === 'hybrid' ? 'visible' : 'none');
-      map.setLayoutProperty('layer-topo', 'visibility', mode === 'topo' ? 'visible' : 'none');
-      map.setLayoutProperty('layer-osm', 'visibility', mode === 'osm' ? 'visible' : 'none');
+      map.easeTo({ bearing: map.getBearing() + deltaDeg, duration: 400 });
     }
 
-    function toggle3DMode() {
-      state.is3D = !state.is3D;
-      const btn = document.getElementById('btn-3d-toggle');
-      const lbl = document.getElementById('label-3d-toggle');
-      if (state.is3D) {
-        btn.className = 'px-2.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold flex items-center gap-1.5 transition';
-        lbl.textContent = '3D View ON';
-        if (mapLoaded) {
-          map.setTerrain({ source: 'terrain-dem', exaggeration: state.exaggeration });
-          map.easeTo({ pitch: 58, duration: 700 });
-        }
+    function resetNorth() {
+      if (!mapLoaded) return;
+      map.easeTo({ bearing: 0, duration: 500 });
+    }
+
+    function togglePistesLayer(checked) {
+      state.showPistes = checked;
+      if (!mapLoaded) return;
+      map.setLayoutProperty('layer-opensnowmap', 'visibility', checked ? 'visible' : 'none');
+    }
+
+    function togglePinLabels(checked) {
+      state.showPinLabels = checked;
+      document.querySelectorAll('.ml-pin-label').forEach(el => {
+        el.style.display = checked ? 'block' : 'none';
+      });
+    }
+
+    function toggleConnectionLayers() {
+      if (!mapLoaded) return;
+      const showSki = document.getElementById('toggle-ski-lines').checked;
+      const showBus = document.getElementById('toggle-bus-lines').checked;
+      map.setLayoutProperty('ski-links-casing', 'visibility', showSki ? 'visible' : 'none');
+      map.setLayoutProperty('ski-links-line', 'visibility', showSki ? 'visible' : 'none');
+      map.setLayoutProperty('bus-links-line', 'visibility', showBus ? 'visible' : 'none');
+    }
+
+    function fitTyrol3D() {
+      if (!mapLoaded) return;
+      map.flyTo({
+        center: [11.42, 47.26],
+        zoom: 8.6,
+        pitch: state.is3D ? 54 : 0,
+        bearing: -8,
+        duration: 1100
+      });
+    }
+
+    function flyToValley(valleyKey) {
+      if (!mapLoaded) return;
+      const presets = {
+        zillertal: { center: [11.88, 47.19], zoom: 10.6, pitch: 62, bearing: -18 },
+        kitz: { center: [12.31, 47.46], zoom: 10.7, pitch: 60, bearing: 12 },
+        paznaun: { center: [10.45, 47.02], zoom: 10.4, pitch: 62, bearing: 15 },
+        oetztal: { center: [11.02, 47.01], zoom: 10.2, pitch: 64, bearing: -12 },
+        osttirol: { center: [12.56, 46.91], zoom: 10.1, pitch: 60, bearing: 10 }
+      };
+      const target = presets[valleyKey];
+      if (!target) return;
+      map.flyTo({
+        center: target.center,
+        zoom: target.zoom,
+        pitch: state.is3D ? target.pitch : 0,
+        bearing: state.is3D ? target.bearing : 0,
+        duration: 1200
+      });
+    }
+
+    function flyToResort(resortId) {
+      const resort = RESORTS.find(r => r.id === resortId);
+      if (!resort) return;
+      if (window.innerWidth < 768) {
+        setMobileTab('map');
+      }
+      if (mapLoaded) {
+        map.flyTo({
+          center: [resort.lng, resort.lat],
+          zoom: 12.6,
+          pitch: state.is3D ? 64 : 0,
+          bearing: state.is3D ? -15 : 0,
+          duration: 1100
+        });
+      }
+      openResortPopup(resort);
+    }
+
+    // =========================================================================
+    // 5. CHECKLIST INTERACTION & STATS CALCULATION
+    // =========================================================================
+    function toggleResortSkied(resortId, fromPopup = false) {
+      const current = state.skied[resortId];
+      if (current && current.checked) {
+        delete state.skied[resortId];
+        showToast('Unmarked resort');
       } else {
-        btn.className = 'px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold flex items-center gap-1.5 transition';
-        lbl.textContent = '2D Top-Down';
-        if (mapLoaded) {
-          map.setTerrain(null);
-          map.easeTo({ pitch: 0, bearing: 0, duration: 700 });
-        }
+        state.skied[resortId] = {
+          checked: true,
+          date: current?.date || new Date().toISOString().split('T')[0],
+          note: current?.note || ''
+        };
+        showToast('Marked as skied! ★');
+      }
+      saveState();
+      updateStats();
+      renderSidebar();
+      renderMapMarkers();
+
+      if (fromPopup) {
+        const resort = RESORTS.find(r => r.id === resortId);
+        if (resort) openResortPopup(resort);
       }
     }
 
-    function setExaggeration(val) {
-      state.exaggeration = val;
-      const mapIds = { 1: 'exag-1.0', 1.45: 'exag-1.45', 1.8: 'exag-1.8' };
-      Object.entries(mapIds).forEach(([numStr, elId]) => {
-        const el = document.getElementById(elId);
-        if (el) {
-          el.className =
-            Number(numStr) === val
-              ? 'px-1.5 py-1 rounded-lg bg-emerald-600 text-white transition'
-              : 'px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition';
+    function updateResortMeta(resortId, field, value) {
+      if (!state.skied[resortId]) {
+        state.skied[resortId] = { checked: true, date: '', note: '' };
+      }
+      state.skied[resortId][field] = value;
+      saveState();
+      updateStats();
+    }
+
+    function toggleResortDetails(resortId) {
+      state.expandedResorts[resortId] = !state.expandedResorts[resortId];
+      renderSidebar();
+    }
+
+    function toggleClusterCollapse(clusterKey) {
+      state.collapsedClusters[clusterKey] = !state.collapsedClusters[clusterKey];
+      renderSidebar();
+    }
+
+    function updateStats() {
+      const total = RESORTS.length;
+      const skiedResorts = RESORTS.filter(r => state.skied[r.id]?.checked);
+      const skiedCount = skiedResorts.length;
+      const pct = total > 0 ? Math.round((skiedCount / total) * 100) : 0;
+
+      // Avoid double-counting shared circuit km when multiple villages of the same mega-circuit are checked
+      const countedCircuits = new Set();
+      let totalKmSkied = 0;
+      skiedResorts.forEach(r => {
+        if (['skiwelt', 'kitzski', 'zillertal-arena', 'skijuwel'].includes(r.circuitId)) {
+          if (!countedCircuits.has(r.circuitId)) {
+            countedCircuits.add(r.circuitId);
+            totalKmSkied += r.km;
+          }
+        } else {
+          totalKmSkied += r.km;
         }
       });
 
-      // Automatically switch to 3D tilted view if currently in 2D Top-Down so elevation changes are visible
-      if (!state.is3D) {
-        state.is3D = true;
-        const btn = document.getElementById('btn-3d-toggle');
-        const lbl = document.getElementById('label-3d-toggle');
-        if (btn) btn.className = 'px-2.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold flex items-center gap-1.5 transition';
-        if (lbl) lbl.textContent = '3D View ON';
-        if (mapLoaded) map.easeTo({ pitch: 58, duration: 600 });
-      }
+      const completedCircuits = CIRCUITS.filter(c => {
+        const members = RESORTS.filter(r => r.circuitId === c.id);
+        return members.length > 0 && members.every(m => state.skied[m.id]?.checked);
+      }).length;
 
-      if (mapLoaded) {
-        map.setTerrain({ source: 'terrain-dem', exaggeration: val });
-        showToast(`3D Mountain Relief set to ${val}x`);
-      }
+      document.getElementById('stat-skied-count').textContent = skiedCount;
+      document.getElementById('stat-total-count').textContent = `/ ${total} Skied`;
+      document.getElementById('stat-progress-bar').style.width = `${pct}%`;
+      document.getElementById('stat-km-count').textContent = `${totalKmSkied.toLocaleString()} km`;
+      document.getElementById('stat-circuits-count').textContent = `${completedCircuits} / ${CIRCUITS.length}`;
+
+      const allPill = document.getElementById('filter-all');
+      if (allPill) allPill.textContent = `All (${total})`;
     }
 
-    function toggleLegendCollapse() {
-      state.legendCollapsed = !state.legendCollapsed;
-      const body = document.getElementById('legend-body');
-      const headerRow = document.getElementById('legend-header-row');
-      const lbl = document.getElementById('legend-toggle-label');
-      const icon = document.getElementById('legend-toggle-icon');
+    // =========================================================================
+    // 6. SIDEBAR RENDERING & FILTERING
+    // =========================================================================
+    function getFilteredResorts() {
+      const q = state.search.trim().toLowerCase();
+      return RESORTS.filter(r => {
+        const isSkied = !!state.skied[r.id]?.checked;
+        if (state.filter === 'skied' && !isSkied) return false;
+        if (state.filter === 'unskied' && isSkied) return false;
+        if (state.filter === 'ski-linked' && r.connectionType !== 'ski-linked') return false;
+        if (state.filter === 'shuttle' && r.connectionType !== 'shuttle') return false;
+        if (state.filter === 'glacier' && !r.isGlacier) return false;
 
-      if (state.legendCollapsed) {
-        body.classList.add('hidden');
-        headerRow.classList.remove('mb-2');
-        lbl.textContent = 'Key';
-        icon.setAttribute('data-lucide', 'eye');
-      } else {
-        body.classList.remove('hidden');
-        headerRow.classList.add('mb-2');
-        lbl.textContent = 'Hide';
-        icon.setAttribute('data-lucide', 'eye-off');
+        if (q) {
+          const circuit = CIRCUITS.find(c => c.id === r.circuitId);
+          const haystack = [
+            r.name,
+            r.region,
+            r.connectionNote,
+            r.highlights,
+            circuit ? circuit.name : ''
+          ]
+            .join(' ')
+            .toLowerCase();
+          if (!haystack.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderResortCard(resort) {
+      const entry = state.skied[resort.id] || {};
+      const isSkied = !!entry.checked;
+      const isExpanded = !!state.expandedResorts[resort.id];
+      const gmapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resort.name + ' Austria')}`;
+
+      const connBadge =
+        resort.connectionType === 'ski-linked'
+          ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">🔗 Ski-Linked</span>'
+          : resort.connectionType === 'shuttle'
+          ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">🚌 Bus Combo</span>'
+          : '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800">⛰ Standalone</span>';
+
+      return `
+        <div id="card-${resort.id}" class="rounded-xl border ${
+          isSkied ? 'border-amber-300 bg-amber-50/40' : 'border-slate-200 bg-white'
+        } p-2.5 shadow-sm transition hover:border-sky-300">
+          <div class="flex items-start gap-2.5">
+            <!-- Custom Checkbox -->
+            <button
+              onclick="toggleResortSkied('${resort.id}')"
+              aria-label="Mark ${resort.name} as skied"
+              class="mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition ${
+                isSkied
+                  ? 'bg-amber-400 border-amber-500 text-slate-950 font-black shadow-sm'
+                  : 'border-slate-300 hover:border-sky-500 bg-white'
+              }"
+            >
+              ${isSkied ? '<i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>' : ''}
+            </button>
+
+            <!-- Main Resort Info -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <button onclick="flyToResort('${resort.id}')" class="text-left font-bold text-xs sm:text-sm ${
+                  isSkied ? 'text-slate-900' : 'text-slate-800'
+                } hover:text-sky-600 leading-snug transition">
+                  ${resort.name}
+                </button>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button onclick="flyToResort('${resort.id}')" title="Fly to 3D Peak" class="p-1.5 rounded-lg bg-slate-100 hover:bg-sky-100 text-slate-600 hover:text-sky-700 transition">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button onclick="toggleResortDetails('${resort.id}')" title="Details & Notes" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+                    <i data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-1.5 mt-1 text-[11px] text-slate-500">
+                ${connBadge}
+                <span class="font-semibold text-slate-700">${resort.km} km</span>
+                <span>·</span>
+                <span>${resort.elevation}</span>
+                ${resort.isGlacier ? '<span class="px-1.5 py-0.5 rounded bg-sky-100 text-sky-800 font-bold text-[10px]">❄️ Glacier</span>' : ''}
+                ${isSkied && entry.date ? `<span class="px-1.5 py-0.5 rounded bg-amber-200/80 text-amber-950 font-semibold text-[10px]">📅 ${entry.date}</span>` : ''}
+              </div>
+
+              <p class="text-[11px] text-slate-600 mt-1 leading-snug">
+                ${resort.connectionNote}
+              </p>
+
+              <!-- Expandable Drawer: Highlights, Date, Notes, Google Maps -->
+              ${
+                isExpanded
+                  ? `
+                <div class="mt-2.5 pt-2.5 border-t border-slate-200/80 space-y-2 text-xs">
+                  <p class="text-[11px] text-slate-700 leading-relaxed bg-slate-50 p-2 rounded-lg border border-slate-200/70">
+                    ${resort.highlights}
+                  </p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                      <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Date Skied</label>
+                      <input
+                        type="date"
+                        value="${entry.date || ''}"
+                        onchange="updateResortMeta('${resort.id}', 'date', this.value)"
+                        class="w-full px-2 py-1 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      />
+                    </div>
+                    <div class="flex items-end">
+                      <a href="${gmapsUrl}" target="_blank" rel="noopener" class="w-full py-1.5 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-semibold flex items-center justify-center gap-1.5 transition">
+                        <i data-lucide="external-link" class="w-3 h-3"></i> Open in Google Maps
+                      </a>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-0.5">Trip / Snow Notes</label>
+                    <input
+                      type="text"
+                      value="${(entry.note || '').replace(/"/g, '&quot;')}"
+                      oninput="updateResortMeta('${resort.id}', 'note', this.value)"
+                      placeholder="Best runs, parking spot, hut recommendation..."
+                      class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    />
+                  </div>
+                </div>
+              `
+                  : ''
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSidebar() {
+      const container = document.getElementById('resort-list-container');
+      const filtered = getFilteredResorts();
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 px-4 bg-white rounded-2xl border border-slate-200">
+            <i data-lucide="search-x" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
+            <p class="text-sm font-bold text-slate-800">No matching resorts found</p>
+            <p class="text-xs text-slate-500 mt-1">Try clearing your search or switching filters.</p>
+            <button onclick="resetFilters()" class="mt-3 px-4 py-1.5 rounded-xl bg-sky-600 text-white text-xs font-semibold hover:bg-sky-700 transition">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
       }
+
+      if (state.groupMode === 'combos') {
+        let html = '';
+        CIRCUITS.forEach(circuit => {
+          const members = filtered.filter(r => r.circuitId === circuit.id);
+          if (members.length === 0) return;
+
+          const allCircuitMembers = RESORTS.filter(r => r.circuitId === circuit.id);
+          const skiedInCircuit = allCircuitMembers.filter(r => state.skied[r.id]?.checked).length;
+          const isCollapsed = !!state.collapsedClusters[circuit.id];
+
+          const headerAccent =
+            circuit.type === 'ski-linked'
+              ? 'border-l-4 border-l-emerald-500'
+              : circuit.type === 'shuttle'
+              ? 'border-l-4 border-l-amber-500'
+              : 'border-l-4 border-l-sky-500';
+
+          html += `
+            <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden ${headerAccent}">
+              <button onclick="toggleClusterCollapse('${circuit.id}')" class="w-full text-left p-3 bg-slate-50/90 hover:bg-slate-100/80 transition flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <h2 class="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug">${circuit.name}</h2>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      skiedInCircuit === allCircuitMembers.length
+                        ? 'bg-amber-400 text-slate-950'
+                        : 'bg-slate-200 text-slate-700'
+                    }">
+                      ${skiedInCircuit}/${allCircuitMembers.length} Skied
+                    </span>
+                  </div>
+                  <p class="text-[11px] font-semibold text-emerald-700 mt-0.5">${circuit.badge}</p>
+                </div>
+                <i data-lucide="${isCollapsed ? 'chevron-down' : 'chevron-up'}" class="w-4 h-4 text-slate-400 shrink-0 mt-1"></i>
+              </button>
+
+              ${
+                !isCollapsed
+                  ? `
+                <div class="p-2.5 space-y-2 border-t border-slate-200/70">
+                  <div class="text-[11px] text-slate-600 bg-sky-50/70 border border-sky-100 rounded-xl p-2 leading-relaxed">
+                    <p>${circuit.summary}</p>
+                    <p class="mt-1 font-semibold text-sky-900">💡 ${circuit.connectionTip}</p>
+                  </div>
+                  <div class="space-y-2">
+                    ${members.map(r => renderResortCard(r)).join('')}
+                  </div>
+                </div>
+              `
+                  : ''
+              }
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } else if (state.groupMode === 'region') {
+        const regions = [...new Set(filtered.map(r => r.region))];
+        container.innerHTML = regions
+          .map(region => {
+            const members = filtered.filter(r => r.region === region);
+            const skiedCount = members.filter(r => state.skied[r.id]?.checked).length;
+            return `
+              <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3 space-y-2">
+                <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+                  <h2 class="text-xs sm:text-sm font-extrabold text-slate-900">${region}</h2>
+                  <span class="text-[11px] font-bold text-slate-500">${skiedCount}/${members.length} Skied</span>
+                </div>
+                <div class="space-y-2">
+                  ${members.map(r => renderResortCard(r)).join('')}
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+      } else {
+        const sorted = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+        container.innerHTML = `<div class="space-y-2">${sorted.map(r => renderResortCard(r)).join('')}</div>`;
+      }
+
       lucide.createIcons();
+    }
+
+    function highlightSidebarCard(resortId) {
+      const resort = RESORTS.find(r => r.id === resortId);
+      if (!resort) return;
+      if (state.collapsedClusters[resort.circuitId]) {
+        state.collapsedClusters[resort.circuitId] = false;
+        renderSidebar();
+      }
+      const card = document.getElementById(`card-${resortId}`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.remove('highlight-pulse');
+        void card.offsetWidth;
+        card.classList.add('highlight-pulse');
+      }
     }
 
     // =========================================================================
