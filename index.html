@@ -231,6 +231,9 @@
           <button onclick="setBasemap('topo')" id="bm-btn-topo" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition">
             Topo Relief
           </button>
+          <button onclick="setBasemap('slope')" id="bm-btn-slope" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition">
+            Slope Angle
+          </button>
           <button onclick="setBasemap('osm')" id="bm-btn-osm" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition">
             Clean Streets
           </button>
@@ -377,6 +380,7 @@
         <div class="flex lg:hidden items-center bg-slate-900/90 backdrop-blur border border-slate-700/80 rounded-xl p-1 text-[11px] font-semibold shadow-lg">
           <button onclick="setBasemap('hybrid')" id="mob-bm-hybrid" class="px-2 py-1 rounded-lg bg-sky-600 text-white">Sat</button>
           <button onclick="setBasemap('topo')" id="mob-bm-topo" class="px-2 py-1 rounded-lg text-slate-300">Topo</button>
+          <button onclick="setBasemap('slope')" id="mob-bm-slope" class="px-2 py-1 rounded-lg text-slate-300">Slope</button>
           <button onclick="setBasemap('osm')" id="mob-bm-osm" class="px-2 py-1 rounded-lg text-slate-300">Map</button>
         </div>
 
@@ -404,20 +408,29 @@
           <!-- Terrain Exaggeration Selector -->
           <div class="hidden sm:flex items-center bg-slate-800 rounded-xl border border-slate-700 p-0.5 text-[10px] font-bold">
             <span class="px-1.5 text-slate-400">Relief:</span>
-            <button onclick="setExaggeration(1.0)" id="exag-1.0" class="px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition">1.0x</button>
-            <button onclick="setExaggeration(1.45)" id="exag-1.45" class="px-1.5 py-1 rounded-lg bg-emerald-600 text-white transition">1.45x</button>
-            <button onclick="setExaggeration(1.8)" id="exag-1.8" class="px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition">1.8x</button>
+            <button onclick="setExaggeration(1.0)" id="exag-100" class="px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition">1.0x</button>
+            <button onclick="setExaggeration(1.45)" id="exag-145" class="px-1.5 py-1 rounded-lg bg-emerald-600 text-white transition">1.45x</button>
+            <button onclick="setExaggeration(1.8)" id="exag-180" class="px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition">1.8x</button>
           </div>
         </div>
       </div>
 
+      <!-- Collapsed Legend Pill (Bottom-Left) -->
+      <button onclick="toggleLegend(true)" id="legend-collapsed-pill" class="hidden absolute bottom-7 left-3 z-20 bg-slate-900/92 backdrop-blur hover:bg-slate-800 text-white rounded-full shadow-xl border border-slate-700/80 px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 transition">
+        <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-400"></i>
+        <span>Key &amp; Overlays</span>
+      </button>
+
       <!-- Bottom-Left Live OpenSnowMap Pistes/Lifts & Connection Legend -->
-      <div class="absolute bottom-7 left-3 z-20 bg-slate-900/92 backdrop-blur text-white rounded-2xl shadow-xl border border-slate-700/80 p-3 max-w-[295px] text-xs">
-        <div class="flex items-center justify-between mb-2">
+      <div id="legend-panel" class="absolute bottom-7 left-3 z-20 bg-slate-900/92 backdrop-blur text-white rounded-2xl shadow-xl border border-slate-700/80 p-3 max-w-[295px] text-xs">
+        <div class="flex items-center justify-between gap-2 mb-2">
           <span class="font-bold text-[11px] uppercase tracking-wider text-sky-300">
             3D Overlays &amp; Piste Key
           </span>
-          <span class="text-[10px] text-slate-400 hidden sm:inline">Right-drag to tilt/orbit</span>
+          <button onclick="toggleLegend(false)" title="Hide Legend" class="px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] font-semibold flex items-center gap-1 transition">
+            <span>Hide</span>
+            <i data-lucide="chevron-down" class="w-3 h-3"></i>
+          </button>
         </div>
 
         <!-- Layer Toggles -->
@@ -440,6 +453,18 @@
           </label>
         </div>
 
+        <!-- Avalanche Slope Angle Key (Visible in Slope Angle Mode) -->
+        <div id="slope-legend-block" class="hidden space-y-1 text-[10px] pb-2 mb-2 border-b border-slate-800">
+          <div class="text-amber-300 font-bold uppercase tracking-wider mb-1">Avalanche Slope Steepness:</div>
+          <div class="grid grid-cols-5 gap-1 text-center font-bold text-[9px]">
+            <div class="rounded py-0.5 bg-yellow-300 text-slate-950">27–29°</div>
+            <div class="rounded py-0.5 bg-amber-500 text-slate-950">30–34°</div>
+            <div class="rounded py-0.5 bg-orange-600 text-white">35–39°</div>
+            <div class="rounded py-0.5 bg-red-600 text-white">40–44°</div>
+            <div class="rounded py-0.5 bg-purple-600 text-white">45°+</div>
+          </div>
+        </div>
+
         <!-- OpenSnowMap Piste Difficulty Legend -->
         <div class="space-y-1 text-[10px] pb-2 mb-2 border-b border-slate-800">
           <div class="text-slate-400 font-semibold uppercase tracking-wider mb-1">OpenSnowMap Runs &amp; Lifts:</div>
@@ -451,26 +476,39 @@
           </div>
         </div>
 
+        <!-- CalTopo-Style Avalanche Slope Angle Key (Visible when Slope Angle View is Active) -->
+        <div id="slope-legend-section" class="hidden space-y-1 text-[10px] pb-2 mb-2 border-b border-slate-800">
+          <div class="text-amber-300 font-semibold uppercase tracking-wider mb-1">Avalanche Slope Steepness:</div>
+          <div class="grid grid-cols-5 gap-1 text-center font-bold text-[9px]">
+            <div class="rounded py-0.5 bg-yellow-300 text-slate-950">27–29°</div>
+            <div class="rounded py-0.5 bg-amber-400 text-slate-950">30–34°</div>
+            <div class="rounded py-0.5 bg-orange-500 text-white">35–39°</div>
+            <div class="rounded py-0.5 bg-red-600 text-white">40–44°</div>
+            <div class="rounded py-0.5 bg-purple-700 text-white">45°+</div>
+          </div>
+        </div>
+
         <!-- Resort Pin & Circuit Legend -->
-        <div class="space-y-1 text-[10px]">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-emerald-500 border border-white shrink-0"></span>
-            <span class="w-4 h-0.5 bg-emerald-400 shrink-0"></span>
-            <span class="text-slate-200">Ski-Linked Circuit (Lift/Piste)</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-amber-500 border border-white shrink-0"></span>
-            <span class="w-4 border-t border-dashed border-amber-400 shrink-0"></span>
-            <span class="text-slate-200">Fast Bus / Shuttle Combo</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-sky-500 border border-white shrink-0"></span>
-            <span class="w-4 shrink-0"></span>
-            <span class="text-slate-200">Standalone Favorite</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-amber-400 border border-white text-slate-950 font-black flex items-center justify-center text-[8px] shrink-0">✓</span>
-            <span class="text-amber-300 font-semibold">Gold Pin + Check = Skied</span>
+          <div class="space-y-1 text-[10px]">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-emerald-500 border border-white shrink-0"></span>
+              <span class="w-4 h-0.5 bg-emerald-400 shrink-0"></span>
+              <span class="text-slate-200">Ski-Linked Circuit (Lift/Piste)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-amber-500 border border-white shrink-0"></span>
+              <span class="w-4 border-t border-dashed border-amber-400 shrink-0"></span>
+              <span class="text-slate-200">Fast Bus / Shuttle Combo</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-sky-500 border border-white shrink-0"></span>
+              <span class="w-4 shrink-0"></span>
+              <span class="text-slate-200">Standalone Favorite</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-amber-400 border border-white text-slate-950 font-black flex items-center justify-center text-[8px] shrink-0">✓</span>
+              <span class="text-amber-300 font-semibold">Gold Pin + Check = Skied</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1662,12 +1700,13 @@
       groupMode: 'combos',
       filter: 'all',
       search: '',
-      basemap: 'hybrid', // 'hybrid' | 'topo' | 'osm'
+      basemap: 'hybrid', // 'hybrid' | 'topo' | 'slope' | 'osm'
       is3D: true,
       exaggeration: 1.45,
       showPistes: true,
       showPinLabels: true,
-      sidebarCollapsed: false
+      sidebarCollapsed: false,
+      legendVisible: true
     };
 
     let syncMeta = {
@@ -1926,6 +1965,119 @@
     let mapMarkers = {};
     let activePopup = null;
 
+    // Register custom 'slope://' protocol to compute CalTopo-style avalanche slope shading from DEM tiles
+    function registerSlopeProtocol() {
+      if (!window.maplibregl || window._slopeProtocolRegistered) return;
+      window._slopeProtocolRegistered = true;
+
+      maplibregl.addProtocol('slope', (params, callback) => {
+        const match = params.url.match(/slope:\/\/(\d+)\/(\d+)\/(\d+)/);
+        if (!match) {
+          callback(new Error('Invalid slope tile URL'));
+          return { cancel: () => {} };
+        }
+        const z = parseInt(match[1], 10);
+        const x = parseInt(match[2], 10);
+        const y = parseInt(match[3], 10);
+
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`;
+
+        img.onload = () => {
+          try {
+            const w = img.width || 256;
+            const h = img.height || 256;
+            const srcCanvas = document.createElement('canvas');
+            srcCanvas.width = w;
+            srcCanvas.height = h;
+            const srcCtx = srcCanvas.getContext('2d');
+            srcCtx.drawImage(img, 0, 0);
+            const srcData = srcCtx.getImageData(0, 0, w, h).data;
+
+            const outCanvas = document.createElement('canvas');
+            outCanvas.width = w;
+            outCanvas.height = h;
+            const outCtx = outCanvas.getContext('2d');
+            const outImg = outCtx.createImageData(w, h);
+            const outData = outImg.data;
+
+            // Ground resolution in meters per pixel at Tyrol latitude (~47.2° N)
+            const latRad = (47.2 * Math.PI) / 180;
+            const metersPerPx = (156543.03392 * Math.cos(latRad)) / Math.pow(2, z);
+
+            const elev = new Float32Array(w * h);
+            for (let i = 0, p = 0; i < srcData.length; i += 4, p++) {
+              elev[p] = srcData[i] * 256 + srcData[i + 1] + srcData[i + 2] / 256 - 32768;
+            }
+
+            for (let py = 0; py < h; py++) {
+              const yUp = py > 0 ? py - 1 : py;
+              const yDn = py < h - 1 ? py + 1 : py;
+              const dyDist = (yDn - yUp) * metersPerPx || metersPerPx;
+
+              for (let px = 0; px < w; px++) {
+                const xLt = px > 0 ? px - 1 : px;
+                const xRt = px < w - 1 ? px + 1 : px;
+                const dxDist = (xRt - xLt) * metersPerPx || metersPerPx;
+
+                const dzdx = (elev[py * w + xRt] - elev[py * w + xLt]) / dxDist;
+                const dzdy = (elev[yDn * w + px] - elev[yUp * w + px]) / dyDist;
+                const slopeDeg = (Math.atan(Math.sqrt(dzdx * dzdx + dzdy * dzdy)) * 180) / Math.PI;
+
+                const idx = (py * w + px) * 4;
+                if (slopeDeg >= 45) {
+                  // Purple: 45°+ extreme terrain
+                  outData[idx] = 147;
+                  outData[idx + 1] = 51;
+                  outData[idx + 2] = 234;
+                  outData[idx + 3] = 185;
+                } else if (slopeDeg >= 40) {
+                  // Crimson Red: 40°–44° steep avalanche terrain
+                  outData[idx] = 220;
+                  outData[idx + 1] = 38;
+                  outData[idx + 2] = 38;
+                  outData[idx + 3] = 180;
+                } else if (slopeDeg >= 35) {
+                  // Deep Orange: 35°–39° prime slab angle
+                  outData[idx] = 234;
+                  outData[idx + 1] = 88;
+                  outData[idx + 2] = 12;
+                  outData[idx + 3] = 170;
+                } else if (slopeDeg >= 30) {
+                  // Amber: 30°–34° critical avalanche zone
+                  outData[idx] = 245;
+                  outData[idx + 1] = 158;
+                  outData[idx + 2] = 11;
+                  outData[idx + 3] = 155;
+                } else if (slopeDeg >= 27) {
+                  // Yellow: 27°–29° caution / runout transition
+                  outData[idx] = 253;
+                  outData[idx + 1] = 224;
+                  outData[idx + 2] = 71;
+                  outData[idx + 3] = 135;
+                }
+              }
+            }
+
+            outCtx.putImageData(outImg, 0, 0);
+            outCanvas.toBlob(blob => {
+              if (!blob) return callback(null, new ArrayBuffer(0), null, null);
+              blob.arrayBuffer().then(buf => callback(null, buf, null, null));
+            }, 'image/png');
+          } catch (err) {
+            callback(null, new ArrayBuffer(0), null, null);
+          }
+        };
+
+        img.onerror = () => {
+          callback(null, new ArrayBuffer(0), null, null);
+        };
+
+        return { cancel: () => {} };
+      });
+    }
+
     function buildMapStyle() {
       return {
         version: 8,
@@ -1978,6 +2130,13 @@
             tileSize: 256,
             maxzoom: 15
           },
+          // CalTopo-style Avalanche Slope Shading Tiles
+          'avalanche-slope': {
+            type: 'raster',
+            tiles: ['slope://{z}/{x}/{y}'],
+            tileSize: 256,
+            maxzoom: 15
+          },
           // Live OpenSnowMap Pistes, Trail Numbers & Ski Lifts Overlay
           'opensnowmap-pistes': {
             type: 'raster',
@@ -2009,6 +2168,15 @@
             layout: { visibility: 'none' }
           },
           {
+            id: 'layer-slope',
+            type: 'raster',
+            source: 'avalanche-slope',
+            paint: {
+              'raster-opacity': 0.85
+            },
+            layout: { visibility: 'none' }
+          },
+          {
             id: 'layer-opensnowmap',
             type: 'raster',
             source: 'opensnowmap-pistes',
@@ -2033,6 +2201,7 @@
 
     function initMap() {
       try {
+        registerSlopeProtocol();
         map = new maplibregl.Map({
           container: 'map',
           style: buildMapStyle(),
@@ -2243,7 +2412,7 @@
     // =========================================================================
     function setBasemap(mode) {
       state.basemap = mode;
-      ['hybrid', 'topo', 'osm'].forEach(key => {
+      ['hybrid', 'topo', 'slope', 'osm'].forEach(key => {
         const btn = document.getElementById(`bm-btn-${key}`);
         const mobBtn = document.getElementById(`mob-bm-${key}`);
         if (btn) {
@@ -2252,6 +2421,139 @@
               ? 'px-2.5 py-1.5 rounded-lg bg-sky-600 text-white transition'
               : 'px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition';
         }
+        if (mobBtn) {
+          mobBtn.className =
+            key === mode
+              ? 'px-2 py-1 rounded-lg bg-sky-600 text-white'
+              : 'px-2 py-1 rounded-lg text-slate-300';
+        }
+      });
+
+      const slopeLegend = document.getElementById('slope-legend-block');
+      if (slopeLegend) {
+        if (mode === 'slope') slopeLegend.classList.remove('hidden');
+        else slopeLegend.classList.add('hidden');
+      }
+
+      if (!mapLoaded) return;
+      map.setLayoutProperty('layer-satellite', 'visibility', mode === 'hybrid' ? 'visible' : 'none');
+      map.setLayoutProperty('layer-satellite-labels', 'visibility', mode === 'hybrid' ? 'visible' : 'none');
+      map.setLayoutProperty('layer-topo', 'visibility', mode === 'topo' || mode === 'slope' ? 'visible' : 'none');
+      map.setLayoutProperty('layer-slope', 'visibility', mode === 'slope' ? 'visible' : 'none');
+      map.setLayoutProperty('layer-osm', 'visibility', mode === 'osm' ? 'visible' : 'none');
+    }
+
+    function toggle3DMode() {
+      state.is3D = !state.is3D;
+      const btn = document.getElementById('btn-3d-toggle');
+      const lbl = document.getElementById('label-3d-toggle');
+      if (state.is3D) {
+        btn.className = 'px-2.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold flex items-center gap-1.5 transition';
+        lbl.textContent = '3D View ON';
+        if (mapLoaded) {
+          map.setTerrain({ source: 'terrain-dem', exaggeration: state.exaggeration });
+          map.easeTo({ pitch: 58, duration: 700 });
+        }
+      } else {
+        btn.className = 'px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold flex items-center gap-1.5 transition';
+        lbl.textContent = '2D Top-Down';
+        if (mapLoaded) {
+          map.setTerrain(null);
+          map.easeTo({ pitch: 0, bearing: 0, duration: 700 });
+        }
+      }
+    }
+
+    function setExaggeration(val) {
+      state.exaggeration = val;
+      const keyMap = { 1: 'exag-100', 1.45: 'exag-145', 1.8: 'exag-180' };
+      Object.entries(keyMap).forEach(([numStr, id]) => {
+        const el = document.getElementById(id);
+        if (el) {
+          const isMatch = Math.abs(parseFloat(numStr) - val) < 0.01;
+          el.className = isMatch
+            ? 'px-1.5 py-1 rounded-lg bg-emerald-600 text-white transition'
+            : 'px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition';
+        }
+      });
+
+      if (!state.is3D) {
+        state.is3D = true;
+        const btn = document.getElementById('btn-3d-toggle');
+        const lbl = document.getElementById('label-3d-toggle');
+        if (btn) btn.className = 'px-2.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold flex items-center gap-1.5 transition';
+        if (lbl) lbl.textContent = '3D View ON';
+      }
+
+      if (mapLoaded) {
+        map.setTerrain({ source: 'terrain-dem', exaggeration: val });
+        if (map.getPitch() < 30) {
+          map.easeTo({ pitch: 58, duration: 650 });
+        }
+      }
+      showToast(`3D Mountain Relief set to ${val}x`);
+    }
+
+    function toggleLegend(show) {
+      state.legendVisible = show;
+      const panel = document.getElementById('legend-panel');
+      const pill = document.getElementById('legend-collapsed-pill');
+      if (!panel || !pill) return;
+      if (show) {
+        panel.classList.remove('hidden');
+        pill.classList.add('hidden');
+      } else {
+        panel.classList.add('hidden');
+        pill.classList.remove('hidden');
+      }
+    }
+
+    function toggle3DMode() {
+      state.is3D = !state.is3D;
+      const btn = document.getElementById('btn-3d-toggle');
+      const lbl = document.getElementById('label-3d-toggle');
+      if (state.is3D) {
+        btn.className = 'px-2.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold flex items-center gap-1.5 transition';
+        lbl.textContent = '3D View ON';
+        if (mapLoaded) {
+          map.setTerrain({ source: 'terrain-dem', exaggeration: state.exaggeration });
+          map.easeTo({ pitch: 58, duration: 700 });
+        }
+      } else {
+        btn.className = 'px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold flex items-center gap-1.5 transition';
+        lbl.textContent = '2D Top-Down';
+        if (mapLoaded) {
+          map.setTerrain(null);
+          map.easeTo({ pitch: 0, bearing: 0, duration: 700 });
+        }
+      }
+    }
+
+    function setExaggeration(val) {
+      state.exaggeration = val;
+      const mapIds = {
+        1.0: 'exag-100',
+        1.45: 'exag-145',
+        1.8: 'exag-180'
+      };
+      Object.entries(mapIds).forEach(([numStr, elId]) => {
+        const el = document.getElementById(elId);
+        if (el) {
+          el.className =
+            parseFloat(numStr) === val
+              ? 'px-1.5 py-1 rounded-lg bg-emerald-600 text-white transition'
+              : 'px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition';
+        }
+      });
+
+      // Automatically switch to 3D perspective if currently in 2D Top-Down so relief is visible
+      if (!state.is3D) {
+        toggle3DMode();
+      } else if (mapLoaded) {
+        map.setTerrain({ source: 'terrain-dem', exaggeration: val });
+      }
+      showToast(`3D Mountain Relief set to ${val}x`);
+    }
         if (mobBtn) {
           mobBtn.className =
             key === mode
@@ -2290,444 +2592,51 @@
 
     function setExaggeration(val) {
       state.exaggeration = val;
-      [1.0, 1.45, 1.8].forEach(v => {
-        const el = document.getElementById(`exag-${v.toFixed(1).replace('.0', '.0')}`);
+      const mapIds = { 1: 'exag-1.0', 1.45: 'exag-1.45', 1.8: 'exag-1.8' };
+      Object.entries(mapIds).forEach(([numStr, elId]) => {
+        const el = document.getElementById(elId);
         if (el) {
           el.className =
-            v === val
+            Number(numStr) === val
               ? 'px-1.5 py-1 rounded-lg bg-emerald-600 text-white transition'
               : 'px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition';
         }
       });
-      if (mapLoaded && state.is3D) {
-        map.setTerrain({ source: 'terrain-dem', exaggeration: val });
+
+      // Automatically switch to 3D tilted view if currently in 2D Top-Down so elevation changes are visible
+      if (!state.is3D) {
+        state.is3D = true;
+        const btn = document.getElementById('btn-3d-toggle');
+        const lbl = document.getElementById('label-3d-toggle');
+        if (btn) btn.className = 'px-2.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold flex items-center gap-1.5 transition';
+        if (lbl) lbl.textContent = '3D View ON';
+        if (mapLoaded) map.easeTo({ pitch: 58, duration: 600 });
       }
-    }
 
-    function rotateCamera(delta) {
-      if (!map) return;
-      map.easeTo({ bearing: map.getBearing() + delta, duration: 400 });
-    }
-
-    function resetNorth() {
-      if (!map) return;
-      map.easeTo({ bearing: 0, duration: 500 });
-    }
-
-    function togglePistesLayer(checked) {
-      state.showPistes = checked;
       if (mapLoaded) {
-        map.setLayoutProperty('layer-opensnowmap', 'visibility', checked ? 'visible' : 'none');
+        map.setTerrain({ source: 'terrain-dem', exaggeration: val });
+        showToast(`3D Mountain Relief set to ${val}x`);
       }
     }
 
-    function togglePinLabels(checked) {
-      state.showPinLabels = checked;
-      document.querySelectorAll('.ml-pin-label').forEach(el => {
-        el.style.display = checked ? 'block' : 'none';
-      });
-    }
+    function toggleLegendCollapse() {
+      state.legendCollapsed = !state.legendCollapsed;
+      const body = document.getElementById('legend-body');
+      const headerRow = document.getElementById('legend-header-row');
+      const lbl = document.getElementById('legend-toggle-label');
+      const icon = document.getElementById('legend-toggle-icon');
 
-    function toggleConnectionLayers() {
-      if (!mapLoaded) return;
-      const showSki = document.getElementById('toggle-ski-lines').checked;
-      const showBus = document.getElementById('toggle-bus-lines').checked;
-      map.setLayoutProperty('ski-links-casing', 'visibility', showSki ? 'visible' : 'none');
-      map.setLayoutProperty('ski-links-line', 'visibility', showSki ? 'visible' : 'none');
-      map.setLayoutProperty('bus-links-line', 'visibility', showBus ? 'visible' : 'none');
-    }
-
-    function fitTyrol3D() {
-      if (!map) return;
-      map.flyTo({
-        center: [11.42, 47.26],
-        zoom: 8.6,
-        pitch: state.is3D ? 54 : 0,
-        bearing: -8,
-        duration: 1100
-      });
-    }
-
-    function flyToValley(key) {
-      if (!map) return;
-      const views = {
-        zillertal: { center: [11.88, 47.21], zoom: 11.2, pitch: 62, bearing: -15 },
-        kitz: { center: [12.31, 47.46], zoom: 11.0, pitch: 60, bearing: 12 },
-        paznaun: { center: [10.42, 47.01], zoom: 10.7, pitch: 62, bearing: -20 },
-        oetztal: { center: [11.05, 47.02], zoom: 10.4, pitch: 62, bearing: 10 },
-        osttirol: { center: [12.56, 46.92], zoom: 10.2, pitch: 60, bearing: -10 }
-      };
-      const v = views[key];
-      if (v) {
-        map.flyTo({
-          center: v.center,
-          zoom: v.zoom,
-          pitch: state.is3D ? v.pitch : 0,
-          bearing: v.bearing,
-          duration: 1200
-        });
-      }
-    }
-
-    function flyToResort(resortId) {
-      const resort = RESORTS.find(r => r.id === resortId);
-      if (!resort) return;
-      if (window.innerWidth < 768) setMobileTab('map');
-      if (map) {
-        map.flyTo({
-          center: [resort.lng, resort.lat],
-          zoom: 12.6,
-          pitch: state.is3D ? 64 : 0,
-          duration: 1100
-        });
-        setTimeout(() => openResortPopup(resort), 450);
-      }
-    }
-
-    // =========================================================================
-    // 5. CHECKLIST INTERACTION, FILTERING & STATS
-    // =========================================================================
-    function getFilteredResorts() {
-      const q = state.search.trim().toLowerCase();
-      return RESORTS.filter(r => {
-        const isSkied = !!state.skied[r.id]?.checked;
-        if (state.filter === 'skied' && !isSkied) return false;
-        if (state.filter === 'unskied' && isSkied) return false;
-        if (state.filter === 'ski-linked' && r.connectionType !== 'ski-linked') return false;
-        if (state.filter === 'shuttle' && r.connectionType !== 'shuttle') return false;
-        if (state.filter === 'glacier' && !r.isGlacier) return false;
-
-        if (q) {
-          const circuit = CIRCUITS.find(c => c.id === r.circuitId);
-          const hay = `${r.name} ${r.region} ${r.connectionNote} ${r.highlights} ${circuit ? circuit.name : ''}`.toLowerCase();
-          if (!hay.includes(q)) return false;
-        }
-        return true;
-      });
-    }
-
-    function toggleResortSkied(resortId, refreshPopup = false) {
-      const current = state.skied[resortId];
-      if (current && current.checked) {
-        delete state.skied[resortId];
-        showToast('Removed from skied list');
+      if (state.legendCollapsed) {
+        body.classList.add('hidden');
+        headerRow.classList.remove('mb-2');
+        lbl.textContent = 'Key';
+        icon.setAttribute('data-lucide', 'eye');
       } else {
-        const today = new Date().toISOString().split('T')[0];
-        state.skied[resortId] = {
-          checked: true,
-          date: current?.date || today,
-          note: current?.note || ''
-        };
-        const resort = RESORTS.find(r => r.id === resortId);
-        showToast(`Checked off: ${resort ? resort.name.split('(')[0].trim() : 'Resort'}!`);
+        body.classList.remove('hidden');
+        headerRow.classList.add('mb-2');
+        lbl.textContent = 'Hide';
+        icon.setAttribute('data-lucide', 'eye-off');
       }
-      saveState();
-      updateStats();
-      renderSidebar();
-      renderMapMarkers();
-
-      if (refreshPopup) {
-        const resort = RESORTS.find(r => r.id === resortId);
-        if (resort) openResortPopup(resort);
-      }
-    }
-
-    function updateResortMeta(resortId, field, value) {
-      if (!state.skied[resortId]) {
-        state.skied[resortId] = { checked: true, date: '', note: '' };
-      }
-      state.skied[resortId][field] = value;
-      saveState();
-      updateStats();
-    }
-
-    function toggleResortDrawer(resortId) {
-      state.expandedResorts[resortId] = !state.expandedResorts[resortId];
-      renderSidebar();
-    }
-
-    function toggleClusterCollapse(clusterKey) {
-      state.collapsedClusters[clusterKey] = !state.collapsedClusters[clusterKey];
-      renderSidebar();
-    }
-
-    function highlightSidebarCard(resortId) {
-      const resort = RESORTS.find(r => r.id === resortId);
-      if (resort && state.groupMode === 'combos') {
-        state.collapsedClusters[resort.circuitId] = false;
-      }
-      state.expandedResorts[resortId] = true;
-      renderSidebar();
-      setTimeout(() => {
-        const card = document.getElementById(`card-${resortId}`);
-        if (card) {
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          card.classList.add('highlight-pulse');
-          setTimeout(() => card.classList.remove('highlight-pulse'), 1700);
-        }
-      }, 60);
-    }
-
-    function updateStats() {
-      const skiedIds = Object.keys(state.skied).filter(id => state.skied[id]?.checked);
-      const total = RESORTS.length;
-      const pct = total ? Math.round((skiedIds.length / total) * 100) : 0;
-
-      // Sum unique circuit/standalone km where at least one entry point is skied
-      let totalKm = 0;
-      const countedCircuits = new Set();
-      skiedIds.forEach(id => {
-        const r = RESORTS.find(item => item.id === id);
-        if (!r) return;
-        if (r.circuitId === 'standalone') {
-          totalKm += r.km;
-        } else if (!countedCircuits.has(r.circuitId)) {
-          countedCircuits.add(r.circuitId);
-          const c = CIRCUITS.find(item => item.id === r.circuitId);
-          totalKm += c ? c.totalKm : r.km;
-        }
-      });
-
-      const comboCircuits = CIRCUITS.filter(c => c.id !== 'standalone');
-      const completedCombos = comboCircuits.filter(c => {
-        const members = RESORTS.filter(r => r.circuitId === c.id);
-        return members.length > 0 && members.every(m => state.skied[m.id]?.checked);
-      }).length;
-
-      document.getElementById('stat-skied-count').textContent = skiedIds.length;
-      document.getElementById('stat-total-count').textContent = `/ ${total} Skied`;
-      document.getElementById('stat-progress-bar').style.width = `${pct}%`;
-      document.getElementById('stat-km-count').textContent = `${totalKm.toLocaleString()} km`;
-      document.getElementById('stat-circuits-count').textContent = `${completedCombos} / ${comboCircuits.length}`;
-    }
-
-    // =========================================================================
-    // 6. SIDEBAR RENDERING (SAME-DAY COMBOS, REGIONS, A-Z)
-    // =========================================================================
-    function renderResortCard(resort) {
-      const entry = state.skied[resort.id] || {};
-      const isSkied = !!entry.checked;
-      const isExpanded = !!state.expandedResorts[resort.id];
-      const gmapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resort.name + ' Austria')}`;
-
-      const badgeHtml =
-        resort.connectionType === 'ski-linked'
-          ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">🔗 Ski-Linked</span>`
-          : resort.connectionType === 'shuttle'
-          ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">🚌 Bus Combo</span>`
-          : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">🏔️ Standalone</span>`;
-
-      return `
-        <div id="card-${resort.id}" class="rounded-xl border transition-all ${
-          isSkied
-            ? 'bg-amber-50/60 border-amber-300 shadow-sm'
-            : 'bg-white border-slate-200 hover:border-slate-300'
-        }">
-          <div class="p-2.5 sm:p-3 flex items-start gap-2.5">
-            <!-- Custom Checkbox -->
-            <button
-              onclick="toggleResortSkied('${resort.id}')"
-              aria-label="Mark ${resort.name} as skied"
-              class="mt-0.5 w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition ${
-                isSkied
-                  ? 'bg-amber-400 border-amber-500 text-slate-950 shadow-sm'
-                  : 'bg-slate-50 border-slate-300 hover:border-sky-500 text-transparent'
-              }"
-            >
-              <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
-            </button>
-
-            <!-- Main Resort Summary -->
-            <div class="flex-1 min-w-0">
-              <div class="flex items-start justify-between gap-2">
-                <button onclick="flyToResort('${resort.id}')" class="text-left group">
-                  <h4 class="text-xs sm:text-sm font-bold leading-snug group-hover:text-sky-600 transition ${
-                    isSkied ? 'text-slate-900' : 'text-slate-800'
-                  }">
-                    ${resort.name}
-                  </h4>
-                </button>
-                <div class="flex items-center gap-1 shrink-0">
-                  <button onclick="flyToResort('${resort.id}')" title="Fly to 3D Mountain View" class="p-1.5 rounded-lg bg-slate-100 hover:bg-sky-100 text-slate-600 hover:text-sky-700 transition">
-                    <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-                  </button>
-                  <button onclick="toggleResortDrawer('${resort.id}')" title="Details, Date & Trip Notes" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
-                    <i data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}" class="w-3.5 h-3.5"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Metadata Pills -->
-              <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
-                ${badgeHtml}
-                <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
-                  ${resort.km} km
-                </span>
-                <span class="text-[11px] text-slate-500">
-                  ${resort.elevation}
-                </span>
-                ${
-                  resort.isGlacier
-                    ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-800">❄️ Glacier</span>`
-                    : ''
-                }
-                ${
-                  isSkied && entry.date
-                    ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-950">✓ ${entry.date}</span>`
-                    : ''
-                }
-              </div>
-
-              <!-- Quick Connection Line -->
-              <p class="text-[11px] text-slate-600 mt-1.5 leading-snug">
-                ${resort.connectionNote}
-              </p>
-            </div>
-          </div>
-
-          <!-- Expandable Details, Date & Personal Notes Drawer -->
-          ${
-            isExpanded
-              ? `
-            <div class="px-3 pb-3 pt-2 border-t border-slate-200/80 bg-slate-50/80 rounded-b-xl space-y-2.5 text-xs">
-              <p class="text-slate-700 leading-relaxed">${resort.highlights}</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Date Skied</label>
-                  <input
-                    type="date"
-                    value="${entry.date || ''}"
-                    onchange="updateResortMeta('${resort.id}', 'date', this.value)"
-                    class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-                  />
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Trip Notes / Best Runs</label>
-                  <input
-                    type="text"
-                    value="${(entry.note || '').replace(/"/g, '&quot;')}"
-                    placeholder="e.g. Parked at Gondola, great powder..."
-                    oninput="updateResortMeta('${resort.id}', 'note', this.value)"
-                    class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
-                  />
-                </div>
-              </div>
-              <div class="flex items-center justify-between pt-1">
-                <span class="text-[11px] text-slate-500">Region: <strong>${resort.region}</strong></span>
-                <a href="${gmapsUrl}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-600 hover:text-sky-800">
-                  Open in Google Maps <i data-lucide="external-link" class="w-3 h-3"></i>
-                </a>
-              </div>
-            </div>
-          `
-              : ''
-          }
-        </div>
-      `;
-    }
-
-    function renderSidebar() {
-      const container = document.getElementById('resort-list-container');
-      const filtered = getFilteredResorts();
-
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-2">
-            <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
-              <i data-lucide="search-x" class="w-5 h-5"></i>
-            </div>
-            <h3 class="text-sm font-bold text-slate-800">No resorts match your filter</h3>
-            <p class="text-xs text-slate-500">Try clearing your search term or switching back to "All (56)".</p>
-            <button onclick="resetFilters()" class="mt-2 px-3.5 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-semibold">
-              Reset Filters
-            </button>
-          </div>
-        `;
-        lucide.createIcons();
-        return;
-      }
-
-      if (state.groupMode === 'az') {
-        const sorted = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
-        container.innerHTML = `<div class="space-y-2">${sorted.map(renderResortCard).join('')}</div>`;
-      } else if (state.groupMode === 'region') {
-        const regions = [...new Set(filtered.map(r => r.region))];
-        container.innerHTML = regions
-          .map(reg => {
-            const members = filtered.filter(r => r.region === reg);
-            const skiedCount = members.filter(r => state.skied[r.id]?.checked).length;
-            const collapsed = !!state.collapsedClusters[`reg-${reg}`];
-            return `
-              <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                <button onclick="toggleClusterCollapse('reg-${reg.replace(/'/g, "\\'")}')" class="w-full px-3.5 py-2.5 bg-slate-900 text-white flex items-center justify-between text-left">
-                  <div>
-                    <h3 class="text-xs sm:text-sm font-extrabold">${reg}</h3>
-                    <p class="text-[11px] text-slate-400">${skiedCount} / ${members.length} skied</p>
-                  </div>
-                  <i data-lucide="${collapsed ? 'chevron-down' : 'chevron-up'}" class="w-4 h-4 text-slate-400"></i>
-                </button>
-                ${
-                  collapsed
-                    ? ''
-                    : `<div class="p-2.5 space-y-2 bg-slate-50/60">${members.map(renderResortCard).join('')}</div>`
-                }
-              </div>
-            `;
-          })
-          .join('');
-      } else {
-        // Default: Same-Day Interconnected Circuits & Bus Combos
-        container.innerHTML = CIRCUITS.map(circuit => {
-          const members = filtered.filter(r => r.circuitId === circuit.id);
-          if (members.length === 0) return '';
-          const skiedCount = members.filter(r => state.skied[r.id]?.checked).length;
-          const collapsed = !!state.collapsedClusters[circuit.id];
-
-          const headerAccent =
-            circuit.type === 'ski-linked'
-              ? 'border-l-4 border-l-emerald-500'
-              : circuit.type === 'shuttle'
-              ? 'border-l-4 border-l-amber-500'
-              : 'border-l-4 border-l-sky-500';
-
-          return `
-            <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm ${headerAccent}">
-              <div onclick="toggleClusterCollapse('${circuit.id}')" class="p-3 bg-slate-900 text-white cursor-pointer select-none">
-                <div class="flex items-start justify-between gap-2">
-                  <div>
-                    <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1 ${
-                      circuit.type === 'ski-linked'
-                        ? 'bg-emerald-500/20 text-emerald-300'
-                        : circuit.type === 'shuttle'
-                        ? 'bg-amber-500/20 text-amber-300'
-                        : 'bg-sky-500/20 text-sky-300'
-                    }">
-                      ${circuit.badge}
-                    </span>
-                    <h3 class="text-xs sm:text-sm font-extrabold leading-snug">${circuit.name}</h3>
-                  </div>
-                  <div class="flex items-center gap-2 shrink-0">
-                    <span class="text-xs font-extrabold px-2 py-0.5 rounded-lg bg-slate-800 text-amber-400 border border-slate-700">
-                      ${skiedCount}/${members.length}
-                    </span>
-                    <i data-lucide="${collapsed ? 'chevron-down' : 'chevron-up'}" class="w-4 h-4 text-slate-400"></i>
-                  </div>
-                </div>
-                <p class="text-[11px] text-slate-300 mt-1.5 leading-relaxed">${circuit.summary}</p>
-                <div class="mt-2 px-2.5 py-1.5 rounded-xl bg-slate-800/90 border border-slate-700/80 text-[11px] text-sky-200">
-                  💡 ${circuit.connectionTip}
-                </div>
-              </div>
-              ${
-                collapsed
-                  ? ''
-                  : `<div class="p-2.5 space-y-2 bg-slate-50/70">${members.map(renderResortCard).join('')}</div>`
-              }
-            </div>
-          `;
-        }).join('');
-      }
-
       lucide.createIcons();
     }
 
