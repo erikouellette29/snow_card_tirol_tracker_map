@@ -788,7 +788,7 @@
     ];
 
     const RESORTS = [
-      // --- 1. SKIWELT WILDER KAISER – BRIXENTAL (All 7 Official Entry Villages) ---
+      // --- 1. SKIWELT WILDER KAISER – BRIXENTAL (Top of Main Lift Coordinates) ---
       {
         id: 'sw-soell',
         name: 'SkiWelt Söll (Hohe Salve)',
@@ -799,9 +799,9 @@
         km: 275,
         elevation: '703 – 1,829 m',
         isGlacier: false,
-        lat: 47.4981,
-        lng: 12.1924,
-        highlights: 'Gateway to Hohe Salve 360° summit panorama, long Hexen6er & Keat runs, plus Austria’s largest night-skiing area (note: night skiing requires an extra ticket).',
+        lat: 47.4728,
+        lng: 12.2039,
+        highlights: 'Pin at Hohe Salve summit (1,829 m): 360° panorama, long Hexen6er & Keat runs, plus Austria’s largest night-skiing area (note: night skiing requires an extra ticket).',
         linkedIds: ['sw-scheffau', 'sw-brixen', 'sw-hopfgarten']
       },
       {
@@ -814,9 +814,9 @@
         km: 275,
         elevation: '745 – 1,650 m',
         isGlacier: false,
-        lat: 47.5238,
-        lng: 12.2486,
-        highlights: 'Fast 8-person gondolas straight into the sunny heart of SkiWelt with wide carving slopes on Brandstadl and Eiberg.',
+        lat: 47.4932,
+        lng: 12.2512,
+        highlights: 'Pin at Brandstadl top station (1,650 m): sunny heart of SkiWelt with wide carving slopes on Brandstadl and Eiberg.',
         linkedIds: ['sw-ellmau', 'sw-soell', 'sw-brixen']
       },
       {
@@ -829,9 +829,9 @@
         km: 275,
         elevation: '820 – 1,555 m',
         isGlacier: false,
-        lat: 47.5105,
-        lng: 12.3015,
-        highlights: 'Modern 10-person Hartkaiser gondola with dramatic Wilder Kaiser limestone wall views and cruising runs toward Going and Scheffau.',
+        lat: 47.4908,
+        lng: 12.2968,
+        highlights: 'Pin at Hartkaiser top station (1,555 m): dramatic Wilder Kaiser limestone wall views and cruising runs toward Going and Scheffau.',
         linkedIds: ['sw-going', 'sw-scheffau']
       },
       {
@@ -844,14 +844,14 @@
         km: 275,
         elevation: '798 – 1,267 m',
         isGlacier: false,
-        lat: 47.5132,
-        lng: 12.3282,
-        highlights: 'Quiet, scenic eastern entry point to SkiWelt with relaxed blue/red runs and views toward the Kitzbüheler Horn.',
+        lat: 47.4922,
+        lng: 12.3238,
+        highlights: 'Pin at Astberg top station (1,267 m): quiet, scenic eastern sector of SkiWelt with relaxed blue/red runs facing Kitzbüheler Horn.',
         linkedIds: ['sw-ellmau']
       },
       {
         id: 'sw-brixen',
-        name: 'SkiWelt Brixen im Thale',
+        name: 'SkiWelt Brixen im Thale (Zinsberg / Hochbrixen)',
         circuitId: 'skiwelt',
         region: 'Kitzbühel Alps',
         connectionType: 'ski-linked',
@@ -859,14 +859,14 @@
         km: 275,
         elevation: '794 – 1,829 m',
         isGlacier: false,
-        lat: 47.4508,
-        lng: 12.2564,
-        highlights: 'Central crossroads of SkiWelt: ride north toward Hohe Salve/Scheffau or take the Sonnenlift & SkiWeltbahn south straight into Westendorf.',
+        lat: 47.4695,
+        lng: 12.2442,
+        highlights: 'Pin at Zinsberg / Hochbrixen ridge (1,675 m): central crossroads of SkiWelt linking north to Hohe Salve/Scheffau and south to Westendorf.',
         linkedIds: ['sw-westendorf', 'sw-soell', 'sw-scheffau']
       },
       {
         id: 'sw-westendorf',
-        name: 'SkiWelt Westendorf (Choralpe)',
+        name: 'SkiWelt Westendorf (Choralpe / Fleiding)',
         circuitId: 'skiwelt',
         region: 'Kitzbühel Alps',
         connectionType: 'ski-linked',
@@ -874,14 +874,14 @@
         km: 275,
         elevation: '802 – 1,892 m',
         isGlacier: false,
-        lat: 47.4316,
-        lng: 12.2145,
-        highlights: 'Highest peak in SkiWelt (Fleiding 1,892 m) with long, steep red/black descents and the Ki-West connection to Kitzbühel.',
+        lat: 47.4192,
+        lng: 12.2568,
+        highlights: 'Pin at Choralpe / Fleiding ridge (1,892 m): highest peak in SkiWelt with long, steep red/black descents and the Ki-West connection to Kitzbühel.',
         linkedIds: ['sw-brixen', 'kitz-kirchberg']
       },
       {
         id: 'sw-hopfgarten',
-        name: 'SkiWelt Hopfgarten / Itter',
+        name: 'SkiWelt Hopfgarten / Itter (Rigi / Kraftalm)',
         circuitId: 'skiwelt',
         region: 'Kitzbühel Alps',
         connectionType: 'ski-linked',
@@ -889,13 +889,13 @@
         km: 275,
         elevation: '622 – 1,829 m',
         isGlacier: false,
-        lat: 47.4665,
-        lng: 12.1602,
-        highlights: 'Sunny south-facing summit descent all the way from Hohe Salve down to Hopfgarten village (over 1,200 m vertical drop).',
+        lat: 47.4685,
+        lng: 12.1895,
+        highlights: 'Pin at Rigi / Salvenbahn II ridge (1,532 m): sunny south-facing descent all the way from Hohe Salve down to Hopfgarten village.',
         linkedIds: ['sw-soell', 'sw-brixen']
       },
 
-      // --- 2. KITZSKI ---
+      // --- 2. KITZSKI (Top of Main Lift Coordinates) ---
       {
         id: 'kitz-hahnenkamm',
         name: 'KitzSki Kitzbühel (Hahnenkamm & Horn)',
@@ -906,14 +906,14 @@
         km: 234,
         elevation: '800 – 2,000 m',
         isGlacier: false,
-        lat: 47.4418,
-        lng: 12.3888,
-        highlights: 'Ski the legendary Streif World Cup downhill course on Hahnenkamm and ride the high-wire 3S Gondola across the valley to Pengelstein/Jochberg.',
+        lat: 47.4242,
+        lng: 12.3698,
+        highlights: 'Pin at Hahnenkammbahn top station (1,668 m): start gate of the legendary Streif downhill course and 3S Gondola across to Pengelstein.',
         linkedIds: ['kitz-kirchberg', 'kitz-jochberg']
       },
       {
         id: 'kitz-kirchberg',
-        name: 'KitzSki Kirchberg (Fleckalm & Pengelstein)',
+        name: 'KitzSki Kirchberg (Ehrenbachhöhe / Pengelstein)',
         circuitId: 'kitzski',
         region: 'Kitzbühel Alps',
         connectionType: 'ski-linked',
@@ -921,14 +921,14 @@
         km: 234,
         elevation: '837 – 1,938 m',
         isGlacier: false,
-        lat: 47.4472,
-        lng: 12.3168,
-        highlights: 'Fast Fleckalmbahn & Maierl lifts give immediate access to KitzSki’s best sustained red runs and the Ki-West SkiWelt link.',
+        lat: 47.4165,
+        lng: 12.3455,
+        highlights: 'Pin at Fleckalmbahn / Ehrenbachhöhe summit (1,802 m): immediate access to KitzSki’s best sustained red runs and Pengelstein.',
         linkedIds: ['kitz-hahnenkamm', 'sw-westendorf']
       },
       {
         id: 'kitz-jochberg',
-        name: 'KitzSki Jochberg – Pass Thurn – Mittersill',
+        name: 'KitzSki Jochberg – Pass Thurn (Resterhöhe)',
         circuitId: 'kitzski',
         region: 'Kitzbühel Alps',
         connectionType: 'ski-linked',
@@ -936,16 +936,16 @@
         km: 234,
         elevation: '1,274 – 2,000 m',
         isGlacier: false,
-        lat: 47.3785,
-        lng: 12.4182,
-        highlights: 'High-altitude, snow-sure wide bowls on Zweitausender and Resterhöhe extending into Salzburg via Panoramabahn Kitzbüheler Alpen.',
+        lat: 47.3435,
+        lng: 12.3885,
+        highlights: 'Pin at Resterhöhe / Zweitausender ridge (1,894 m): high-altitude, snow-sure wide bowls extending into Salzburg via Panoramabahn.',
         linkedIds: ['kitz-hahnenkamm']
       },
 
-      // --- 3. ZILLERTAL ARENA ---
+      // --- 3. ZILLERTAL ARENA (Top of Main Lift Coordinates) ---
       {
         id: 'za-zell',
-        name: 'Zillertal Arena: Zell am Ziller',
+        name: 'Zillertal Arena: Zell am Ziller (Rosenalm / Übergangsjoch)',
         circuitId: 'zillertal-arena',
         region: 'Zillertal',
         connectionType: 'ski-linked',
@@ -953,9 +953,9 @@
         km: 150,
         elevation: '580 – 2,500 m',
         isGlacier: false,
-        lat: 47.2335,
-        lng: 11.8832,
-        highlights: 'Home to Austria’s longest vertical valley descent (1,930 m continuous drop from Übergangsjoch down to Zell am Ziller).',
+        lat: 47.2468,
+        lng: 11.9385,
+        highlights: 'Pin at Karspitz / Übergangsjoch ridge (2,500 m): top of Austria’s longest vertical valley descent (1,930 m drop down to Zell).',
         linkedIds: ['za-gerlos']
       },
       {
@@ -968,9 +968,9 @@
         km: 150,
         elevation: '1,246 – 2,500 m',
         isGlacier: false,
-        lat: 47.2254,
-        lng: 12.0338,
-        highlights: 'High-altitude middle hub with wide sunny bowls on Isskogel and seamless lift links west to Zell and east to Königsleiten.',
+        lat: 47.2485,
+        lng: 12.0235,
+        highlights: 'Pin at Isskogel top station (2,264 m): high-altitude middle hub with wide sunny bowls linking west to Zell and east to Königsleiten.',
         linkedIds: ['za-zell', 'za-koenigsleiten']
       },
       {
@@ -983,16 +983,16 @@
         km: 150,
         elevation: '1,600 – 2,315 m',
         isGlacier: false,
-        lat: 47.2485,
-        lng: 12.1215,
-        highlights: 'Ski-in/ski-out alpine village at 1,600 m with panoramic cruising on Königsleitenspitze and Gerlosplatte.',
+        lat: 47.2592,
+        lng: 12.1112,
+        highlights: 'Pin at Königsleitenspitze summit (2,315 m): panoramic high-alpine cruising above Königsleiten and Gerlosplatte.',
         linkedIds: ['za-gerlos']
       },
 
-      // --- 4. MAYRHOFEN – TUX – HINTERTUX ---
+      // --- 4. MAYRHOFEN – TUX – HINTERTUX (Top of Main Lift Coordinates) ---
       {
         id: 'mh-penken',
-        name: 'Mayrhofen (Penken & Ahorn)',
+        name: 'Mayrhofen (Penkenjoch & Ahorn)',
         circuitId: 'mayrhofen-tux',
         region: 'Zillertal',
         connectionType: 'ski-linked',
@@ -1000,14 +1000,14 @@
         km: 142,
         elevation: '630 – 2,500 m',
         isGlacier: false,
-        lat: 47.1678,
-        lng: 11.8625,
-        highlights: 'Famous for the 78% gradient Harakiri steep slope, Vans Penken Park, and long carving runs on sunny Ahorn plateau.',
+        lat: 47.1768,
+        lng: 11.8125,
+        highlights: 'Pin at Penken / Knorren summit ridge (2,095 m): home of the 78% gradient Harakiri steep slope and Vans Penken Park.',
         linkedIds: ['mh-finkenberg', 'mh-rastkogel']
       },
       {
         id: 'mh-finkenberg',
-        name: 'Finkenberg (Almbahnen)',
+        name: 'Finkenberg (Penkenjoch)',
         circuitId: 'mayrhofen-tux',
         region: 'Zillertal',
         connectionType: 'ski-linked',
@@ -1015,9 +1015,9 @@
         km: 142,
         elevation: '840 – 2,500 m',
         isGlacier: false,
-        lat: 47.1525,
-        lng: 11.8255,
-        highlights: 'Direct gondola access straight onto Penkenjoch and the 150er Tux aerial tramway over to Rastkogel.',
+        lat: 47.1685,
+        lng: 11.7965,
+        highlights: 'Pin at Penkenjoch top station (2,095 m): upper terminal of Finkenberger Almbahnen and the 150er Tux aerial tramway.',
         linkedIds: ['mh-penken', 'mh-rastkogel']
       },
       {
@@ -1030,14 +1030,14 @@
         km: 142,
         elevation: '1,300 – 2,500 m',
         isGlacier: false,
-        lat: 47.1682,
-        lng: 11.7458,
-        highlights: 'High-altitude sunny bowls on Horbergjoch and Eggalm with fast free ski bus access straight up to Hintertux Glacier.',
+        lat: 47.1855,
+        lng: 11.7412,
+        highlights: 'Pin at Horbergjoch / Rastkogel summit (2,500 m): sunny high-altitude bowls overlooking Tux valley and Hintertux Glacier.',
         linkedIds: ['mh-finkenberg', 'mh-hintertux']
       },
       {
         id: 'mh-hintertux',
-        name: 'Hintertuxer Gletscher',
+        name: 'Hintertuxer Gletscher (Gefrorene Wand)',
         circuitId: 'mayrhofen-tux',
         region: 'Zillertal',
         connectionType: 'shuttle',
@@ -1045,16 +1045,16 @@
         km: 62,
         elevation: '1,500 – 3,250 m',
         isGlacier: true,
-        lat: 47.0812,
-        lng: 11.6742,
-        highlights: 'Austria’s premier year-round glacier resort with 1,750 m vertical drop down the Schwarze Pfanne run to the valley floor.',
+        lat: 47.0615,
+        lng: 11.6712,
+        highlights: 'Pin at Gefrorene Wand panorama terrace (3,250 m): Austria’s premier year-round glacier with 1,750 m vertical drop.',
         linkedIds: ['mh-rastkogel']
       },
 
-      // --- 5. HOCHZILLERTAL – HOCHFÜGEN – SPIELJOCH ---
+      // --- 5. HOCHZILLERTAL – HOCHFÜGEN – SPIELJOCH (Top of Main Lift Coordinates) ---
       {
         id: 'hz-kaltenbach',
-        name: 'Hochzillertal – Hochfügen (Kaltenbach)',
+        name: 'Hochzillertal – Hochfügen (Marchkopf / Wedelhütte)',
         circuitId: 'hochzillertal-fuegen',
         region: 'Zillertal',
         connectionType: 'ski-linked',
@@ -1062,14 +1062,14 @@
         km: 91,
         elevation: '560 – 2,501 m',
         isGlacier: false,
-        lat: 47.2912,
-        lng: 11.8742,
-        highlights: 'High-speed gondolas, gourmet mountain huts (Kristallhütte, Wedelhütte), and freeride terrain in the high Hochfügen bowl.',
+        lat: 47.2725,
+        lng: 11.8112,
+        highlights: 'Pin at Marchkopf / Wedelexpress ridge (2,501 m): high-alpine saddle linking Kaltenbach and Hochfügen with gourmet huts.',
         linkedIds: ['hz-spieljoch']
       },
       {
         id: 'hz-spieljoch',
-        name: 'Spieljoch – Fügen',
+        name: 'Spieljoch – Fügen (Onkeljoch)',
         circuitId: 'hochzillertal-fuegen',
         region: 'Zillertal',
         connectionType: 'shuttle',
@@ -1077,13 +1077,13 @@
         km: 21,
         elevation: '650 – 2,054 m',
         isGlacier: false,
-        lat: 47.3422,
-        lng: 11.8455,
-        highlights: 'First ski area in Zillertal with a 7 km top-to-bottom snow-covered valley descent and fast gondola.',
+        lat: 47.3268,
+        lng: 11.8125,
+        highlights: 'Pin at Onkeljoch / Spieljoch summit (2,054 m): top of Zillertal’s 7 km continuous snow-covered valley descent.',
         linkedIds: ['hz-kaltenbach']
       },
 
-      // --- 6. SKI JUWEL ALPBACHTAL WILDSCHÖNAU ---
+      // --- 6. SKI JUWEL ALPBACHTAL WILDSCHÖNAU (Top of Main Lift Coordinates) ---
       {
         id: 'sj-alpbach',
         name: 'Ski Juwel: Alpbach (Wiedersbergerhorn)',
@@ -1094,14 +1094,14 @@
         km: 113,
         elevation: '670 – 2,025 m',
         isGlacier: false,
-        lat: 47.3865,
-        lng: 11.9442,
-        highlights: 'Traditional timber village charm paired with long treeless top bowls on Wiedersbergerhorn and seamless connection to Wildschönau.',
+        lat: 47.3688,
+        lng: 11.9225,
+        highlights: 'Pin at Wiedersbergerhorn top station (2,025 m): treeless summit bowls with seamless gondola link across to Wildschönau.',
         linkedIds: ['sj-wildschoenau']
       },
       {
         id: 'sj-wildschoenau',
-        name: 'Ski Juwel: Wildschönau (Auffach / Schatzberg)',
+        name: 'Ski Juwel: Wildschönau (Schatzberg)',
         circuitId: 'skijuwel',
         region: 'Alpbachtal',
         connectionType: 'ski-linked',
@@ -1109,16 +1109,16 @@
         km: 113,
         elevation: '875 – 1,903 m',
         isGlacier: false,
-        lat: 47.3688,
-        lng: 12.0125,
-        highlights: 'Wide, rolling red and blue runs from Schatzberg down to Auffach with easy lift transit across to Alpbach.',
+        lat: 47.3725,
+        lng: 11.9845,
+        highlights: 'Pin at Schatzberg summit (1,903 m): wide, rolling red and blue runs above Auffach with direct gondola link to Alpbach.',
         linkedIds: ['sj-alpbach']
       },
 
-      // --- 7. PAZNAUN VALLEY (ISCHGL/SAMNAUN, KAPPL, SEE, GALTÜR) ---
+      // --- 7. PAZNAUN VALLEY (Top of Main Lift Coordinates) ---
       {
         id: 'pz-ischgl',
-        name: 'Silvretta Arena Ischgl / Samnaun (CH)',
+        name: 'Silvretta Arena Ischgl / Samnaun (Idalp / Palinkopf)',
         circuitId: 'paznaun',
         region: 'Paznaun',
         connectionType: 'ski-linked',
@@ -1126,14 +1126,14 @@
         km: 239,
         elevation: '1,377 – 2,872 m',
         isGlacier: false,
-        lat: 47.0112,
-        lng: 10.2885,
-        highlights: 'Massive high-altitude cross-border ski arena (90% above 2,000 m) with 11 km Eleven run. Official note: excluded on Ischgl concert days.',
+        lat: 46.9825,
+        lng: 10.3125,
+        highlights: 'Pin at Idalp / Viderjoch cross-border ridge (2,732 m): heart of the 239 km Ischgl–Samnaun arena. Excluded on concert days.',
         linkedIds: ['pz-kappl', 'pz-galtuer']
       },
       {
         id: 'pz-kappl',
-        name: 'Skischaukel Kappl & See',
+        name: 'Skischaukel Kappl & See (Alblittkopf)',
         circuitId: 'paznaun',
         region: 'Paznaun',
         connectionType: 'ski-linked',
@@ -1141,14 +1141,14 @@
         km: 42,
         elevation: '1,040 – 2,690 m',
         isGlacier: false,
-        lat: 47.0628,
-        lng: 10.3752,
-        highlights: 'Sunny south-facing slopes in Kappl (8 km Lattenabfahrt) linked across the ridge with family-friendly See im Paznaun.',
+        lat: 47.0785,
+        lng: 10.3485,
+        highlights: 'Pin at Alblittkopf summit (2,690 m): sunny south-facing ridge linking Kappl’s 8 km Lattenabfahrt with See im Paznaun.',
         linkedIds: ['pz-ischgl']
       },
       {
         id: 'pz-galtuer',
-        name: 'Silvapark Galtür',
+        name: 'Silvapark Galtür (Breitspitz)',
         circuitId: 'paznaun',
         region: 'Paznaun',
         connectionType: 'shuttle',
@@ -1156,16 +1156,16 @@
         km: 43,
         elevation: '1,600 – 2,300 m',
         isGlacier: false,
-        lat: 46.9685,
-        lng: 10.1842,
-        highlights: 'High-altitude hidden gem at the end of Paznaun with 6 themed Silvapark sectors, uncrowded powder, and crisp snow.',
+        lat: 46.9525,
+        lng: 10.1745,
+        highlights: 'Pin at Breitspitzbahn top station (2,300 m): high-altitude hidden gem at the end of Paznaun with 6 themed Silvapark sectors.',
         linkedIds: ['pz-ischgl']
       },
 
-      // --- 8. SERFAUS – FISS – LADIS & OBERLAND ---
+      // --- 8. SERFAUS – FISS – LADIS & OBERLAND (Top of Main Lift Coordinates) ---
       {
         id: 'sfl-serfaus',
-        name: 'Serfaus – Fiss – Ladis',
+        name: 'Serfaus – Fiss – Ladis (Schönjoch / Masner)',
         circuitId: 'sfl-oberland',
         region: 'Tiroler Oberland',
         connectionType: 'ski-linked',
@@ -1173,14 +1173,14 @@
         km: 214,
         elevation: '1,200 – 2,828 m',
         isGlacier: false,
-        lat: 47.0385,
-        lng: 10.6062,
-        highlights: 'Car-free Serfaus with its underground hover-metro, linked across Fiss and Ladis up to Masnerkopf (2,828 m).',
+        lat: 47.0545,
+        lng: 10.5785,
+        highlights: 'Pin at Schönjoch / Zwölferkopf ridge (2,596 m): central crest of the 214 km sun plateau stretching out to Masnerkopf (2,828 m).',
         linkedIds: ['ob-fendels', 'ob-nauders']
       },
       {
         id: 'ob-fendels',
-        name: 'Fendels (Ried / Prutz)',
+        name: 'Fendels (Planggeross / Sattelboden)',
         circuitId: 'sfl-oberland',
         region: 'Tiroler Oberland',
         connectionType: 'shuttle',
@@ -1188,14 +1188,14 @@
         km: 11,
         elevation: '1,356 – 2,300 m',
         isGlacier: false,
-        lat: 47.0532,
-        lng: 10.6745,
-        highlights: 'Charming, crowd-free forest runs directly reachable by cable car from Ried im Oberinntal.',
+        lat: 47.0445,
+        lng: 10.6925,
+        highlights: 'Pin at Planggeross chairlift top (2,300 m): uncrowded forest and alpine runs directly above Ried im Oberinntal.',
         linkedIds: ['sfl-serfaus']
       },
       {
         id: 'ob-nauders',
-        name: 'Nauders am Reschenpass (Bergkastel)',
+        name: 'Nauders am Reschenpass (Bergkastel / Gueser Kopf)',
         circuitId: 'sfl-oberland',
         region: 'Tiroler Oberland',
         connectionType: 'shuttle',
@@ -1203,16 +1203,16 @@
         km: 75,
         elevation: '1,400 – 2,750 m',
         isGlacier: false,
-        lat: 46.8895,
-        lng: 10.5032,
-        highlights: 'Wide, high-altitude carving slopes at the tri-border corner of Austria, Italy, and Switzerland.',
+        lat: 46.8725,
+        lng: 10.5315,
+        highlights: 'Pin at Gueser Kopf / Tscheyeck summit (2,750 m): wide high-altitude carving slopes at the Austria–Italy–Switzerland tri-border.',
         linkedIds: ['sfl-serfaus']
       },
 
-      // --- 9. ÖTZTAL (SÖLDEN & GURGL) ---
+      // --- 9. ÖTZTAL (Top of Main Lift Coordinates) ---
       {
         id: 'oe-soelden',
-        name: 'Sölden (Giggijoch, Gaislachkogl & 2 Glaciers)',
+        name: 'Sölden (Gaislachkogl, Giggijoch & 2 Glaciers)',
         circuitId: 'oetztal',
         region: 'Ötztal',
         connectionType: 'shuttle',
@@ -1220,14 +1220,14 @@
         km: 146,
         elevation: '1,350 – 3,340 m',
         isGlacier: true,
-        lat: 46.9654,
-        lng: 11.0076,
-        highlights: 'Only Austrian resort with three 3,000 m+ peaks (BIG 3 Rally), Rettenbach & Tiefenbach glaciers, and 007 ELEMENTS.',
+        lat: 46.9385,
+        lng: 10.9675,
+        highlights: 'Pin at Gaislachkogl summit (3,058 m / 007 ELEMENTS): links Giggijoch with Rettenbach & Tiefenbach glaciers (3,340 m).',
         linkedIds: ['oe-gurgl']
       },
       {
         id: 'oe-gurgl',
-        name: 'Obergurgl – Hochgurgl',
+        name: 'Obergurgl – Hochgurgl (Hohe Mut / Top Mountain)',
         circuitId: 'oetztal',
         region: 'Ötztal',
         connectionType: 'shuttle',
@@ -1235,16 +1235,16 @@
         km: 112,
         elevation: '1,800 – 3,080 m',
         isGlacier: false,
-        lat: 46.8685,
-        lng: 11.0268,
-        highlights: 'Guaranteed snow from November to late April. Official note: €34/day Snow Card surcharge applies during FIS World Cup Nov 21–22, 2026.',
+        lat: 46.8615,
+        lng: 11.0545,
+        highlights: 'Pin at Hohe Mut Alm summit (2,670 m): 360° panorama over 21 three-thousand-meter peaks. Note: €34 surcharge on FIS World Cup Nov 21–22, 2026.',
         linkedIds: ['oe-soelden']
       },
 
-      // --- 10. HOCHOETZ – KÜHTAI ---
+      // --- 10. HOCHOETZ – KÜHTAI (Top of Main Lift Coordinates) ---
       {
         id: 'hk-hochoetz',
-        name: 'Hochoetz (Oetz / Ochsengarten)',
+        name: 'Hochoetz (Brunnenkopf / Balbach)',
         circuitId: 'hochoetz-kuehtai',
         region: 'Ötztal',
         connectionType: 'shuttle',
@@ -1252,14 +1252,14 @@
         km: 41,
         elevation: '1,410 – 2,272 m',
         isGlacier: false,
-        lat: 47.2062,
-        lng: 10.9285,
-        highlights: 'Sunny, wind-protected trails above Oetz with seamless bus link from Ochsengarten up to Kühtai.',
+        lat: 47.2115,
+        lng: 10.9465,
+        highlights: 'Pin at Brunnenkopf summit (2,272 m): sunny, wind-protected trails above Oetz with seamless bus link from Ochsengarten to Kühtai.',
         linkedIds: ['hk-kuehtai']
       },
       {
         id: 'hk-kuehtai',
-        name: 'Kühtai',
+        name: 'Kühtai (DreiSeen / KaiserBahn)',
         circuitId: 'hochoetz-kuehtai',
         region: 'Innsbruck & Surroundings',
         connectionType: 'shuttle',
@@ -1267,16 +1267,16 @@
         km: 47,
         elevation: '2,020 – 2,520 m',
         isGlacier: false,
-        lat: 47.2135,
-        lng: 11.0225,
-        highlights: 'Austria’s highest ski resort village (2,020 m) with ski-in/ski-out hotels and natural snow all winter.',
+        lat: 47.2245,
+        lng: 11.0185,
+        highlights: 'Pin at KaiserBahn / DreiSeen ridge (2,520 m): Austria’s highest ski village (2,020 m) with natural snow all winter.',
         linkedIds: ['hk-hochoetz', 'ibk-axamer']
       },
 
-      // --- 11. PITZTAL ---
+      // --- 11. PITZTAL (Top of Main Lift Coordinates) ---
       {
         id: 'pz-glacier',
-        name: 'Pitztaler Gletscher & Rifflsee',
+        name: 'Pitztaler Gletscher & Rifflsee (Wildspitzbahn 3,440 m)',
         circuitId: 'pitztal',
         region: 'Pitztal',
         connectionType: 'ski-linked',
@@ -1284,14 +1284,14 @@
         km: 68,
         elevation: '1,640 – 3,440 m',
         isGlacier: true,
-        lat: 46.9268,
-        lng: 10.8785,
-        highlights: 'Highest cable car in Austria (Wildspitzbahn 3,440 m with Café 3.440) linked via glacier descent to Rifflsee.',
+        lat: 46.9125,
+        lng: 10.8735,
+        highlights: 'Pin at Hinterer Brunnenkogel / Café 3.440 (3,440 m): highest cable car in Austria, linked via glacier descent to Rifflsee.',
         linkedIds: ['pz-hochzeiger']
       },
       {
         id: 'pz-hochzeiger',
-        name: 'Hochzeiger – Jerzens im Pitztal',
+        name: 'Hochzeiger – Jerzens (Sechszeiger)',
         circuitId: 'pitztal',
         region: 'Pitztal',
         connectionType: 'shuttle',
@@ -1299,16 +1299,16 @@
         km: 40,
         elevation: '1,450 – 2,450 m',
         isGlacier: false,
-        lat: 47.1432,
-        lng: 10.7785,
-        highlights: 'Sunny west-facing carving runs and the steep Benni Raich black descent.',
+        lat: 47.1295,
+        lng: 10.8125,
+        highlights: 'Pin at Sechszeiger / Rotmoos summit (2,450 m): sunny west-facing carving runs and the steep Benni Raich black descent.',
         linkedIds: ['pz-glacier']
       },
 
-      // --- 12. STUBAITAL ---
+      // --- 12. STUBAITAL (Top of Main Lift Coordinates) ---
       {
         id: 'st-glacier',
-        name: 'Stubaier Gletscher',
+        name: 'Stubaier Gletscher (Schaufeljoch / Top of Tyrol)',
         circuitId: 'stubai',
         region: 'Stubaital',
         connectionType: 'shuttle',
@@ -1316,14 +1316,14 @@
         km: 68,
         elevation: '1,750 – 3,210 m',
         isGlacier: true,
-        lat: 46.9965,
-        lng: 11.1142,
-        highlights: 'Austria’s largest glacier ski area with the 10 km Wilde Grub’n valley run and Top of Tyrol summit platform.',
+        lat: 46.9825,
+        lng: 11.1125,
+        highlights: 'Pin at Schaufeljoch / Top of Tyrol (3,210 m): Austria’s largest glacier ski area with the 10 km Wilde Grub’n valley run.',
         linkedIds: ['st-schlick', 'st-elfer']
       },
       {
         id: 'st-schlick',
-        name: 'Schlick 2000 – Fulpmes',
+        name: 'Schlick 2000 – Fulpmes (Kreuzjoch)',
         circuitId: 'stubai',
         region: 'Stubaital',
         connectionType: 'shuttle',
@@ -1331,9 +1331,9 @@
         km: 25,
         elevation: '1,000 – 2,240 m',
         isGlacier: false,
-        lat: 47.1528,
-        lng: 11.3185,
-        highlights: 'Dramatic Kalkkögel Dolomite peaks overlooking wide red trails and lively rustic ski huts.',
+        lat: 47.1635,
+        lng: 11.2985,
+        highlights: 'Pin at Kreuzjoch / Sennjoch summit (2,240 m): dramatic Kalkkögel Dolomite peaks overlooking wide red trails.',
         linkedIds: ['st-glacier', 'st-elfer']
       },
       {
@@ -1346,16 +1346,16 @@
         km: 13,
         elevation: '952 – 2,080 m',
         isGlacier: false,
-        lat: 47.1085,
-        lng: 11.3145,
-        highlights: 'Steep natural snow runs on Elfer in Neustift and scenic family trails overlooking the Inn Valley at Serles.',
+        lat: 47.1012,
+        lng: 11.3265,
+        highlights: 'Pin at Elferhütte / Elferlift top (2,080 m): steep natural snow runs above Neustift paired with Serlesbahnen Mieders.',
         linkedIds: ['st-schlick']
       },
 
-      // --- 13. INNSBRUCK & SURROUNDINGS ---
+      // --- 13. INNSBRUCK & SURROUNDINGS (Top of Main Lift Coordinates) ---
       {
         id: 'ibk-axamer',
-        name: 'Axamer Lizum',
+        name: 'Axamer Lizum (Hoadl 2,340 m)',
         circuitId: 'innsbruck',
         region: 'Innsbruck & Surroundings',
         connectionType: 'shuttle',
@@ -1363,14 +1363,14 @@
         km: 41,
         elevation: '1,560 – 2,340 m',
         isGlacier: false,
-        lat: 47.1945,
-        lng: 11.3022,
-        highlights: '1964 & 1976 Olympic alpine venue with modern 10-person Hoadlbahn gondola and legendary freeride bowls.',
+        lat: 47.1815,
+        lng: 11.2965,
+        highlights: 'Pin at Hoadl summit house (2,340 m): 1964 & 1976 Olympic alpine venue with modern 10-person Hoadlbahn gondola.',
         linkedIds: ['ibk-mutterer', 'hk-kuehtai']
       },
       {
         id: 'ibk-mutterer',
-        name: 'Muttereralm & Rangger Köpfl (Oberperfuss)',
+        name: 'Muttereralm & Rangger Köpfl (Pfriemesköpfl)',
         circuitId: 'innsbruck',
         region: 'Innsbruck & Surroundings',
         connectionType: 'shuttle',
@@ -1378,9 +1378,9 @@
         km: 30,
         elevation: '820 – 2,000 m',
         isGlacier: false,
-        lat: 47.2242,
-        lng: 11.3485,
-        highlights: 'Tree-lined runs overlooking Innsbruck with rapid 8-person gondolas in Mutters/Götzens and Oberperfuss.',
+        lat: 47.2115,
+        lng: 11.3315,
+        highlights: 'Pin at Pfriemesköpfl summit (1,801 m): tree-lined runs overlooking Innsbruck with rapid 8-person gondolas.',
         linkedIds: ['ibk-axamer']
       },
       {
@@ -1393,14 +1393,14 @@
         km: 42,
         elevation: '950 – 2,677 m',
         isGlacier: false,
-        lat: 47.2138,
-        lng: 11.4585,
-        highlights: 'Innsbruck’s iconic Olympic home mountain paired with Glungezer’s 15 km continuous descent to Tulfes.',
+        lat: 47.2088,
+        lng: 11.4622,
+        highlights: 'Pin at Patscherkofel summit station (1,965 m): Innsbruck’s Olympic home mountain paired with Glungezer’s 15 km descent.',
         linkedIds: ['ibk-nordkette']
       },
       {
         id: 'ibk-nordkette',
-        name: 'Innsbruck Nordkette (Seegrube – Hafelekar)',
+        name: 'Innsbruck Nordkette (Hafelekar 2,334 m)',
         circuitId: 'innsbruck',
         region: 'Innsbruck & Surroundings',
         connectionType: 'shuttle',
@@ -1408,16 +1408,16 @@
         km: 13,
         elevation: '1,905 – 2,334 m',
         isGlacier: false,
-        lat: 47.3065,
-        lng: 11.3788,
-        highlights: 'Steepest ski route in Europe (Hafelekar 70% gradient) perched directly above Innsbruck’s Old Town.',
+        lat: 47.3118,
+        lng: 11.3845,
+        highlights: 'Pin at Hafelekar top station (2,334 m): steepest ski route in Europe (70% gradient) perched directly above Innsbruck.',
         linkedIds: ['ibk-patscherkofel']
       },
 
-      // --- 14. TIROLER ZUGSPITZ ARENA ---
+      // --- 14. TIROLER ZUGSPITZ ARENA (Top of Main Lift Coordinates) ---
       {
         id: 'za-ehrwald',
-        name: 'Ehrwalder Almbahn & Wettersteinbahnen',
+        name: 'Ehrwalder Almbahn & Wettersteinbahnen (Issentalkopf)',
         circuitId: 'zugspitz-arena',
         region: 'Tiroler Zugspitz Arena',
         connectionType: 'shuttle',
@@ -1425,14 +1425,14 @@
         km: 51,
         elevation: '1,000 – 1,923 m',
         isGlacier: false,
-        lat: 47.3925,
-        lng: 10.9412,
-        highlights: 'Wide sunny cruising beneath the sheer western rock walls of the Zugspitze.',
+        lat: 47.3765,
+        lng: 10.9685,
+        highlights: 'Pin at Issentalkopf summit (1,923 m): wide sunny cruising beneath the sheer western rock walls of the Zugspitze.',
         linkedIds: ['za-lermoos', 'za-zugspitzbahn']
       },
       {
         id: 'za-lermoos',
-        name: 'Lermoos Grubigstein & Berwang – Bichlbach',
+        name: 'Lermoos Grubigstein & Berwang (Grubigalm 2,100 m)',
         circuitId: 'zugspitz-arena',
         region: 'Tiroler Zugspitz Arena',
         connectionType: 'shuttle',
@@ -1440,14 +1440,14 @@
         km: 62,
         elevation: '1,004 – 2,100 m',
         isGlacier: false,
-        lat: 47.3985,
-        lng: 10.8752,
-        highlights: 'Grubigstein offers a 1,100 m vertical drop facing the Zugspitze, easily paired with Berwang’s high-altitude ski-in village.',
+        lat: 47.3915,
+        lng: 10.8485,
+        highlights: 'Pin at Grubigstein summit station (2,100 m): 1,100 m vertical drop facing the Zugspitze, paired with Berwang–Bichlbach.',
         linkedIds: ['za-ehrwald']
       },
       {
         id: 'za-zugspitzbahn',
-        name: 'Tiroler Zugspitzbahn (Summit Cable Car)',
+        name: 'Tiroler Zugspitzbahn (Zugspitze Summit 2,962 m)',
         circuitId: 'zugspitz-arena',
         region: 'Tiroler Zugspitz Arena',
         connectionType: 'shuttle',
@@ -1455,16 +1455,16 @@
         km: 17,
         elevation: '1,225 – 2,962 m',
         isGlacier: true,
-        lat: 47.4235,
-        lng: 10.9428,
-        highlights: '10-minute ride to Germany/Austria’s highest peak (2,962 m) for 4-country panoramic views. Note: skiing on Zugspitzplatt requires a separate pass.',
+        lat: 47.4211,
+        lng: 10.9854,
+        highlights: 'Pin at Zugspitze Summit station (2,962 m): 4-country panoramic views. Note: skiing on Zugspitzplatt requires a separate pass.',
         linkedIds: ['za-ehrwald']
       },
 
-      // --- 15. SEEFELD & TANNHEIMER TAL ---
+      // --- 15. SEEFELD & TANNHEIMER TAL (Top of Main Lift Coordinates) ---
       {
         id: 'sf-rosshuette',
-        name: 'Seefeld: Rosshütte & Gschwandtkopf',
+        name: 'Seefeld: Rosshütte & Gschwandtkopf (Seefelder Joch)',
         circuitId: 'seefeld-tannheim',
         region: 'Seefeld & Außerfern',
         connectionType: 'shuttle',
@@ -1472,14 +1472,14 @@
         km: 26,
         elevation: '1,200 – 2,064 m',
         isGlacier: false,
-        lat: 47.3315,
-        lng: 11.2012,
-        highlights: 'Sunny high plateau 30 min from Garmisch/Mittenwald with fast 6-pack chairs on Rosshütte and scenic cruising on Gschwandtkopf.',
+        lat: 47.3385,
+        lng: 11.2185,
+        highlights: 'Pin at Seefelder Joch / Härmelekopf top station (2,064 m): sunny high plateau 30 min from Garmisch/Mittenwald.',
         linkedIds: ['tt-tannheim']
       },
       {
         id: 'tt-tannheim',
-        name: 'Tannheimer Tal (Grän, Tannheim & Schattwald–Zöblen)',
+        name: 'Tannheimer Tal (Füssener Jöchle & Neunerköpfle)',
         circuitId: 'seefeld-tannheim',
         region: 'Seefeld & Außerfern',
         connectionType: 'shuttle',
@@ -1487,13 +1487,13 @@
         km: 52,
         elevation: '1,080 – 1,886 m',
         isGlacier: false,
-        lat: 47.4985,
-        lng: 10.5212,
-        highlights: 'Füssener Jöchle (Grän), Neunerköpfle (Tannheim), Schattwald–Zöblen, and Bergwelt Hahnenkamm Reutte are all minutes apart.',
+        lat: 47.5165,
+        lng: 10.5485,
+        highlights: 'Pin at Füssener Jöchle summit (1,821 m): connects Grän, Tannheim Neunerköpfle, Schattwald–Zöblen, and Hahnenkamm Reutte.',
         linkedIds: ['sf-rosshuette']
       },
 
-      // --- 16. ACHENSEE, ST. JOHANN & PILLERSEETAL ---
+      // --- 16. ACHENSEE, ST. JOHANN & PILLERSEETAL (Top of Main Lift Coordinates) ---
       {
         id: 'ac-christlum',
         name: 'Achensee: Christlum Achenkirch & Rofan Maurach',
@@ -1504,14 +1504,14 @@
         km: 38,
         elevation: '950 – 1,840 m',
         isGlacier: false,
-        lat: 47.5265,
-        lng: 11.6985,
-        highlights: 'Fjord-like views over Lake Achensee from Rofan cable car combined with wide snow-sure slopes at Christlum.',
+        lat: 47.5345,
+        lng: 11.6785,
+        highlights: 'Pin at Christlumkopf / Cabrio-Flitzer top (1,800 m): wide snow-sure slopes overlooking Lake Achensee, 10 min from Rofan.',
         linkedIds: ['kp-stjohann']
       },
       {
         id: 'kp-stjohann',
-        name: 'St. Johann in Tirol & Buchensteinwand (Pillersee)',
+        name: 'St. Johann in Tirol & Buchensteinwand (Harschbichl)',
         circuitId: 'achensee-pillerseetal',
         region: 'Kitzbühel Alps',
         connectionType: 'shuttle',
@@ -1519,14 +1519,14 @@
         km: 62,
         elevation: '659 – 1,604 m',
         isGlacier: false,
-        lat: 47.5185,
-        lng: 12.4265,
-        highlights: 'Uncrowded north-facing runs on Kitzbüheler Horn paired with Buchensteinwand and its summit Jakobskreuz.',
+        lat: 47.4935,
+        lng: 12.4285,
+        highlights: 'Pin at Harschbichl top station (1,604 m): uncrowded north-facing runs on Kitzbüheler Horn paired with Buchensteinwand.',
         linkedIds: ['ac-christlum', 'kp-steinplatte']
       },
       {
         id: 'kp-steinplatte',
-        name: 'Steinplatte Waidring & Hochkössen (Unterberg)',
+        name: 'Steinplatte Waidring & Hochkössen (Plattenkogel)',
         circuitId: 'achensee-pillerseetal',
         region: 'Achensee & Kaiserwinkl',
         connectionType: 'shuttle',
@@ -1534,16 +1534,16 @@
         km: 64,
         elevation: '600 – 1,860 m',
         isGlacier: false,
-        lat: 47.6145,
-        lng: 12.5685,
-        highlights: 'Wide sunny bowls on Steinplatte (cross-border with Winklmoosalm) and scenic runs overlooking Lake Chiemsee from Hochkössen.',
+        lat: 47.6435,
+        lng: 12.5785,
+        highlights: 'Pin at Plattenkogel / Steinplatte summit (1,860 m): wide sunny bowls cross-border with Winklmoosalm, 15 min from Hochkössen.',
         linkedIds: ['kp-stjohann']
       },
 
-      // --- 17. OSTTIROL (EAST TYROL) ---
+      // --- 17. OSTTIROL (Top of Main Lift Coordinates) ---
       {
         id: 'ot-grossglockner',
-        name: 'Großglockner Resort Kals – Matrei',
+        name: 'Großglockner Resort Kals – Matrei (Cimaross 2,421 m)',
         circuitId: 'osttirol',
         region: 'Osttirol',
         connectionType: 'ski-linked',
@@ -1551,14 +1551,14 @@
         km: 45,
         elevation: '980 – 2,421 m',
         isGlacier: false,
-        lat: 47.0015,
-        lng: 12.6025,
-        highlights: 'East Tyrol’s largest ski resort with uninterrupted views of Großglockner (3,798 m) and long 11 km valley descents.',
+        lat: 47.0185,
+        lng: 12.6085,
+        highlights: 'Pin at Cimaross summit ridge (2,421 m): links Matrei and Kals with front-row views of Großglockner (3,798 m).',
         linkedIds: ['ot-stjakob', 'ot-lienz']
       },
       {
         id: 'ot-stjakob',
-        name: 'Brunnalm – St. Jakob im Defereggental',
+        name: 'Brunnalm – St. Jakob im Defereggental (Leppleskofel)',
         circuitId: 'osttirol',
         region: 'Osttirol',
         connectionType: 'shuttle',
@@ -1566,14 +1566,14 @@
         km: 35,
         elevation: '1,400 – 2,683 m',
         isGlacier: false,
-        lat: 46.9245,
-        lng: 12.3412,
-        highlights: 'High-altitude Leppleskofel 6-pack chairlift (2,683 m) delivering pristine natural snow and zero lift lines.',
+        lat: 46.9425,
+        lng: 12.3345,
+        highlights: 'Pin at Leppleskofel 6-pack chairlift top (2,683 m): pristine high-altitude natural snow and zero lift lines.',
         linkedIds: ['ot-grossglockner']
       },
       {
         id: 'ot-sillian',
-        name: 'Sillian – Hochpustertal',
+        name: 'Sillian – Hochpustertal (Thurntaler)',
         circuitId: 'osttirol',
         region: 'Osttirol',
         connectionType: 'shuttle',
@@ -1581,9 +1581,9 @@
         km: 22,
         elevation: '1,100 – 2,407 m',
         isGlacier: false,
-        lat: 46.7585,
-        lng: 12.4185,
-        highlights: 'Sunny south-facing carving slopes on Thurntaler facing the Sexten Dolomites on the Italian border.',
+        lat: 46.7745,
+        lng: 12.4045,
+        highlights: 'Pin at Thurntaler summit (2,407 m): sunny south-facing carving slopes facing the Sexten Dolomites.',
         linkedIds: ['ot-lienz']
       },
       {
@@ -1596,16 +1596,16 @@
         km: 21,
         elevation: '686 – 2,278 m',
         isGlacier: false,
-        lat: 46.8542,
-        lng: 12.7685,
-        highlights: 'Austria’s sunniest town: pair panoramic Zettersfeld with the steep FIS World Cup slopes on Hochstein.',
+        lat: 46.8715,
+        lng: 12.7825,
+        highlights: 'Pin at Schoberköpfl / Zettersfeld summit (2,278 m): Austria’s sunniest ski plateau paired with World Cup slopes on Hochstein.',
         linkedIds: ['ot-grossglockner', 'ot-sillian']
       },
 
-      // --- 18. STANDALONE FAVORITES ---
+      // --- 18. STANDALONE FAVORITES (Top of Main Lift Coordinates) ---
       {
         id: 'sa-kaunertal',
-        name: 'Kaunertaler Gletscher',
+        name: 'Kaunertaler Gletscher (Karlesjoch 3,108 m)',
         circuitId: 'standalone',
         region: 'Tiroler Oberland',
         connectionType: 'standalone',
@@ -1613,14 +1613,14 @@
         km: 55,
         elevation: '2,150 – 3,113 m',
         isGlacier: true,
-        lat: 46.8665,
-        lng: 10.7135,
-        highlights: 'Drive Austria’s most scenic glacier road straight to 2,750 m—wide uncrowded glacier highways and the steep Black Ibex piste.',
+        lat: 46.8545,
+        lng: 10.7185,
+        highlights: 'Pin at Karlesjochbahn summit (3,108 m): wide uncrowded glacier highways on the Italian border and the steep Black Ibex piste.',
         linkedIds: []
       },
       {
         id: 'sa-wildkogel',
-        name: 'Wildkogel-Arena (Neukirchen / Bramberg)',
+        name: 'Wildkogel-Arena (Frühmesser / Pfeifferköpfl)',
         circuitId: 'standalone',
         region: 'Kitzbühel Alps',
         connectionType: 'standalone',
@@ -1628,14 +1628,14 @@
         km: 75,
         elevation: '820 – 2,150 m',
         isGlacier: false,
-        lat: 47.2745,
-        lng: 12.2752,
-        highlights: '85% blue and red panoramic runs facing the 3,000 m peaks of Hohe Tauern National Park.',
+        lat: 47.2785,
+        lng: 12.2945,
+        highlights: 'Pin at Frühmesser / Pfeifferköpfl ridge (2,150 m): panoramic runs facing the 3,000 m peaks of Hohe Tauern National Park.',
         linkedIds: []
       },
       {
         id: 'sa-bergeralm',
-        name: 'Bergeralm – Steinach am Brenner',
+        name: 'Bergeralm – Steinach am Brenner (Nösslachjoch)',
         circuitId: 'standalone',
         region: 'Innsbruck & Surroundings',
         connectionType: 'standalone',
@@ -1643,14 +1643,14 @@
         km: 30,
         elevation: '1,048 – 2,231 m',
         isGlacier: false,
-        lat: 47.0865,
-        lng: 11.4685,
-        highlights: 'Fast gondola/chairlifts, great snow reliability in Wipptal, and Europe’s largest night-skiing arena.',
+        lat: 47.0815,
+        lng: 11.4415,
+        highlights: 'Pin at Nösslachjoch / Hoher Turm summit (2,231 m): fast lifts, great snow reliability in Wipptal, and night skiing.',
         linkedIds: []
       },
       {
         id: 'sa-venet',
-        name: 'Venet (Landeck – Zams – Fließ)',
+        name: 'Venet (Krahberg Summit 2,212 m)',
         circuitId: 'standalone',
         region: 'Tiroler Oberland',
         connectionType: 'standalone',
@@ -1658,14 +1658,14 @@
         km: 16,
         elevation: '780 – 2,212 m',
         isGlacier: false,
-        lat: 47.1432,
-        lng: 10.6285,
-        highlights: '360° summit panorama over the Inn Valley with a 1,430 m continuous descent to Zams.',
+        lat: 47.1455,
+        lng: 10.6295,
+        highlights: 'Pin at Krahberg summit station (2,212 m): 360° panorama over the Inn Valley with a 1,430 m continuous descent to Zams.',
         linkedIds: []
       },
       {
         id: 'sa-imst',
-        name: 'Imster Bergbahnen (Hoch-Imst)',
+        name: 'Imster Bergbahnen (Alpjoch 2,100 m)',
         circuitId: 'standalone',
         region: 'Tiroler Oberland',
         connectionType: 'standalone',
@@ -1673,14 +1673,14 @@
         km: 10,
         elevation: '1,050 – 2,100 m',
         isGlacier: false,
-        lat: 47.2585,
-        lng: 10.7185,
-        highlights: 'Modern 10-person gondolas serving wide, uncrowded carving slopes above Imst.',
+        lat: 47.2695,
+        lng: 10.7015,
+        highlights: 'Pin at Alpjoch top station (2,100 m): modern 10-person gondolas serving wide, uncrowded carving slopes above Imst.',
         linkedIds: []
       },
       {
         id: 'sa-kellerjoch',
-        name: 'Kellerjochbahn (Schwaz – Pill)',
+        name: 'Kellerjochbahn (Hecherhaus 1,887 m)',
         circuitId: 'standalone',
         region: 'Innsbruck & Surroundings',
         connectionType: 'standalone',
@@ -1688,9 +1688,9 @@
         km: 14,
         elevation: '830 – 1,887 m',
         isGlacier: false,
-        lat: 47.3265,
-        lng: 11.7345,
-        highlights: 'Classic local Tyrolean mountain with sweeping Inn Valley views and quiet tree-lined runs.',
+        lat: 47.3215,
+        lng: 11.7585,
+        highlights: 'Pin at Hecherhaus top station (1,887 m): classic local Tyrolean mountain with sweeping Inn Valley views.',
         linkedIds: []
       }
     ];
