@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Snow Card Tirol 2026/27 — 3D Piste & Circuit Tracker</title>
+
+  <!-- Progressive Web App (PWA) & iOS Home Screen App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Ski Tirol" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0f172a" />
+  <link id="apple-touch-icon" rel="apple-touch-icon" href="" />
+  <link id="pwa-manifest" rel="manifest" href="" />
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- MapLibre GL JS v3.6.2 (100% Open-Source WebGL 3D Terrain Engine - Sandboxed Iframe Safe) -->
+  <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+  <script>
+    // Safely guard window.top & window.parent against cross-origin SecurityError inside sandboxed blob: iframes
+    (function () {
+      const safeLocation = {
+        href: 'https://localhost/',
+        origin: 'https://localhost',
+        protocol: 'https:',
+        host: 'localhost',
+        hostname: 'localhost',
+        pathname: '/',
+        search: '',
+        hash: '',
+        toString: function () { return 'https://localhost/'; }
+      };
+
+      function createSafeWindowProxy(targetWin) {
+        try {
+          void targetWin.location.href;
+          return targetWin;
+        } catch (e) {
+          return new Proxy(window, {
+            get: function (obj, prop) {
+              if (prop === 'location') return safeLocation;
+              if (prop === 'top' || prop === 'parent') return obj;
+              const val = obj[prop];
+              return typeof val === 'function' ? val.bind(obj) : val;
+            }
+          });
+        }
+      }
+
+      const safeTop = createSafeWindowProxy(window.top);
+      const safeParent = createSafeWindowProxy(window.parent);
+
+      try {
+        Object.defineProperty(window, 'top', { get: function () { return safeTop; }, configurable: true });
+      } catch (e) {}
+      try {
+        Object.defineProperty(window, 'parent', { get: function () { return safeParent; }, configurable: true });
+      } catch (e) {}
+    })();
+  </script>
+  <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+  <script>
+    // Wrap cross-origin CDN worker in a same-origin Blob wrapper (browsers forbid new Worker('https://unpkg.com/...'))
+    (function () {
+      const workerCode = "importScripts('https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl-csp-worker.js');";
+      const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+      const blobWorkerUrl = URL.createObjectURL(workerBlob);
+      if (window.maplibregl) {
+        window.maplibregl.workerUrl = blobWorkerUrl;
+      }
+    })();
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Custom Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* MapLibre Custom HTML Marker Styling */
+    .ml-resort-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .ml-pin-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      font-weight: 800;
+      font-size: 11px;
+      color: #ffffff;
+      border: 2px solid #ffffff;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.55);
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+    }
+    .ml-resort-marker:hover .ml-pin-circle {
+      transform: scale(1.25);
+    }
+    .ml-pin-skied {
+      background: linear-gradient(135deg, #facc15, #eab308) !important;
+      color: #0f172a !important;
+      border-color: #ffffff !important;
+      box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.55), 0 4px 12px rgba(0, 0, 0, 0.65);
+    }
+    .ml-pin-label {
+      margin-top: 3px;
+      padding: 1px 6px;
+      border-radius: 5px;
+      background: rgba(15, 23, 42, 0.88);
+      color: #f8fafc;
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+    }
+
+    /* MapLibre Popup Styling */
+    .maplibregl-popup-content {
+      padding: 0 !important;
+      border-radius: 14px !important;
+      overflow: hidden;
+      box-shadow: 0 18px 36px -8px rgba(15, 23, 42, 0.45) !important;
+      width: 305px !important;
+      max-width: 90vw !important;
+    }
+    .maplibregl-popup-close-button {
+      color: #cbd5e1 !important;
+      font-size: 18px !important;
+      width: 26px !important;
+      height: 26px !important;
+      top: 6px !important;
+      right: 6px !important;
+      z-index: 20;
+    }
+    .maplibregl-popup-close-button:hover {
+      color: #ffffff !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-radius: 6px;
+    }
+    .maplibregl-ctrl-top-right {
+      top: 12px !important;
+      right: 12px !important;
+    }
+
+    @keyframes cardHighlight {
+      0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.75); background-color: #f0f9ff; }
+      70% { box-shadow: 0 0 0 10px rgba(14, 165, 233, 0); background-color: #f0f9ff; }
+      100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+    }
+    .highlight-pulse {
+      animation: cardHighlight 1.6s ease-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-800 h-screen flex flex-col overflow-hidden">
+
+  <!-- TOP NAVIGATION & PROGRESS HEADER -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 shrink-0 z-30 shadow-lg">
+    <div class="max-w-full mx-auto px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
+      <!-- Brand & Title -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 flex items-center justify-center shadow-inner shrink-0">
+          <i data-lucide="mountain-snow" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-sm sm:text-base lg:text-lg font-extrabold tracking-tight leading-none">
+              Snow Card Tirol 2026/27 — 3D Piste &amp; Circuit Tracker
+            </h1>
+            <span class="hidden xl:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              3D DEM + OpenSnowMap Live
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-0.5 hidden sm:block">
+            100% Keyless WebGL 3D Terrain · Live Ski Runs &amp; Lifts · Same-Day Lift/Bus Combos
+          </p>
+        </div>
+      </div>
+
+      <!-- Progress Stats, Basemap Switcher & Backup Actions -->
+      <div class="flex items-center gap-2 sm:gap-3 ml-auto">
+        <!-- Stats Pill -->
+        <div class="flex items-center gap-2.5 sm:gap-3.5 bg-slate-800/90 border border-slate-700/80 rounded-xl px-2.5 sm:px-3 py-1.5">
+          <div>
+            <div class="flex items-baseline gap-1">
+              <span id="stat-skied-count" class="text-xs sm:text-sm font-extrabold text-amber-400">0</span>
+              <span id="stat-total-count" class="text-[11px] text-slate-400">/ 56 Skied</span>
+            </div>
+            <div class="w-20 sm:w-28 h-1.5 bg-slate-700 rounded-full overflow-hidden mt-1">
+              <div id="stat-progress-bar" class="h-full bg-gradient-to-r from-sky-400 via-emerald-400 to-amber-400 transition-all duration-300" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="hidden md:block border-l border-slate-700 pl-3">
+            <div id="stat-km-count" class="text-xs sm:text-sm font-bold text-sky-300">0 km</div>
+            <div class="text-[10px] text-slate-400 uppercase tracking-wider">Pistes Skied</div>
+          </div>
+          <div class="hidden xl:block border-l border-slate-700 pl-3">
+            <div id="stat-circuits-count" class="text-xs sm:text-sm font-bold text-emerald-300">0 / 18</div>
+            <div class="text-[10px] text-slate-400 uppercase tracking-wider">Combos Done</div>
+          </div>
+        </div>
+
+        <!-- 100% Keyless Basemap Switcher -->
+        <div class="hidden lg:flex items-center bg-slate-800 border border-slate-700 rounded-xl p-0.5 text-[11px] font-semibold">
+          <button onclick="setBasemap('hybrid')" id="bm-btn-hybrid" class="px-2.5 py-1.5 rounded-lg bg-sky-600 text-white transition">
+            Satellite Hybrid
+          </button>
+          <button onclick="setBasemap('topo')" id="bm-btn-topo" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition">
+            Topo Relief
+          </button>
+          <button onclick="setBasemap('osm')" id="bm-btn-osm" class="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition">
+            Clean Streets
+          </button>
+        </div>
+
+        <!-- Export / Import / Reset -->
+        <div class="flex items-center gap-1">
+          <button onclick="openSyncModal()" title="Cloud Sync Between iPhone & Computer" class="px-2.5 py-2 rounded-lg bg-sky-600/20 hover:bg-sky-600/35 text-sky-300 border border-sky-500/40 transition flex items-center gap-1.5 text-xs font-semibold">
+            <i data-lucide="cloud" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Sync</span>
+            <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-slate-500"></span>
+          </button>
+          <button onclick="exportProgress()" title="Export JSON Backup" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">
+            <i data-lucide="download" class="w-4 h-4"></i>
+          </button>
+          <label title="Import JSON Backup" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer">
+            <i data-lucide="upload" class="w-4 h-4"></i>
+            <input type="file" id="import-file" accept=".json" class="hidden" onchange="importProgress(event)" />
+          </label>
+          <button onclick="openResetModal()" title="Reset Progress" class="p-2 rounded-lg bg-slate-800 hover:bg-rose-950/70 text-slate-300 hover:text-rose-300 border border-slate-700 transition">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile View Switcher Bar -->
+    <div class="flex md:hidden border-t border-slate-800 bg-slate-900">
+      <button id="mob-tab-list" onclick="setMobileTab('list')" class="flex-1 py-2 text-xs font-semibold flex items-center justify-center gap-1.5 border-b-2 border-sky-400 text-sky-300 bg-slate-800/50">
+        <i data-lucide="list-checks" class="w-3.5 h-3.5"></i> Checklist &amp; Combos
+      </button>
+      <button id="mob-tab-map" onclick="setMobileTab('map')" class="flex-1 py-2 text-xs font-semibold flex items-center justify-center gap-1.5 border-b-2 border-transparent text-slate-400">
+        <i data-lucide="mountain" class="w-3.5 h-3.5"></i> 3D Piste Map
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE: SPLIT SCREEN -->
+  <main class="flex-1 flex overflow-hidden relative">
+
+    <!-- LEFT PANEL: COLLAPSIBLE CHECKLIST & SAME-DAY CIRCUIT PLANNER -->
+    <section id="sidebar-panel" class="w-full md:w-[46%] lg:w-[42%] xl:w-[39%] bg-slate-50 border-r border-slate-300 flex flex-col h-full z-20 transition-all duration-200">
+
+      <!-- Search, Grouping Tabs & Filter Pills -->
+      <div class="p-3 bg-white border-b border-slate-200 space-y-2.5 shrink-0 shadow-sm">
+        <!-- Search Input -->
+        <div class="relative">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input
+            type="text"
+            id="search-input"
+            oninput="handleSearch(this.value)"
+            placeholder="Search resort, village, circuit, or connection (e.g. 'Zillertal', 'bus', 'glacier')..."
+            class="w-full pl-9 pr-8 py-2 text-xs sm:text-sm bg-slate-100 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
+          />
+          <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Grouping Mode Toggle -->
+        <div class="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80">
+          <button onclick="setGroupMode('combos')" id="mode-combos" class="py-1.5 px-2 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition flex items-center justify-center gap-1">
+            <i data-lucide="git-merge" class="w-3.5 h-3.5 text-emerald-600"></i>
+            <span>Same-Day Combos</span>
+          </button>
+          <button onclick="setGroupMode('region')" id="mode-region" class="py-1.5 px-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1">
+            <i data-lucide="compass" class="w-3.5 h-3.5 text-sky-600"></i>
+            <span>Regions</span>
+          </button>
+          <button onclick="setGroupMode('az')" id="mode-az" class="py-1.5 px-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1">
+            <i data-lucide="arrow-down-a-z" class="w-3.5 h-3.5 text-slate-500"></i>
+            <span>A–Z</span>
+          </button>
+        </div>
+
+        <!-- Filter Pills (Horizontal Scroll) -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar">
+          <button onclick="setFilter('all')" id="filter-all" class="filter-pill shrink-0 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-900 text-white transition">
+            All (56)
+          </button>
+          <button onclick="setFilter('unskied')" id="filter-unskied" class="filter-pill shrink-0 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+            Unskied
+          </button>
+          <button onclick="setFilter('skied')" id="filter-skied" class="filter-pill shrink-0 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition">
+            Skied ★
+          </button>
+          <button onclick="setFilter('ski-linked')" id="filter-ski-linked" class="filter-pill shrink-0 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition">
+            🔗 Ski-Linked
+          </button>
+          <button onclick="setFilter('shuttle')" id="filter-shuttle" class="filter-pill shrink-0 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition">
+            🚌 Bus Combo
+          </button>
+          <button onclick="setFilter('glacier')" id="filter-glacier" class="filter-pill shrink-0 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100 transition">
+            ❄️ Glaciers
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable Resort List Container -->
+      <div id="resort-list-container" class="flex-1 overflow-y-auto p-3 space-y-3.5 custom-scrollbar">
+        <!-- Populated dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: TRUE 3D MAPLIBRE GL JS + OPENSNOWMAP PISTES & LIFTS -->
+    <section id="map-panel" class="hidden md:block flex-1 h-full relative bg-slate-900">
+      <div id="map" class="w-full h-full"></div>
+
+      <!-- Top-Left Sidebar Collapse + Quick Valley Jump Bar -->
+      <div class="absolute top-3 left-3 z-20 flex flex-wrap items-center gap-1.5 max-w-[calc(100%-64px)]">
+        <button onclick="toggleSidebarCollapse()" id="collapse-sidebar-btn" title="Expand/Collapse Sidebar" class="hidden md:flex bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-white text-xs font-semibold p-2 rounded-xl shadow-lg border border-slate-700/80 items-center gap-1 transition">
+          <i data-lucide="panel-left-close" id="collapse-icon" class="w-4 h-4 text-sky-400"></i>
+        </button>
+
+        <button onclick="fitTyrol3D()" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-xl shadow-lg border border-slate-700/80 flex items-center gap-1.5 transition">
+          <i data-lucide="maximize-2" class="w-3.5 h-3.5 text-sky-400"></i> All Tyrol 3D
+        </button>
+
+        <button onclick="flyToValley('zillertal')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 transition">
+          Zillertal
+        </button>
+
+        <button onclick="flyToValley('kitz')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 hidden sm:inline-flex transition">
+          SkiWelt &amp; Kitz
+        </button>
+
+        <button onclick="flyToValley('arlberg')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 hidden lg:inline-flex transition">
+          Arlberg &amp; Paznaun
+        </button>
+
+        <button onclick="flyToValley('oetztal')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 hidden xl:inline-flex transition">
+          Ötztal &amp; Stubai
+        </button>
+
+        <button onclick="flyToValley('osttirol')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 hidden xl:inline-flex transition">
+          Osttirol
+        </button>
+      </div>
+
+      <!-- Floating 3D View & Camera Control Bar (Bottom-Right) -->
+      <div class="absolute bottom-7 right-3 z-20 flex flex-col items-end gap-2">
+        <!-- Mobile Basemap Switcher -->
+        <div class="flex lg:hidden items-center bg-slate-900/90 backdrop-blur border border-slate-700/80 rounded-xl p-1 text-[11px] font-semibold shadow-lg">
+          <button onclick="setBasemap('hybrid')" id="mob-bm-hybrid" class="px-2 py-1 rounded-lg bg-sky-600 text-white">Sat</button>
+          <button onclick="setBasemap('topo')" id="mob-bm-topo" class="px-2 py-1 rounded-lg text-slate-300">Topo</button>
+          <button onclick="setBasemap('osm')" id="mob-bm-osm" class="px-2 py-1 rounded-lg text-slate-300">Map</button>
+        </div>
+
+        <!-- 3D Tilt, Rotation & Terrain Exaggeration Control Pill -->
+        <div class="bg-slate-900/90 backdrop-blur text-white rounded-2xl shadow-xl border border-slate-700/80 p-2 flex flex-wrap items-center gap-1.5 text-xs">
+          <!-- 3D Tilt / 2D Top-Down Toggle -->
+          <button onclick="toggle3DMode()" id="btn-3d-toggle" class="px-2.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold flex items-center gap-1.5 transition" title="Toggle 3D Perspective vs 2D Top-Down">
+            <i data-lucide="box" class="w-3.5 h-3.5"></i>
+            <span id="label-3d-toggle">3D View ON</span>
+          </button>
+
+          <!-- Rotate Left / North / Rotate Right -->
+          <div class="flex items-center bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+            <button onclick="rotateCamera(-25)" title="Rotate Camera Left" class="px-2 py-1.5 hover:bg-slate-700 text-slate-200 transition">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            </button>
+            <button onclick="resetNorth()" title="Reset North Bearing" class="px-2 py-1.5 hover:bg-slate-700 text-slate-200 border-x border-slate-700 font-bold text-[10px] transition">
+              N
+            </button>
+            <button onclick="rotateCamera(25)" title="Rotate Camera Right" class="px-2 py-1.5 hover:bg-slate-700 text-slate-200 transition">
+              <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <!-- Terrain Exaggeration Selector -->
+          <div class="hidden sm:flex items-center bg-slate-800 rounded-xl border border-slate-700 p-0.5 text-[10px] font-bold">
+            <span class="px-1.5 text-slate-400">Relief:</span>
+            <button onclick="setExaggeration(1.0)" id="exag-1.0" class="px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition">1.0x</button>
+            <button onclick="setExaggeration(1.45)" id="exag-1.45" class="px-1.5 py-1 rounded-lg bg-emerald-600 text-white transition">1.45x</button>
+            <button onclick="setExaggeration(1.8)" id="exag-1.8" class="px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition">1.8x</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom-Left Live OpenSnowMap Pistes/Lifts & Connection Legend -->
+      <div class="absolute bottom-7 left-3 z-20 bg-slate-900/92 backdrop-blur text-white rounded-2xl shadow-xl border border-slate-700/80 p-3 max-w-[295px] text-xs">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-bold text-[11px] uppercase tracking-wider text-sky-300">
+            3D Overlays &amp; Piste Key
+          </span>
+          <span class="text-[10px] text-slate-400 hidden sm:inline">Right-drag to tilt/orbit</span>
+        </div>
+
+        <!-- Layer Toggles -->
+        <div class="grid grid-cols-2 gap-1.5 pb-2 mb-2 border-b border-slate-800 text-[11px]">
+          <label class="flex items-center gap-1.5 text-slate-100 font-semibold cursor-pointer select-none">
+            <input type="checkbox" id="toggle-pistes" checked onchange="togglePistesLayer(this.checked)" class="rounded text-sky-500 focus:ring-0" />
+            <span>Pistes &amp; Lifts</span>
+          </label>
+          <label class="flex items-center gap-1.5 text-slate-200 font-medium cursor-pointer select-none">
+            <input type="checkbox" id="toggle-labels" checked onchange="togglePinLabels(this.checked)" class="rounded text-sky-500 focus:ring-0" />
+            <span>Resort Labels</span>
+          </label>
+          <label class="flex items-center gap-1.5 text-slate-200 font-medium cursor-pointer select-none">
+            <input type="checkbox" id="toggle-ski-lines" checked onchange="toggleConnectionLayers()" class="rounded text-emerald-500 focus:ring-0" />
+            <span>Ski-Link Lines</span>
+          </label>
+          <label class="flex items-center gap-1.5 text-slate-200 font-medium cursor-pointer select-none">
+            <input type="checkbox" id="toggle-bus-lines" checked onchange="toggleConnectionLayers()" class="rounded text-amber-500 focus:ring-0" />
+            <span>Bus-Link Lines</span>
+          </label>
+        </div>
+
+        <!-- OpenSnowMap Piste Difficulty Legend -->
+        <div class="space-y-1 text-[10px] pb-2 mb-2 border-b border-slate-800">
+          <div class="text-slate-400 font-semibold uppercase tracking-wider mb-1">OpenSnowMap Runs &amp; Lifts:</div>
+          <div class="flex items-center justify-between gap-2">
+            <span class="flex items-center gap-1"><span class="w-3 h-1 bg-blue-500 inline-block rounded"></span> Easy</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-1 bg-red-500 inline-block rounded"></span> Intermediate</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-1 bg-slate-950 border border-slate-500 inline-block rounded"></span> Expert</span>
+            <span class="flex items-center gap-1"><span class="w-3 border-t border-dashed border-slate-300 inline-block"></span> Lifts</span>
+          </div>
+        </div>
+
+        <!-- Resort Pin & Circuit Legend -->
+        <div class="space-y-1 text-[10px]">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 border border-white shrink-0"></span>
+            <span class="w-4 h-0.5 bg-emerald-400 shrink-0"></span>
+            <span class="text-slate-200">Ski-Linked Circuit (Lift/Piste)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-amber-500 border border-white shrink-0"></span>
+            <span class="w-4 border-t border-dashed border-amber-400 shrink-0"></span>
+            <span class="text-slate-200">Fast Bus / Shuttle Combo</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-sky-500 border border-white shrink-0"></span>
+            <span class="w-4 shrink-0"></span>
+            <span class="text-slate-200">Standalone Favorite</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-amber-400 border border-white text-slate-950 font-black flex items-center justify-center text-[8px] shrink-0">✓</span>
+            <span class="text-amber-300 font-semibold">Gold Pin + Check = Skied</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- RESET CONFIRMATION MODAL -->
+  <div id="reset-modal" class="hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-slate-200">
+      <div class="flex items-center gap-3 text-rose-600 mb-3">
+        <div class="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
+          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+        </div>
+        <h3 class="text-base font-bold text-slate-900">Reset All Skied Progress?</h3>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-600 mb-5">
+        This clears all checked-off resorts, ski dates, and trip notes saved in your browser. Export a JSON backup first if you want to keep a copy.
+      </p>
+      <div class="flex justify-end gap-2">
+        <button onclick="closeResetModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition">
+          Cancel
+        </button>
+        <button onclick="confirmResetProgress()" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 transition">
+          Yes, Clear Everything
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    Saved!
+  </div>
+
+  <!-- CLOUD SYNC MODAL (IPHONE <-> COMPUTER SYNC CODE) -->
+  <div id="sync-modal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center shrink-0">
+            <i data-lucide="cloud-cog" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">iPhone &amp; Computer Cloud Sync</h3>
+            <p class="text-[11px] text-slate-500">Keep checkmarks &amp; notes synced across all devices</p>
+          </div>
+        </div>
+        <button onclick="closeSyncModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Your Active Sync Code</span>
+          <span id="sync-modal-status" class="text-[11px] font-semibold text-emerald-600">Ready</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input
+            type="text"
+            id="sync-code-display"
+            readonly
+            class="flex-1 font-mono text-xs sm:text-sm font-bold bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-900 select-all"
+          />
+          <button onclick="copySyncCode()" class="px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition shrink-0">
+            Copy
+          </button>
+        </div>
+        <p class="text-[11px] text-slate-500 leading-relaxed">
+          Every time you check off a resort or add a note, it automatically syncs to this code.
+        </p>
+      </div>
+
+      <div class="border-t border-slate-200 pt-3 space-y-2">
+        <label class="block text-xs font-bold text-slate-800">Link Another Device (Paste Sync Code)</label>
+        <div class="flex items-center gap-2">
+          <input
+            type="text"
+            id="sync-code-input"
+            placeholder="Paste code from your other device..."
+            class="flex-1 font-mono text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          />
+          <button onclick="linkSyncCode()" class="px-3.5 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition shrink-0">
+            Link Device
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+        <button onclick="forcePullSync()" class="text-xs font-semibold text-sky-600 hover:text-sky-800 flex items-center gap-1">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Pull Latest Now
+        </button>
+        <button onclick="closeSyncModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+// ... existing code ... -->
+    // =========================================================================
+    // 3. STATE MANAGEMENT, LOCALSTORAGE & INSTANT CLOUD SYNC
+    // =========================================================================
+    const STORAGE_KEY = 'snowCardTirol_3D_Tracker_v1';
+    const SYNC_META_KEY = 'snowCardTirol_SyncMeta_v1';
+
+    let state = {
+      skied: {}, // { [resortId]: { checked: true, date: '2026-12-15', note: '' } }
+      expandedResorts: {},
+      collapsedClusters: {},
+      groupMode: 'combos',
+      filter: 'all',
+      search: '',
+      basemap: 'hybrid', // 'hybrid' | 'topo' | 'osm'
+      is3D: true,
+      exaggeration: 1.45,
+      showPistes: true,
+      showPinLabels: true,
+      sidebarCollapsed: false
+    };
+
+    let syncMeta = {
+      binId: null,
+      updatedAt: 0
+    };
+
+    function initPwaAssets() {
+      try {
+        // Generate crisp 512x512 Alpine Mountain App Icon on Canvas for iPhone Home Screen
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+
+        const grad = ctx.createLinearGradient(0, 0, 512, 512);
+        grad.addColorStop(0, '#0284c7');
+        grad.addColorStop(1, '#10b981');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 512, 512);
+
+        // Mountain peaks
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(75, 390);
+        ctx.lineTo(220, 145);
+        ctx.lineTo(315, 290);
+        ctx.lineTo(365, 215);
+        ctx.lineTo(445, 390);
+        ctx.closePath();
+        ctx.fill();
+
+        // Snow shadow facet
+        ctx.fillStyle = '#e0f2fe';
+        ctx.beginPath();
+        ctx.moveTo(220, 145);
+        ctx.lineTo(255, 265);
+        ctx.lineTo(315, 290);
+        ctx.closePath();
+        ctx.fill();
+
+        const iconUrl = canvas.toDataURL('image/png');
+        const appleIcon = document.getElementById('apple-touch-icon');
+        if (appleIcon) appleIcon.href = iconUrl;
+
+        const manifest = {
+          name: 'Snow Card Tirol 3D Tracker',
+          short_name: 'Ski Tirol',
+          start_url: '.',
+          display: 'standalone',
+          background_color: '#0f172a',
+          theme_color: '#0f172a',
+          icons: [
+            { src: iconUrl, sizes: '512x512', type: 'image/png' }
+          ]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+        const manifestLink = document.getElementById('pwa-manifest');
+        if (manifestLink) manifestLink.href = URL.createObjectURL(manifestBlob);
+      } catch (e) {
+        console.warn('PWA icon init skipped:', e);
+      }
+    }
+
+    function loadState() {
+      try {
+        const raw =
+          localStorage.getItem(STORAGE_KEY) ||
+          localStorage.getItem('snowCardTirolTracker_2026_v2') ||
+          localStorage.getItem('snowCardTirolTracker_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed.skied === 'object') {
+            state.skied = parsed.skied;
+          }
+        }
+        const rawSync = localStorage.getItem(SYNC_META_KEY);
+        if (rawSync) {
+          const parsedSync = JSON.parse(rawSync);
+          if (parsedSync && parsedSync.binId) {
+            syncMeta = parsedSync;
+          }
+        }
+      } catch (e) {
+        console.warn('Could not load saved progress:', e);
+      }
+    }
+
+    function saveSyncMeta() {
+      try {
+        localStorage.setItem(SYNC_META_KEY, JSON.stringify(syncMeta));
+      } catch (e) {}
+    }
+
+    function updateSyncIndicator(status) {
+      const dot = document.getElementById('sync-status-dot');
+      const modalStatus = document.getElementById('sync-modal-status');
+      if (dot) {
+        dot.className =
+          status === 'synced'
+            ? 'w-2 h-2 rounded-full bg-emerald-400'
+            : status === 'syncing'
+            ? 'w-2 h-2 rounded-full bg-amber-400 animate-pulse'
+            : 'w-2 h-2 rounded-full bg-slate-500';
+      }
+      if (modalStatus) {
+        modalStatus.textContent =
+          status === 'synced' ? 'Synced ✓' : status === 'syncing' ? 'Syncing...' : 'Local Only';
+      }
+    }
+
+    async function ensureSyncBin() {
+      if (syncMeta.binId) return syncMeta.binId;
+      try {
+        updateSyncIndicator('syncing');
+        const res = await fetch('https://jsonblob.com/api/jsonBlob', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          },
+          body: JSON.stringify({
+            updatedAt: Date.now(),
+            skied: state.skied
+          })
+        });
+        const locationHeader = res.headers.get('Location') || res.headers.get('X-jsonblob');
+        if (locationHeader) {
+          const id = locationHeader.split('/').pop();
+          if (id) {
+            syncMeta.binId = id;
+            syncMeta.updatedAt = Date.now();
+            saveSyncMeta();
+            updateSyncIndicator('synced');
+            return id;
+          }
+        }
+      } catch (e) {
+        console.warn('Cloud sync create skipped:', e);
+      }
+      updateSyncIndicator('local');
+      return null;
+    }
+
+    async function pushCloudSync() {
+      const id = await ensureSyncBin();
+      if (!id) return;
+      try {
+        updateSyncIndicator('syncing');
+        syncMeta.updatedAt = Date.now();
+        saveSyncMeta();
+        await fetch(`https://jsonblob.com/api/jsonBlob/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          },
+          body: JSON.stringify({
+            updatedAt: syncMeta.updatedAt,
+            skied: state.skied
+          })
+        });
+        updateSyncIndicator('synced');
+      } catch (e) {
+        updateSyncIndicator('local');
+      }
+    }
+
+    async function pullCloudSync(silent = true) {
+      if (!syncMeta.binId) return;
+      try {
+        updateSyncIndicator('syncing');
+        const res = await fetch(`https://jsonblob.com/api/jsonBlob/${syncMeta.binId}`, {
+          headers: { Accept: 'application/json' }
+        });
+        if (!res.ok) throw new Error('Sync fetch failed');
+        const remote = await res.json();
+        if (remote && typeof remote.skied === 'object') {
+          if (!remote.updatedAt || remote.updatedAt >= (syncMeta.updatedAt || 0)) {
+            state.skied = remote.skied;
+            syncMeta.updatedAt = remote.updatedAt || Date.now();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ skied: state.skied }));
+            saveSyncMeta();
+            updateStats();
+            renderSidebar();
+            renderMapMarkers();
+            if (!silent) showToast('Synced latest checkmarks from cloud!');
+          }
+        }
+        updateSyncIndicator('synced');
+      } catch (e) {
+        updateSyncIndicator('local');
+        if (!silent) showToast('Could not reach cloud sync');
+      }
+    }
+
+    async function openSyncModal() {
+      document.getElementById('sync-modal').classList.remove('hidden');
+      const display = document.getElementById('sync-code-display');
+      display.value = syncMeta.binId ? `TIROL-${syncMeta.binId}` : 'Generating code...';
+      const id = await ensureSyncBin();
+      display.value = id ? `TIROL-${id}` : 'Offline (use JSON backup)';
+    }
+
+    function closeSyncModal() {
+      document.getElementById('sync-modal').classList.add('hidden');
+    }
+
+    function copySyncCode() {
+      const input = document.getElementById('sync-code-display');
+      input.select();
+      input.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      showToast('Sync Code copied! Paste it on your other device');
+    }
+
+    async function linkSyncCode() {
+      const raw = document.getElementById('sync-code-input').value.trim();
+      if (!raw) return;
+      const cleanId = raw.replace(/^TIROL-/i, '').trim();
+      syncMeta.binId = cleanId;
+      syncMeta.updatedAt = 0;
+      saveSyncMeta();
+      document.getElementById('sync-code-display').value = `TIROL-${cleanId}`;
+      document.getElementById('sync-code-input').value = '';
+      await pullCloudSync(false);
+    }
+
+    async function forcePullSync() {
+      syncMeta.updatedAt = 0;
+      await pullCloudSync(false);
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ skied: state.skied }));
+        clearTimeout(window._cloudPushTimer);
+        window._cloudPushTimer = setTimeout(() => {
+          pushCloudSync();
+        }, 500);
+      } catch (e) {
+        console.warn('Could not save progress:', e);
+      }
+    }
+
+    function showToast(msg) {
+// ... existing code ... -->
+    // =========================================================================
+    // 9. BOOTSTRAP ON LOAD
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      initPwaAssets();
+      loadState();
+      initMap();
+      updateStats();
+      setFilter('all');
+      lucide.createIcons();
+      if (syncMeta.binId) {
+        pullCloudSync(true);
+      }
+      window.addEventListener('focus', () => {
+        if (syncMeta.binId) pullCloudSync(true);
+      });
+    });
+  </script>
+</body>
+</html>
