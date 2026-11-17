@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Snow Card Tirol 2026/27 — 3D Piste & Circuit Tracker</title>
 
   <!-- Progressive Web App (PWA) & iOS Home Screen App Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Ski Tirol" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="theme-color" content="#0f172a" />
@@ -76,6 +76,21 @@
   <style>
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* Crisp iOS Safe-Area Top Header (removes translucent status-bar haze) */
+    .safe-top-header {
+      padding-top: env(safe-area-inset-top, 0px);
+      background-color: #0f172a;
+    }
+
+    /* Hide scrollbar for clean horizontal chip scrollers on mobile */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
 
     /* Custom Scrollbar */
@@ -161,8 +176,14 @@
       border-radius: 6px;
     }
     .maplibregl-ctrl-top-right {
-      top: 12px !important;
-      right: 12px !important;
+      top: 48px !important;
+      right: 10px !important;
+    }
+    @media (min-width: 768px) {
+      .maplibregl-ctrl-top-right {
+        top: 12px !important;
+        right: 12px !important;
+      }
     }
 
     @keyframes cardHighlight {
@@ -175,10 +196,10 @@
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-800 h-screen flex flex-col overflow-hidden">
+<body class="bg-slate-950 text-slate-800 h-[100dvh] flex flex-col overflow-hidden">
 
   <!-- TOP NAVIGATION & PROGRESS HEADER -->
-  <header class="bg-slate-900 text-white border-b border-slate-800 shrink-0 z-30 shadow-lg">
+  <header class="safe-top-header bg-slate-900 text-white border-b border-slate-800 shrink-0 z-30 shadow-lg">
     <div class="max-w-full mx-auto px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2.5">
       <!-- Brand & Title -->
       <div class="flex items-center gap-2.5">
@@ -343,33 +364,33 @@
     <section id="map-panel" class="hidden md:block flex-1 h-full relative bg-slate-900">
       <div id="map" class="w-full h-full"></div>
 
-      <!-- Top-Left Sidebar Collapse + Quick Valley Jump Bar -->
-      <div class="absolute top-3 left-3 z-20 flex flex-wrap items-center gap-1.5 max-w-[calc(100%-64px)]">
-        <button onclick="toggleSidebarCollapse()" id="collapse-sidebar-btn" title="Expand/Collapse Sidebar" class="hidden md:flex bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-white text-xs font-semibold p-2 rounded-xl shadow-lg border border-slate-700/80 items-center gap-1 transition">
+      <!-- Top-Left Sidebar Collapse + Quick Valley Jump Bar (Scrollable on Mobile) -->
+      <div class="absolute top-3 left-3 right-3 md:right-14 z-20 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+        <button onclick="toggleSidebarCollapse()" id="collapse-sidebar-btn" title="Expand/Collapse Sidebar" class="hidden md:flex shrink-0 bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-white text-xs font-semibold p-2 rounded-xl shadow-lg border border-slate-700/80 items-center gap-1 transition">
           <i data-lucide="panel-left-close" id="collapse-icon" class="w-4 h-4 text-sky-400"></i>
         </button>
 
-        <button onclick="fitTyrol3D()" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-xl shadow-lg border border-slate-700/80 flex items-center gap-1.5 transition">
+        <button onclick="fitTyrol3D()" class="shrink-0 bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-xl shadow-lg border border-slate-700/80 flex items-center gap-1.5 transition">
           <i data-lucide="maximize-2" class="w-3.5 h-3.5 text-sky-400"></i> All Tyrol 3D
         </button>
 
-        <button onclick="flyToValley('zillertal')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 transition">
+        <button onclick="flyToValley('zillertal')" class="shrink-0 bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 transition">
           Zillertal
         </button>
 
-        <button onclick="flyToValley('kitz')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 hidden sm:inline-flex transition">
+        <button onclick="flyToValley('kitz')" class="shrink-0 bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 transition">
           SkiWelt &amp; Kitz
         </button>
 
-        <button onclick="flyToValley('paznaun')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 hidden lg:inline-flex transition">
+        <button onclick="flyToValley('paznaun')" class="shrink-0 bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 transition">
           Paznaun &amp; SFL
         </button>
 
-        <button onclick="flyToValley('oetztal')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 hidden xl:inline-flex transition">
+        <button onclick="flyToValley('oetztal')" class="shrink-0 bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 transition">
           Ötztal &amp; Stubai
         </button>
 
-        <button onclick="flyToValley('osttirol')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 hidden xl:inline-flex transition">
+        <button onclick="flyToValley('osttirol')" class="shrink-0 bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 transition">
           Osttirol
         </button>
       </div>
@@ -441,7 +462,7 @@
           </label>
           <label class="flex items-center gap-1.5 text-slate-200 font-medium cursor-pointer select-none">
             <input type="checkbox" id="toggle-labels" checked onchange="togglePinLabels(this.checked)" class="rounded text-sky-500 focus:ring-0" />
-            <span>Resort Labels</span>
+            <span>Zoom Labels</span>
           </label>
           <label class="flex items-center gap-1.5 text-slate-200 font-medium cursor-pointer select-none">
             <input type="checkbox" id="toggle-ski-lines" checked onchange="toggleConnectionLayers()" class="rounded text-emerald-500 focus:ring-0" />
@@ -476,39 +497,26 @@
           </div>
         </div>
 
-        <!-- CalTopo-Style Avalanche Slope Angle Key (Visible when Slope Angle View is Active) -->
-        <div id="slope-legend-section" class="hidden space-y-1 text-[10px] pb-2 mb-2 border-b border-slate-800">
-          <div class="text-amber-300 font-semibold uppercase tracking-wider mb-1">Avalanche Slope Steepness:</div>
-          <div class="grid grid-cols-5 gap-1 text-center font-bold text-[9px]">
-            <div class="rounded py-0.5 bg-yellow-300 text-slate-950">27–29°</div>
-            <div class="rounded py-0.5 bg-amber-400 text-slate-950">30–34°</div>
-            <div class="rounded py-0.5 bg-orange-500 text-white">35–39°</div>
-            <div class="rounded py-0.5 bg-red-600 text-white">40–44°</div>
-            <div class="rounded py-0.5 bg-purple-700 text-white">45°+</div>
-          </div>
-        </div>
-
         <!-- Resort Pin & Circuit Legend -->
-          <div class="space-y-1 text-[10px]">
-            <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-emerald-500 border border-white shrink-0"></span>
-              <span class="w-4 h-0.5 bg-emerald-400 shrink-0"></span>
-              <span class="text-slate-200">Ski-Linked Circuit (Lift/Piste)</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-amber-500 border border-white shrink-0"></span>
-              <span class="w-4 border-t border-dashed border-amber-400 shrink-0"></span>
-              <span class="text-slate-200">Fast Bus / Shuttle Combo</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-sky-500 border border-white shrink-0"></span>
-              <span class="w-4 shrink-0"></span>
-              <span class="text-slate-200">Standalone Favorite</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-amber-400 border border-white text-slate-950 font-black flex items-center justify-center text-[8px] shrink-0">✓</span>
-              <span class="text-amber-300 font-semibold">Gold Pin + Check = Skied</span>
-            </div>
+        <div class="space-y-1 text-[10px]">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500 border border-white shrink-0"></span>
+            <span class="w-4 h-0.5 bg-emerald-400 shrink-0"></span>
+            <span class="text-slate-200">Ski-Linked Circuit (Lift/Piste)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-amber-500 border border-white shrink-0"></span>
+            <span class="w-4 border-t border-dashed border-amber-400 shrink-0"></span>
+            <span class="text-slate-200">Fast Bus / Shuttle Combo</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-sky-500 border border-white shrink-0"></span>
+            <span class="w-4 shrink-0"></span>
+            <span class="text-slate-200">Standalone Favorite</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-amber-400 border border-white text-slate-950 font-black flex items-center justify-center text-[8px] shrink-0">✓</span>
+            <span class="text-amber-300 font-semibold">Gold Pin + Check = Skied</span>
           </div>
         </div>
       </div>
@@ -1692,6 +1700,7 @@
     // =========================================================================
     const STORAGE_KEY = 'snowCardTirol_3D_Tracker_v1';
     const SYNC_META_KEY = 'snowCardTirol_SyncMeta_v1';
+    const LABEL_MIN_ZOOM = 10.2;
 
     let state = {
       skied: {}, // { [resortId]: { checked: true, date: '2026-12-15', note: '' } }
@@ -2219,10 +2228,21 @@
           mapLoaded = true;
           addConnectionSourcesAndLayers();
           renderMapMarkers();
+          updatePinLabelVisibility();
         });
+
+        map.on('zoom', updatePinLabelVisibility);
       } catch (err) {
         console.error('MapLibre initialization error:', err);
       }
+    }
+
+    function updatePinLabelVisibility() {
+      const zoom = map ? map.getZoom() : 8.6;
+      const shouldShow = state.showPinLabels && zoom >= LABEL_MIN_ZOOM;
+      document.querySelectorAll('.ml-pin-label').forEach(el => {
+        el.style.display = shouldShow ? 'block' : 'none';
+      });
     }
 
     function buildConnectionGeoJSON() {
@@ -2314,6 +2334,9 @@
       Object.values(mapMarkers).forEach(m => m.remove());
       mapMarkers = {};
 
+      const currentZoom = map.getZoom();
+      const showLabelsNow = state.showPinLabels && currentZoom >= LABEL_MIN_ZOOM;
+
       const visibleResorts = getFilteredResorts();
       visibleResorts.forEach(resort => {
         const isSkied = !!state.skied[resort.id]?.checked;
@@ -2339,7 +2362,7 @@
         const label = document.createElement('div');
         label.className = 'ml-pin-label';
         label.textContent = resort.name.split('(')[0].trim();
-        label.style.display = state.showPinLabels ? 'block' : 'none';
+        label.style.display = showLabelsNow ? 'block' : 'none';
 
         el.appendChild(pin);
         el.appendChild(label);
@@ -2526,9 +2549,10 @@
 
     function togglePinLabels(checked) {
       state.showPinLabels = checked;
-      document.querySelectorAll('.ml-pin-label').forEach(el => {
-        el.style.display = checked ? 'block' : 'none';
-      });
+      updatePinLabelVisibility();
+      if (checked && map && map.getZoom() < LABEL_MIN_ZOOM) {
+        showToast('Labels appear automatically when zoomed into a valley');
+      }
     }
 
     function toggleConnectionLayers() {
@@ -2556,9 +2580,9 @@
       const presets = {
         zillertal: { center: [11.88, 47.19], zoom: 10.6, pitch: 62, bearing: -18 },
         kitz: { center: [12.31, 47.46], zoom: 10.7, pitch: 60, bearing: 12 },
-        paznaun: { center: [10.45, 47.02], zoom: 10.4, pitch: 62, bearing: 15 },
-        oetztal: { center: [11.02, 47.01], zoom: 10.2, pitch: 64, bearing: -12 },
-        osttirol: { center: [12.56, 46.91], zoom: 10.1, pitch: 60, bearing: 10 }
+        paznaun: { center: [10.45, 47.02], zoom: 10.5, pitch: 62, bearing: 15 },
+        oetztal: { center: [11.02, 47.01], zoom: 10.4, pitch: 64, bearing: -12 },
+        osttirol: { center: [12.56, 46.91], zoom: 10.4, pitch: 60, bearing: 10 }
       };
       const target = presets[valleyKey];
       if (!target) return;
