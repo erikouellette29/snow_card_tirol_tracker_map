@@ -22,59 +22,50 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- MapLibre GL JS v3.6.2 (100% Open-Source WebGL 3D Terrain Engine - Sandboxed Iframe Safe) -->
+  <!-- MapLibre GL JS v3.6.2 (100% Open-Source WebGL 3D Terrain Engine) -->
   <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
   <script>
-    // Safely guard window.top & window.parent against cross-origin SecurityError inside sandboxed blob: iframes
+    // Safely guard window.top & window.parent against cross-origin SecurityError inside sandboxed iframes
     (function () {
-      const safeLocation = {
-        href: 'https://localhost/',
-        origin: 'https://localhost',
-        protocol: 'https:',
-        host: 'localhost',
-        hostname: 'localhost',
-        pathname: '/',
-        search: '',
-        hash: '',
-        toString: function () { return 'https://localhost/'; }
-      };
-
-      function createSafeWindowProxy(targetWin) {
-        try {
-          void targetWin.location.href;
-          return targetWin;
-        } catch (e) {
-          return new Proxy(window, {
-            get: function (obj, prop) {
-              if (prop === 'location') return safeLocation;
-              if (prop === 'top' || prop === 'parent') return obj;
-              const val = obj[prop];
-              return typeof val === 'function' ? val.bind(obj) : val;
-            }
-          });
-        }
+      try {
+        void window.top.location.href;
+      } catch (e) {
+        const safeLocation = {
+          href: window.location.href || 'https://localhost/',
+          origin: 'https://localhost',
+          protocol: 'https:',
+          host: 'localhost',
+          hostname: 'localhost',
+          pathname: '/',
+          search: '',
+          hash: '',
+          toString: function () { return 'https://localhost/'; }
+        };
+        const safeWin = new Proxy(window, {
+          get: function (obj, prop) {
+            if (prop === 'location') return safeLocation;
+            if (prop === 'top' || prop === 'parent') return obj;
+            const val = obj[prop];
+            return typeof val === 'function' ? val.bind(obj) : val;
+          }
+        });
+        try { Object.defineProperty(window, 'top', { get: function () { return safeWin; }, configurable: true }); } catch (_) {}
+        try { Object.defineProperty(window, 'parent', { get: function () { return safeWin; }, configurable: true }); } catch (_) {}
       }
-
-      const safeTop = createSafeWindowProxy(window.top);
-      const safeParent = createSafeWindowProxy(window.parent);
-
-      try {
-        Object.defineProperty(window, 'top', { get: function () { return safeTop; }, configurable: true });
-      } catch (e) {}
-      try {
-        Object.defineProperty(window, 'parent', { get: function () { return safeParent; }, configurable: true });
-      } catch (e) {}
     })();
   </script>
   <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
   <script>
-    // Wrap cross-origin CDN worker in a same-origin Blob wrapper (browsers forbid new Worker('https://unpkg.com/...'))
+    // Wrap cross-origin CDN worker in a same-origin Blob wrapper so WebGL tiles load everywhere
     (function () {
-      const workerCode = "importScripts('https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl-csp-worker.js');";
-      const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
-      const blobWorkerUrl = URL.createObjectURL(workerBlob);
-      if (window.maplibregl) {
-        window.maplibregl.workerUrl = blobWorkerUrl;
+      try {
+        if (window.maplibregl) {
+          const workerCode = "importScripts('https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl-csp-worker.js');";
+          const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+          window.maplibregl.workerUrl = URL.createObjectURL(workerBlob);
+        }
+      } catch (e) {
+        console.warn('Worker blob wrapper skipped:', e);
       }
     })();
   </script>
@@ -200,7 +191,7 @@
               Snow Card Tirol 2026/27 — 3D Piste &amp; Circuit Tracker
             </h1>
             <span class="hidden xl:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              3D DEM + OpenSnowMap Live
+              Verified Official Roster + OpenSnowMap
             </span>
           </div>
           <p class="text-[11px] text-slate-400 mt-0.5 hidden sm:block">
@@ -245,7 +236,7 @@
           </button>
         </div>
 
-        <!-- Export / Import / Reset -->
+        <!-- Cloud Sync / Export / Import / Reset -->
         <div class="flex items-center gap-1">
           <button onclick="openSyncModal()" title="Cloud Sync Between iPhone & Computer" class="px-2.5 py-2 rounded-lg bg-sky-600/20 hover:bg-sky-600/35 text-sky-300 border border-sky-500/40 transition flex items-center gap-1.5 text-xs font-semibold">
             <i data-lucide="cloud" class="w-4 h-4"></i>
@@ -367,8 +358,8 @@
           SkiWelt &amp; Kitz
         </button>
 
-        <button onclick="flyToValley('arlberg')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 hidden lg:inline-flex transition">
-          Arlberg &amp; Paznaun
+        <button onclick="flyToValley('paznaun')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 hidden lg:inline-flex transition">
+          Paznaun &amp; SFL
         </button>
 
         <button onclick="flyToValley('oetztal')" class="bg-slate-900/90 backdrop-blur hover:bg-slate-800 text-slate-100 text-xs font-semibold px-2.5 py-1.5 rounded-xl shadow-lg border border-slate-700/80 hidden xl:inline-flex transition">
@@ -509,11 +500,6 @@
     </div>
   </div>
 
-  <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-    Saved!
-  </div>
-
   <!-- CLOUD SYNC MODAL (IPHONE <-> COMPUTER SYNC CODE) -->
   <div id="sync-modal" class="hidden fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-200 space-y-4">
@@ -579,10 +565,1092 @@
     </div>
   </div>
 
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    Saved!
+  </div>
+
   <script>
-// ... existing code ... -->
     // =========================================================================
-    // 3. STATE MANAGEMENT, LOCALSTORAGE & INSTANT CLOUD SYNC
+    // 1. VERIFIED SNOW CARD TIROL 2026/27 SAME-DAY CIRCUITS & PARTNER ROSTER
+    // (Audited strictly against snowcard.tirol.at — Arlberg, Saalbach-Fieberbrunn,
+    //  and Almenwelt Lofer excluded; Zugspitzbahn terms clarified)
+    // =========================================================================
+    const CIRCUITS = [
+      {
+        id: 'skiwelt',
+        name: 'SkiWelt Wilder Kaiser – Brixental',
+        type: 'ski-linked',
+        badge: '100% Ski-Linked Mega Circuit (275 km)',
+        totalKm: 275,
+        summary: 'All 7 SkiWelt entry villages are continuously interconnected by lifts and pistes—plus Brixen/Westendorf links directly by gondola into KitzSki.',
+        connectionTip: 'Same-Day Strategy: Park at Söll, Scheffau, Ellmau, or Brixen im Thale and ski a huge clockwise loop over Hohe Salve (1,829 m) and Choralpe.'
+      },
+      {
+        id: 'kitzski',
+        name: 'KitzSki (Kitzbühel – Kirchberg – Pass Thurn)',
+        type: 'ski-linked',
+        badge: '100% Ski-Linked + SkiWelt Ki-West Link (234 km)',
+        totalKm: 234,
+        summary: 'Continuous lift and trail network stretching from Kirchberg and Hahnenkamm across the 3S Gondola to Jochberg, Pass Thurn, and Hollersbach.',
+        connectionTip: 'Same-Day Combo: Ride the Ki-West gondola in Kirchberg + 3-min shuttle to Westendorf to link KitzSki and SkiWelt on one massive ski day.'
+      },
+      {
+        id: 'zillertal-arena',
+        name: 'Zillertal Arena (Zell – Gerlos – Königsleiten – Hochkrimml)',
+        type: 'ski-linked',
+        badge: '100% Ski-Linked Cross-Border Circuit (150 km)',
+        totalKm: 150,
+        summary: 'Seamlessly ski from Zell am Ziller in Tyrol over Übergangsjoch (2,500 m) into Gerlos, Königsleiten, and Hochkrimml (Salzburg).',
+        connectionTip: 'Same-Day Strategy: Start early at Zell am Ziller Rosenalmbahn to reach Gerlosplatte/Hochkrimml and return before last lifts at 16:00.'
+      },
+      {
+        id: 'mayrhofen-tux',
+        name: 'Ski- & Gletscherwelt Zillertal 3000 (Mayrhofen – Tux – Hintertux)',
+        type: 'ski-linked',
+        badge: 'Ski-Linked 4-Mountain Circuit + 10-Min Glacier Bus',
+        totalKm: 204,
+        summary: 'Mayrhofen (Penken), Finkenberg, Rastkogel, and Eggalm form one continuous 142 km ski-linked circuit; Hintertux Glacier (62 km) is a 10-min free ski bus up the valley.',
+        connectionTip: 'Same-Day Combo: Ski the 4-mountain Penken–Rastkogel–Eggalm circuit in the morning, then catch the Green Line bus from Lanersbach to Hintertux Glacier.'
+      },
+      {
+        id: 'hochzillertal-fuegen',
+        name: 'Hochzillertal – Hochfügen & Spieljoch (Fügen)',
+        type: 'ski-linked',
+        badge: 'Ski-Linked High-Alpine Bowl + 10-Min Valley Bus',
+        totalKm: 112,
+        summary: 'Kaltenbach (Hochzillertal) and Hochfügen are 100% ski-linked over the ridge (91 km); Spieljoch in Fügen (21 km) sits 10 minutes down the valley via free ski bus.',
+        connectionTip: 'Same-Day Combo: Warm up on Spieljoch’s long valley run in Fügen, then take the 10-min shuttle to Kaltenbach to ski across to Hochfügen.'
+      },
+      {
+        id: 'skijuwel',
+        name: 'Ski Juwel Alpbachtal Wildschönau',
+        type: 'ski-linked',
+        badge: '100% Ski-Linked Dual-Valley Circuit (113 km)',
+        totalKm: 113,
+        summary: 'Connected via the Schatzberg–Auffach and Verbindungsbahn gondolas linking Alpbach/Inneralpbach directly with Auffach in Wildschönau.',
+        connectionTip: 'Same-Day Strategy: Park at Inneralpbach or Auffach for instant access to both valleys without driving over the mountain pass.'
+      },
+      {
+        id: 'paznaun',
+        name: 'Paznaun Valley: Ischgl/Samnaun + Kappl & See + Galtür',
+        type: 'shuttle',
+        badge: 'Cross-Border Mega-Circuit (239 km) + 10-Min Valley Bus',
+        totalKm: 324,
+        summary: 'Ischgl & Samnaun (Switzerland) are 100% ski-linked (239 km). Kappl & See are ski-linked with each other (42 km), and Silvapark Galtür (43 km) sits 10 min up the valley.',
+        connectionTip: 'Official Note: Snow Card Tirol is NOT valid on Ischgl Top-of-the-Mountain concert days. Free Paznaun ski buses link See, Kappl, Ischgl, and Galtür every 15 min.'
+      },
+      {
+        id: 'sfl-oberland',
+        name: 'Serfaus – Fiss – Ladis & Nauders / Fendels',
+        type: 'shuttle',
+        badge: '214 km Ski-Linked Plateau + 15–25 Min Oberland Bus',
+        totalKm: 300,
+        summary: 'Serfaus, Fiss, and Ladis form one massive 214 km interconnected sun plateau. Fendels (11 km) and Nauders Reschenpass (75 km) sit along the same Reschen highway.',
+        connectionTip: 'Same-Day Combo: Combine morning runs at Fendels (above Ried/Prutz) with an afternoon session on the Serfaus–Fiss–Ladis sun plateau.'
+      },
+      {
+        id: 'oetztal',
+        name: 'Ötztal Valley: Sölden & Obergurgl – Hochgurgl',
+        type: 'shuttle',
+        badge: '15-Min Free Ski Bus Between 2 High-Alpine Giants (258 km)',
+        totalKm: 258,
+        summary: 'Sölden (146 km, 2 glaciers) and Obergurgl–Hochgurgl (112 km, ski-linked via Top Express) are separated by a scenic 15-minute free ski bus ride.',
+        connectionTip: 'Official Note: On FIS World Cup weekend (Nov 21–22, 2026), Gurgl charges a €34/day Snow Card surcharge (€20 youth). Sölden has no surcharge.'
+      },
+      {
+        id: 'hochoetz-kuehtai',
+        name: 'Hochoetz – Kühtai Ski Region',
+        type: 'shuttle',
+        badge: '15-Min Free Shuttle Linking 2 High-Altitude Areas (88 km)',
+        totalKm: 88,
+        summary: 'Hochoetz (41 km, tree-lined above Oetz) and Kühtai (47 km, Austria’s highest ski village at 2,020 m) operate as one combined ticket with a 15-min shuttle.',
+        connectionTip: 'Same-Day Combo: Ski sunny morning groomers in Kühtai, take the 11:30 shuttle to Ochsengarten/Hochoetz, and return on the afternoon bus.'
+      },
+      {
+        id: 'pitztal',
+        name: 'Pitztaler Gletscher & Rifflsee (+ Hochzeiger)',
+        type: 'ski-linked',
+        badge: 'Ski-Linked Glacier & Rifflsee (68 km) + Valley Bus to Hochzeiger',
+        totalKm: 108,
+        summary: 'Pitztal Glacier (3,440 m) and Rifflsee are directly ski-linked via the Riffelsee valley descent and glacier bus; Hochzeiger (40 km) is 20 min down the valley.',
+        connectionTip: 'Same-Day Combo: Ski high-altitude glacier snow in the morning, descend the ungroomed Rifflsee glacier run at midday, and finish at Rifflsee.'
+      },
+      {
+        id: 'stubai',
+        name: 'Stubaital: Stubaier Gletscher, Schlick 2000, Elfer & Serles',
+        type: 'shuttle',
+        badge: 'Free Valley Ski Bus (10–25 Min) Linking 4 Resorts (106 km)',
+        totalKm: 106,
+        summary: 'Stubai Glacier (68 km), Schlick 2000 in Fulpmes (25 km), Elferbahnen Neustift (7 km), and Serlesbahnen Mieders (6 km) all sit along the frequent Stubai ski bus line.',
+        connectionTip: 'Same-Day Combo: Ski Stubaier Gletscher until 13:00, then ride the valley bus down to Schlick 2000 in Fulpmes for sunny afternoon tree runs.'
+      },
+      {
+        id: 'innsbruck',
+        name: 'Olympia SkiWorld Innsbruck (Axamer Lizum, Kühtai, Patscherkofel, Glungezer, Nordkette)',
+        type: 'shuttle',
+        badge: 'Free Innsbruck Ski Bus Network (15–35 Min)',
+        totalKm: 112,
+        summary: 'Axamer Lizum (41 km), Muttereralm (13 km), Patscherkofel (19 km), Glungezer (23 km), Rangger Köpfl (17 km), and Nordkette (13 km) surround Innsbruck.',
+        connectionTip: 'Official Note: Snow Card Tirol is NOT valid on the Hungerburgbahn funicular in Innsbruck—drive/bus directly to Seegrube station or take the H-bus to Patscherkofel.'
+      },
+      {
+        id: 'zugspitz-arena',
+        name: 'Tiroler Zugspitz Arena (Ehrwald, Lermoos, Berwang & Zugspitzbahn)',
+        type: 'shuttle',
+        badge: '5–10 Min Free Rundbus Loop Around Ehrwald Basin (112 km)',
+        totalKm: 112,
+        summary: 'Lermoos Grubigstein (28 km), Ehrwalder Alm (28 km), Wettersteinbahnen (23 km), and Berwang–Bichlbach (34 km) form a tight ring connected by 5–10 min buses.',
+        connectionTip: 'Official Note: At Tiroler Zugspitzbahn, Snow Card Tirol covers ONLY the round-trip cable car ride to the summit (Zugspitzplatt ski lifts require a separate ticket).'
+      },
+      {
+        id: 'seefeld-tannheim',
+        name: 'Seefeld Plateau & Tannheimer Tal / Reutte',
+        type: 'shuttle',
+        badge: '5–10 Min Local Village Buses (75 km)',
+        totalKm: 75,
+        summary: 'In Seefeld, Rosshütte (20 km) and Gschwandtkopf (6 km) are 5 min apart. Further west, Tannheimer Tal (Grän, Tannheim, Schattwald–Zöblen) & Hahnenkamm Reutte share a valley bus.',
+        connectionTip: 'Same-Day Combo: Pair Rosshütte’s steep Härmelekopf runs in the morning with sunny afternoon cruising on Gschwandtkopf.'
+      },
+      {
+        id: 'achensee-pillerseetal',
+        name: 'Achensee, St. Johann, Steinplatte & Pillerseetal',
+        type: 'shuttle',
+        badge: '10–20 Min Regional Ski Bus Combos (157 km)',
+        totalKm: 157,
+        summary: 'Achensee links Christlum (27 km) & Rofan (11 km) in 10 min. In Kitzbühel Alps, St. Johann (40 km), Steinplatte Waidring (42 km), Buchensteinwand (22 km) & Hochkössen (22 km) sit minutes apart.',
+        connectionTip: 'Same-Day Combo: Combine St. Johann in Tirol with Buchensteinwand (St. Ulrich am Pillersee) or Waidring Steinplatte—only 12 min apart by car/bus.'
+      },
+      {
+        id: 'osttirol',
+        name: 'Osttirol: Großglockner Kals–Matrei, St. Jakob, Sillian & Lienz',
+        type: 'ski-linked',
+        badge: '45 km Ski-Linked Kals–Matrei + Scenic East Tyrol Gems (122 km)',
+        totalKm: 122,
+        summary: 'Großglockner Resort Kals–Matrei is 100% ski-linked across the Cimaross ridge (45 km). St. Jakob im Defereggental (35 km), Sillian Hochpustertal (22 km), and Lienz Zettersfeld (21 km) sit 25–35 min apart.',
+        connectionTip: 'Same-Day Combo: Ski both sides of Großglockner Resort (Matrei & Kals) in one day with front-row views of Austria’s highest peak (3,798 m).'
+      },
+      {
+        id: 'standalone',
+        name: 'Standalone Favorites & Cross-Border Partners',
+        type: 'standalone',
+        badge: 'Single-Base Gems Included on Snow Card Tirol',
+        totalKm: 204,
+        summary: 'Kaunertal Glacier (55 km), Wildkogel-Arena Neukirchen/Bramberg (75 km), Bergeralm Steinach (30 km), Venet Landeck–Zams (16 km), Imster Bergbahnen (10 km), and Kellerjoch Schwaz (14 km).',
+        connectionTip: 'Pro Tip: Kaunertal Glacier and Wildkogel-Arena are sensational standalone full-day trips with uncrowded wide pistes.'
+      }
+    ];
+
+    const RESORTS = [
+      // --- 1. SKIWELT WILDER KAISER – BRIXENTAL (All 7 Official Entry Villages) ---
+      {
+        id: 'sw-soell',
+        name: 'SkiWelt Söll (Hohe Salve)',
+        circuitId: 'skiwelt',
+        region: 'Kitzbühel Alps',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Scheffau, Brixen, Itter, Hopfgarten, Ellmau & Going',
+        km: 275,
+        elevation: '703 – 1,829 m',
+        isGlacier: false,
+        lat: 47.4981,
+        lng: 12.1924,
+        highlights: 'Gateway to Hohe Salve 360° summit panorama, long Hexen6er & Keat runs, plus Austria’s largest night-skiing area (note: night skiing requires an extra ticket).',
+        linkedIds: ['sw-scheffau', 'sw-brixen', 'sw-hopfgarten']
+      },
+      {
+        id: 'sw-scheffau',
+        name: 'SkiWelt Scheffau (Brandstadl)',
+        circuitId: 'skiwelt',
+        region: 'Kitzbühel Alps',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Ellmau, Söll & Brixen im Thale',
+        km: 275,
+        elevation: '745 – 1,650 m',
+        isGlacier: false,
+        lat: 47.5238,
+        lng: 12.2486,
+        highlights: 'Fast 8-person gondolas straight into the sunny heart of SkiWelt with wide carving slopes on Brandstadl and Eiberg.',
+        linkedIds: ['sw-ellmau', 'sw-soell', 'sw-brixen']
+      },
+      {
+        id: 'sw-ellmau',
+        name: 'SkiWelt Ellmau (Hartkaiser)',
+        circuitId: 'skiwelt',
+        region: 'Kitzbühel Alps',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Going & Scheffau',
+        km: 275,
+        elevation: '820 – 1,555 m',
+        isGlacier: false,
+        lat: 47.5105,
+        lng: 12.3015,
+        highlights: 'Modern 10-person Hartkaiser gondola with dramatic Wilder Kaiser limestone wall views and cruising runs toward Going and Scheffau.',
+        linkedIds: ['sw-going', 'sw-scheffau']
+      },
+      {
+        id: 'sw-going',
+        name: 'SkiWelt Going (Astberg)',
+        circuitId: 'skiwelt',
+        region: 'Kitzbühel Alps',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Ellmau',
+        km: 275,
+        elevation: '798 – 1,267 m',
+        isGlacier: false,
+        lat: 47.5132,
+        lng: 12.3282,
+        highlights: 'Quiet, scenic eastern entry point to SkiWelt with relaxed blue/red runs and views toward the Kitzbüheler Horn.',
+        linkedIds: ['sw-ellmau']
+      },
+      {
+        id: 'sw-brixen',
+        name: 'SkiWelt Brixen im Thale',
+        circuitId: 'skiwelt',
+        region: 'Kitzbühel Alps',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked hub connecting Söll/Scheffau with Westendorf',
+        km: 275,
+        elevation: '794 – 1,829 m',
+        isGlacier: false,
+        lat: 47.4508,
+        lng: 12.2564,
+        highlights: 'Central crossroads of SkiWelt: ride north toward Hohe Salve/Scheffau or take the Sonnenlift & SkiWeltbahn south straight into Westendorf.',
+        linkedIds: ['sw-westendorf', 'sw-soell', 'sw-scheffau']
+      },
+      {
+        id: 'sw-westendorf',
+        name: 'SkiWelt Westendorf (Choralpe)',
+        circuitId: 'skiwelt',
+        region: 'Kitzbühel Alps',
+        connectionType: 'ski-linked',
+        connectionNote: 'Ski-linked to Brixen + Ki-West gondola/3-min bus link to KitzSki',
+        km: 275,
+        elevation: '802 – 1,892 m',
+        isGlacier: false,
+        lat: 47.4316,
+        lng: 12.2145,
+        highlights: 'Highest peak in SkiWelt (Fleiding 1,892 m) with long, steep red/black descents and the Ki-West connection to Kitzbühel.',
+        linkedIds: ['sw-brixen', 'kitz-kirchberg']
+      },
+      {
+        id: 'sw-hopfgarten',
+        name: 'SkiWelt Hopfgarten / Itter',
+        circuitId: 'skiwelt',
+        region: 'Kitzbühel Alps',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Hohe Salve, Söll & Brixen',
+        km: 275,
+        elevation: '622 – 1,829 m',
+        isGlacier: false,
+        lat: 47.4665,
+        lng: 12.1602,
+        highlights: 'Sunny south-facing summit descent all the way from Hohe Salve down to Hopfgarten village (over 1,200 m vertical drop).',
+        linkedIds: ['sw-soell', 'sw-brixen']
+      },
+
+      // --- 2. KITZSKI ---
+      {
+        id: 'kitz-hahnenkamm',
+        name: 'KitzSki Kitzbühel (Hahnenkamm & Horn)',
+        circuitId: 'kitzski',
+        region: 'Kitzbühel Alps',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Kirchberg, Jochberg & Pass Thurn',
+        km: 234,
+        elevation: '800 – 2,000 m',
+        isGlacier: false,
+        lat: 47.4418,
+        lng: 12.3888,
+        highlights: 'Ski the legendary Streif World Cup downhill course on Hahnenkamm and ride the high-wire 3S Gondola across the valley to Pengelstein/Jochberg.',
+        linkedIds: ['kitz-kirchberg', 'kitz-jochberg']
+      },
+      {
+        id: 'kitz-kirchberg',
+        name: 'KitzSki Kirchberg (Fleckalm & Pengelstein)',
+        circuitId: 'kitzski',
+        region: 'Kitzbühel Alps',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Kitzbühel/Pass Thurn + Ki-West link to Westendorf',
+        km: 234,
+        elevation: '837 – 1,938 m',
+        isGlacier: false,
+        lat: 47.4472,
+        lng: 12.3168,
+        highlights: 'Fast Fleckalmbahn & Maierl lifts give immediate access to KitzSki’s best sustained red runs and the Ki-West SkiWelt link.',
+        linkedIds: ['kitz-hahnenkamm', 'sw-westendorf']
+      },
+      {
+        id: 'kitz-jochberg',
+        name: 'KitzSki Jochberg – Pass Thurn – Mittersill',
+        circuitId: 'kitzski',
+        region: 'Kitzbühel Alps',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked southern sector via 3S Gondola & Resterhöhe',
+        km: 234,
+        elevation: '1,274 – 2,000 m',
+        isGlacier: false,
+        lat: 47.3785,
+        lng: 12.4182,
+        highlights: 'High-altitude, snow-sure wide bowls on Zweitausender and Resterhöhe extending into Salzburg via Panoramabahn Kitzbüheler Alpen.',
+        linkedIds: ['kitz-hahnenkamm']
+      },
+
+      // --- 3. ZILLERTAL ARENA ---
+      {
+        id: 'za-zell',
+        name: 'Zillertal Arena: Zell am Ziller',
+        circuitId: 'zillertal-arena',
+        region: 'Zillertal',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked over Übergangsjoch to Gerlos & Königsleiten',
+        km: 150,
+        elevation: '580 – 2,500 m',
+        isGlacier: false,
+        lat: 47.2335,
+        lng: 11.8832,
+        highlights: 'Home to Austria’s longest vertical valley descent (1,930 m continuous drop from Übergangsjoch down to Zell am Ziller).',
+        linkedIds: ['za-gerlos']
+      },
+      {
+        id: 'za-gerlos',
+        name: 'Zillertal Arena: Gerlos (Isskogel)',
+        circuitId: 'zillertal-arena',
+        region: 'Zillertal',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked central hub between Zell am Ziller & Königsleiten',
+        km: 150,
+        elevation: '1,246 – 2,500 m',
+        isGlacier: false,
+        lat: 47.2254,
+        lng: 12.0338,
+        highlights: 'High-altitude middle hub with wide sunny bowls on Isskogel and seamless lift links west to Zell and east to Königsleiten.',
+        linkedIds: ['za-zell', 'za-koenigsleiten']
+      },
+      {
+        id: 'za-koenigsleiten',
+        name: 'Zillertal Arena: Königsleiten & Hochkrimml',
+        circuitId: 'zillertal-arena',
+        region: 'Zillertal',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked eastern sector on the Tyrol/Salzburg border',
+        km: 150,
+        elevation: '1,600 – 2,315 m',
+        isGlacier: false,
+        lat: 47.2485,
+        lng: 12.1215,
+        highlights: 'Ski-in/ski-out alpine village at 1,600 m with panoramic cruising on Königsleitenspitze and Gerlosplatte.',
+        linkedIds: ['za-gerlos']
+      },
+
+      // --- 4. MAYRHOFEN – TUX – HINTERTUX ---
+      {
+        id: 'mh-penken',
+        name: 'Mayrhofen (Penken & Ahorn)',
+        circuitId: 'mayrhofen-tux',
+        region: 'Zillertal',
+        connectionType: 'ski-linked',
+        connectionNote: 'Penken 100% ski-linked to Finkenberg, Rastkogel & Eggalm (142 km)',
+        km: 142,
+        elevation: '630 – 2,500 m',
+        isGlacier: false,
+        lat: 47.1678,
+        lng: 11.8625,
+        highlights: 'Famous for the 78% gradient Harakiri steep slope, Vans Penken Park, and long carving runs on sunny Ahorn plateau.',
+        linkedIds: ['mh-finkenberg', 'mh-rastkogel']
+      },
+      {
+        id: 'mh-finkenberg',
+        name: 'Finkenberg (Almbahnen)',
+        circuitId: 'mayrhofen-tux',
+        region: 'Zillertal',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Mayrhofen Penken & Rastkogel',
+        km: 142,
+        elevation: '840 – 2,500 m',
+        isGlacier: false,
+        lat: 47.1525,
+        lng: 11.8255,
+        highlights: 'Direct gondola access straight onto Penkenjoch and the 150er Tux aerial tramway over to Rastkogel.',
+        linkedIds: ['mh-penken', 'mh-rastkogel']
+      },
+      {
+        id: 'mh-rastkogel',
+        name: 'Tux-Vorderlanersbach (Rastkogel & Eggalm)',
+        circuitId: 'mayrhofen-tux',
+        region: 'Zillertal',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Mayrhofen/Finkenberg + 10-min bus to Hintertux',
+        km: 142,
+        elevation: '1,300 – 2,500 m',
+        isGlacier: false,
+        lat: 47.1682,
+        lng: 11.7458,
+        highlights: 'High-altitude sunny bowls on Horbergjoch and Eggalm with fast free ski bus access straight up to Hintertux Glacier.',
+        linkedIds: ['mh-finkenberg', 'mh-hintertux']
+      },
+      {
+        id: 'mh-hintertux',
+        name: 'Hintertuxer Gletscher',
+        circuitId: 'mayrhofen-tux',
+        region: 'Zillertal',
+        connectionType: 'shuttle',
+        connectionNote: '10-min free Green Line ski bus from Eggalm/Lanersbach',
+        km: 62,
+        elevation: '1,500 – 3,250 m',
+        isGlacier: true,
+        lat: 47.0812,
+        lng: 11.6742,
+        highlights: 'Austria’s premier year-round glacier resort with 1,750 m vertical drop down the Schwarze Pfanne run to the valley floor.',
+        linkedIds: ['mh-rastkogel']
+      },
+
+      // --- 5. HOCHZILLERTAL – HOCHFÜGEN – SPIELJOCH ---
+      {
+        id: 'hz-kaltenbach',
+        name: 'Hochzillertal – Hochfügen (Kaltenbach)',
+        circuitId: 'hochzillertal-fuegen',
+        region: 'Zillertal',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked between Kaltenbach & Hochfügen (91 km)',
+        km: 91,
+        elevation: '560 – 2,501 m',
+        isGlacier: false,
+        lat: 47.2912,
+        lng: 11.8742,
+        highlights: 'High-speed gondolas, gourmet mountain huts (Kristallhütte, Wedelhütte), and freeride terrain in the high Hochfügen bowl.',
+        linkedIds: ['hz-spieljoch']
+      },
+      {
+        id: 'hz-spieljoch',
+        name: 'Spieljoch – Fügen',
+        circuitId: 'hochzillertal-fuegen',
+        region: 'Zillertal',
+        connectionType: 'shuttle',
+        connectionNote: '10-min free Zillertal ski bus to Kaltenbach (Hochzillertal)',
+        km: 21,
+        elevation: '650 – 2,054 m',
+        isGlacier: false,
+        lat: 47.3422,
+        lng: 11.8455,
+        highlights: 'First ski area in Zillertal with a 7 km top-to-bottom snow-covered valley descent and fast gondola.',
+        linkedIds: ['hz-kaltenbach']
+      },
+
+      // --- 6. SKI JUWEL ALPBACHTAL WILDSCHÖNAU ---
+      {
+        id: 'sj-alpbach',
+        name: 'Ski Juwel: Alpbach (Wiedersbergerhorn)',
+        circuitId: 'skijuwel',
+        region: 'Alpbachtal',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Auffach/Wildschönau via Verbindungsbahn',
+        km: 113,
+        elevation: '670 – 2,025 m',
+        isGlacier: false,
+        lat: 47.3865,
+        lng: 11.9442,
+        highlights: 'Traditional timber village charm paired with long treeless top bowls on Wiedersbergerhorn and seamless connection to Wildschönau.',
+        linkedIds: ['sj-wildschoenau']
+      },
+      {
+        id: 'sj-wildschoenau',
+        name: 'Ski Juwel: Wildschönau (Auffach / Schatzberg)',
+        circuitId: 'skijuwel',
+        region: 'Alpbachtal',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Alpbach via Schatzberg–Auffach gondola',
+        km: 113,
+        elevation: '875 – 1,903 m',
+        isGlacier: false,
+        lat: 47.3688,
+        lng: 12.0125,
+        highlights: 'Wide, rolling red and blue runs from Schatzberg down to Auffach with easy lift transit across to Alpbach.',
+        linkedIds: ['sj-alpbach']
+      },
+
+      // --- 7. PAZNAUN VALLEY (ISCHGL/SAMNAUN, KAPPL, SEE, GALTÜR) ---
+      {
+        id: 'pz-ischgl',
+        name: 'Silvretta Arena Ischgl / Samnaun (CH)',
+        circuitId: 'paznaun',
+        region: 'Paznaun',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked cross-border with Samnaun + 10-min bus to Kappl/Galtür',
+        km: 239,
+        elevation: '1,377 – 2,872 m',
+        isGlacier: false,
+        lat: 47.0112,
+        lng: 10.2885,
+        highlights: 'Massive high-altitude cross-border ski arena (90% above 2,000 m) with 11 km Eleven run. Official note: excluded on Ischgl concert days.',
+        linkedIds: ['pz-kappl', 'pz-galtuer']
+      },
+      {
+        id: 'pz-kappl',
+        name: 'Skischaukel Kappl & See',
+        circuitId: 'paznaun',
+        region: 'Paznaun',
+        connectionType: 'ski-linked',
+        connectionNote: 'Kappl & See are ski-linked + 10-min Paznaun bus to Ischgl',
+        km: 42,
+        elevation: '1,040 – 2,690 m',
+        isGlacier: false,
+        lat: 47.0628,
+        lng: 10.3752,
+        highlights: 'Sunny south-facing slopes in Kappl (8 km Lattenabfahrt) linked across the ridge with family-friendly See im Paznaun.',
+        linkedIds: ['pz-ischgl']
+      },
+      {
+        id: 'pz-galtuer',
+        name: 'Silvapark Galtür',
+        circuitId: 'paznaun',
+        region: 'Paznaun',
+        connectionType: 'shuttle',
+        connectionNote: '10-min free Paznaun ski bus from Ischgl',
+        km: 43,
+        elevation: '1,600 – 2,300 m',
+        isGlacier: false,
+        lat: 46.9685,
+        lng: 10.1842,
+        highlights: 'High-altitude hidden gem at the end of Paznaun with 6 themed Silvapark sectors, uncrowded powder, and crisp snow.',
+        linkedIds: ['pz-ischgl']
+      },
+
+      // --- 8. SERFAUS – FISS – LADIS & OBERLAND ---
+      {
+        id: 'sfl-serfaus',
+        name: 'Serfaus – Fiss – Ladis',
+        circuitId: 'sfl-oberland',
+        region: 'Tiroler Oberland',
+        connectionType: 'ski-linked',
+        connectionNote: 'All 3 sun-plateau villages 100% ski-linked (214 km)',
+        km: 214,
+        elevation: '1,200 – 2,828 m',
+        isGlacier: false,
+        lat: 47.0385,
+        lng: 10.6062,
+        highlights: 'Car-free Serfaus with its underground hover-metro, linked across Fiss and Ladis up to Masnerkopf (2,828 m).',
+        linkedIds: ['ob-fendels', 'ob-nauders']
+      },
+      {
+        id: 'ob-fendels',
+        name: 'Fendels (Ried / Prutz)',
+        circuitId: 'sfl-oberland',
+        region: 'Tiroler Oberland',
+        connectionType: 'shuttle',
+        connectionNote: '15-min bus/drive below Serfaus–Fiss–Ladis',
+        km: 11,
+        elevation: '1,356 – 2,300 m',
+        isGlacier: false,
+        lat: 47.0532,
+        lng: 10.6745,
+        highlights: 'Charming, crowd-free forest runs directly reachable by cable car from Ried im Oberinntal.',
+        linkedIds: ['sfl-serfaus']
+      },
+      {
+        id: 'ob-nauders',
+        name: 'Nauders am Reschenpass (Bergkastel)',
+        circuitId: 'sfl-oberland',
+        region: 'Tiroler Oberland',
+        connectionType: 'shuttle',
+        connectionNote: '25-min drive/bus along Reschen highway south of SFL',
+        km: 75,
+        elevation: '1,400 – 2,750 m',
+        isGlacier: false,
+        lat: 46.8895,
+        lng: 10.5032,
+        highlights: 'Wide, high-altitude carving slopes at the tri-border corner of Austria, Italy, and Switzerland.',
+        linkedIds: ['sfl-serfaus']
+      },
+
+      // --- 9. ÖTZTAL (SÖLDEN & GURGL) ---
+      {
+        id: 'oe-soelden',
+        name: 'Sölden (Giggijoch, Gaislachkogl & 2 Glaciers)',
+        circuitId: 'oetztal',
+        region: 'Ötztal',
+        connectionType: 'shuttle',
+        connectionNote: '15-min free ski bus to Obergurgl–Hochgurgl',
+        km: 146,
+        elevation: '1,350 – 3,340 m',
+        isGlacier: true,
+        lat: 46.9654,
+        lng: 11.0076,
+        highlights: 'Only Austrian resort with three 3,000 m+ peaks (BIG 3 Rally), Rettenbach & Tiefenbach glaciers, and 007 ELEMENTS.',
+        linkedIds: ['oe-gurgl']
+      },
+      {
+        id: 'oe-gurgl',
+        name: 'Obergurgl – Hochgurgl',
+        circuitId: 'oetztal',
+        region: 'Ötztal',
+        connectionType: 'shuttle',
+        connectionNote: 'Obergurgl & Hochgurgl ski-linked + 15-min bus to Sölden',
+        km: 112,
+        elevation: '1,800 – 3,080 m',
+        isGlacier: false,
+        lat: 46.8685,
+        lng: 11.0268,
+        highlights: 'Guaranteed snow from November to late April. Official note: €34/day Snow Card surcharge applies during FIS World Cup Nov 21–22, 2026.',
+        linkedIds: ['oe-soelden']
+      },
+
+      // --- 10. HOCHOETZ – KÜHTAI ---
+      {
+        id: 'hk-hochoetz',
+        name: 'Hochoetz (Oetz / Ochsengarten)',
+        circuitId: 'hochoetz-kuehtai',
+        region: 'Ötztal',
+        connectionType: 'shuttle',
+        connectionNote: '15-min free ski shuttle from Ochsengarten to Kühtai',
+        km: 41,
+        elevation: '1,410 – 2,272 m',
+        isGlacier: false,
+        lat: 47.2062,
+        lng: 10.9285,
+        highlights: 'Sunny, wind-protected trails above Oetz with seamless bus link from Ochsengarten up to Kühtai.',
+        linkedIds: ['hk-kuehtai']
+      },
+      {
+        id: 'hk-kuehtai',
+        name: 'Kühtai',
+        circuitId: 'hochoetz-kuehtai',
+        region: 'Innsbruck & Surroundings',
+        connectionType: 'shuttle',
+        connectionNote: '15-min free ski shuttle to Hochoetz + Innsbruck ski bus',
+        km: 47,
+        elevation: '2,020 – 2,520 m',
+        isGlacier: false,
+        lat: 47.2135,
+        lng: 11.0225,
+        highlights: 'Austria’s highest ski resort village (2,020 m) with ski-in/ski-out hotels and natural snow all winter.',
+        linkedIds: ['hk-hochoetz', 'ibk-axamer']
+      },
+
+      // --- 11. PITZTAL ---
+      {
+        id: 'pz-glacier',
+        name: 'Pitztaler Gletscher & Rifflsee',
+        circuitId: 'pitztal',
+        region: 'Pitztal',
+        connectionType: 'ski-linked',
+        connectionNote: 'Glacier & Rifflsee ski-linked + 20-min bus to Hochzeiger',
+        km: 68,
+        elevation: '1,640 – 3,440 m',
+        isGlacier: true,
+        lat: 46.9268,
+        lng: 10.8785,
+        highlights: 'Highest cable car in Austria (Wildspitzbahn 3,440 m with Café 3.440) linked via glacier descent to Rifflsee.',
+        linkedIds: ['pz-hochzeiger']
+      },
+      {
+        id: 'pz-hochzeiger',
+        name: 'Hochzeiger – Jerzens im Pitztal',
+        circuitId: 'pitztal',
+        region: 'Pitztal',
+        connectionType: 'shuttle',
+        connectionNote: '20-min free Pitztal valley bus to Pitztal Glacier/Rifflsee',
+        km: 40,
+        elevation: '1,450 – 2,450 m',
+        isGlacier: false,
+        lat: 47.1432,
+        lng: 10.7785,
+        highlights: 'Sunny west-facing carving runs and the steep Benni Raich black descent.',
+        linkedIds: ['pz-glacier']
+      },
+
+      // --- 12. STUBAITAL ---
+      {
+        id: 'st-glacier',
+        name: 'Stubaier Gletscher',
+        circuitId: 'stubai',
+        region: 'Stubaital',
+        connectionType: 'shuttle',
+        connectionNote: '20-min free Stubai ski bus to Schlick 2000 & Elfer',
+        km: 68,
+        elevation: '1,750 – 3,210 m',
+        isGlacier: true,
+        lat: 46.9965,
+        lng: 11.1142,
+        highlights: 'Austria’s largest glacier ski area with the 10 km Wilde Grub’n valley run and Top of Tyrol summit platform.',
+        linkedIds: ['st-schlick', 'st-elfer']
+      },
+      {
+        id: 'st-schlick',
+        name: 'Schlick 2000 – Fulpmes',
+        circuitId: 'stubai',
+        region: 'Stubaital',
+        connectionType: 'shuttle',
+        connectionNote: '10–20 min free Stubai ski bus to Stubai Glacier, Elfer & Serles',
+        km: 25,
+        elevation: '1,000 – 2,240 m',
+        isGlacier: false,
+        lat: 47.1528,
+        lng: 11.3185,
+        highlights: 'Dramatic Kalkkögel Dolomite peaks overlooking wide red trails and lively rustic ski huts.',
+        linkedIds: ['st-glacier', 'st-elfer']
+      },
+      {
+        id: 'st-elfer',
+        name: 'Elferbahnen Neustift & Serlesbahnen Mieders',
+        circuitId: 'stubai',
+        region: 'Stubaital',
+        connectionType: 'shuttle',
+        connectionNote: '10-min free Stubai bus between Neustift, Mieders & Fulpmes',
+        km: 13,
+        elevation: '952 – 2,080 m',
+        isGlacier: false,
+        lat: 47.1085,
+        lng: 11.3145,
+        highlights: 'Steep natural snow runs on Elfer in Neustift and scenic family trails overlooking the Inn Valley at Serles.',
+        linkedIds: ['st-schlick']
+      },
+
+      // --- 13. INNSBRUCK & SURROUNDINGS ---
+      {
+        id: 'ibk-axamer',
+        name: 'Axamer Lizum',
+        circuitId: 'innsbruck',
+        region: 'Innsbruck & Surroundings',
+        connectionType: 'shuttle',
+        connectionNote: '25-min free Innsbruck ski bus + ski-tour/bus link to Muttereralm',
+        km: 41,
+        elevation: '1,560 – 2,340 m',
+        isGlacier: false,
+        lat: 47.1945,
+        lng: 11.3022,
+        highlights: '1964 & 1976 Olympic alpine venue with modern 10-person Hoadlbahn gondola and legendary freeride bowls.',
+        linkedIds: ['ibk-mutterer', 'hk-kuehtai']
+      },
+      {
+        id: 'ibk-mutterer',
+        name: 'Muttereralm & Rangger Köpfl (Oberperfuss)',
+        circuitId: 'innsbruck',
+        region: 'Innsbruck & Surroundings',
+        connectionType: 'shuttle',
+        connectionNote: '15–25 min Innsbruck ski bus loop',
+        km: 30,
+        elevation: '820 – 2,000 m',
+        isGlacier: false,
+        lat: 47.2242,
+        lng: 11.3485,
+        highlights: 'Tree-lined runs overlooking Innsbruck with rapid 8-person gondolas in Mutters/Götzens and Oberperfuss.',
+        linkedIds: ['ibk-axamer']
+      },
+      {
+        id: 'ibk-patscherkofel',
+        name: 'Patscherkofel & Glungezer',
+        circuitId: 'innsbruck',
+        region: 'Innsbruck & Surroundings',
+        connectionType: 'shuttle',
+        connectionNote: '15-min bus between Igls (Patscherkofel) & Tulfes (Glungezer)',
+        km: 42,
+        elevation: '950 – 2,677 m',
+        isGlacier: false,
+        lat: 47.2138,
+        lng: 11.4585,
+        highlights: 'Innsbruck’s iconic Olympic home mountain paired with Glungezer’s 15 km continuous descent to Tulfes.',
+        linkedIds: ['ibk-nordkette']
+      },
+      {
+        id: 'ibk-nordkette',
+        name: 'Innsbruck Nordkette (Seegrube – Hafelekar)',
+        circuitId: 'innsbruck',
+        region: 'Innsbruck & Surroundings',
+        connectionType: 'shuttle',
+        connectionNote: 'Official Note: Hungerburgbahn NOT included—board at Seegrube station',
+        km: 13,
+        elevation: '1,905 – 2,334 m',
+        isGlacier: false,
+        lat: 47.3065,
+        lng: 11.3788,
+        highlights: 'Steepest ski route in Europe (Hafelekar 70% gradient) perched directly above Innsbruck’s Old Town.',
+        linkedIds: ['ibk-patscherkofel']
+      },
+
+      // --- 14. TIROLER ZUGSPITZ ARENA ---
+      {
+        id: 'za-ehrwald',
+        name: 'Ehrwalder Almbahn & Wettersteinbahnen',
+        circuitId: 'zugspitz-arena',
+        region: 'Tiroler Zugspitz Arena',
+        connectionType: 'shuttle',
+        connectionNote: '5-min free Rundbus loop between Ehrwald, Lermoos & Biberwier',
+        km: 51,
+        elevation: '1,000 – 1,923 m',
+        isGlacier: false,
+        lat: 47.3925,
+        lng: 10.9412,
+        highlights: 'Wide sunny cruising beneath the sheer western rock walls of the Zugspitze.',
+        linkedIds: ['za-lermoos', 'za-zugspitzbahn']
+      },
+      {
+        id: 'za-lermoos',
+        name: 'Lermoos Grubigstein & Berwang – Bichlbach',
+        circuitId: 'zugspitz-arena',
+        region: 'Tiroler Zugspitz Arena',
+        connectionType: 'shuttle',
+        connectionNote: '10-min free Rundbus / train link across the Zugspitz Arena',
+        km: 62,
+        elevation: '1,004 – 2,100 m',
+        isGlacier: false,
+        lat: 47.3985,
+        lng: 10.8752,
+        highlights: 'Grubigstein offers a 1,100 m vertical drop facing the Zugspitze, easily paired with Berwang’s high-altitude ski-in village.',
+        linkedIds: ['za-ehrwald']
+      },
+      {
+        id: 'za-zugspitzbahn',
+        name: 'Tiroler Zugspitzbahn (Summit Cable Car)',
+        circuitId: 'zugspitz-arena',
+        region: 'Tiroler Zugspitz Arena',
+        connectionType: 'shuttle',
+        connectionNote: 'Official Rule: Gondola ride up/down included; Zugspitzplatt ski lifts extra',
+        km: 17,
+        elevation: '1,225 – 2,962 m',
+        isGlacier: true,
+        lat: 47.4235,
+        lng: 10.9428,
+        highlights: '10-minute ride to Germany/Austria’s highest peak (2,962 m) for 4-country panoramic views. Note: skiing on Zugspitzplatt requires a separate pass.',
+        linkedIds: ['za-ehrwald']
+      },
+
+      // --- 15. SEEFELD & TANNHEIMER TAL ---
+      {
+        id: 'sf-rosshuette',
+        name: 'Seefeld: Rosshütte & Gschwandtkopf',
+        circuitId: 'seefeld-tannheim',
+        region: 'Seefeld & Außerfern',
+        connectionType: 'shuttle',
+        connectionNote: '5-min free Seefeld ski bus between Rosshütte & Gschwandtkopf',
+        km: 26,
+        elevation: '1,200 – 2,064 m',
+        isGlacier: false,
+        lat: 47.3315,
+        lng: 11.2012,
+        highlights: 'Sunny high plateau 30 min from Garmisch/Mittenwald with fast 6-pack chairs on Rosshütte and scenic cruising on Gschwandtkopf.',
+        linkedIds: ['tt-tannheim']
+      },
+      {
+        id: 'tt-tannheim',
+        name: 'Tannheimer Tal (Grän, Tannheim & Schattwald–Zöblen)',
+        circuitId: 'seefeld-tannheim',
+        region: 'Seefeld & Außerfern',
+        connectionType: 'shuttle',
+        connectionNote: '5–10 min free Tannheimer Tal valley bus + Hahnenkamm Reutte',
+        km: 52,
+        elevation: '1,080 – 1,886 m',
+        isGlacier: false,
+        lat: 47.4985,
+        lng: 10.5212,
+        highlights: 'Füssener Jöchle (Grän), Neunerköpfle (Tannheim), Schattwald–Zöblen, and Bergwelt Hahnenkamm Reutte are all minutes apart.',
+        linkedIds: ['sf-rosshuette']
+      },
+
+      // --- 16. ACHENSEE, ST. JOHANN & PILLERSEETAL ---
+      {
+        id: 'ac-christlum',
+        name: 'Achensee: Christlum Achenkirch & Rofan Maurach',
+        circuitId: 'achensee-pillerseetal',
+        region: 'Achensee & Kaiserwinkl',
+        connectionType: 'shuttle',
+        connectionNote: '10-min free lakeside bus along Lake Achensee',
+        km: 38,
+        elevation: '950 – 1,840 m',
+        isGlacier: false,
+        lat: 47.5265,
+        lng: 11.6985,
+        highlights: 'Fjord-like views over Lake Achensee from Rofan cable car combined with wide snow-sure slopes at Christlum.',
+        linkedIds: ['kp-stjohann']
+      },
+      {
+        id: 'kp-stjohann',
+        name: 'St. Johann in Tirol & Buchensteinwand (Pillersee)',
+        circuitId: 'achensee-pillerseetal',
+        region: 'Kitzbühel Alps',
+        connectionType: 'shuttle',
+        connectionNote: '12-min drive/bus between St. Johann & St. Ulrich am Pillersee',
+        km: 62,
+        elevation: '659 – 1,604 m',
+        isGlacier: false,
+        lat: 47.5185,
+        lng: 12.4265,
+        highlights: 'Uncrowded north-facing runs on Kitzbüheler Horn paired with Buchensteinwand and its summit Jakobskreuz.',
+        linkedIds: ['ac-christlum', 'kp-steinplatte']
+      },
+      {
+        id: 'kp-steinplatte',
+        name: 'Steinplatte Waidring & Hochkössen (Unterberg)',
+        circuitId: 'achensee-pillerseetal',
+        region: 'Achensee & Kaiserwinkl',
+        connectionType: 'shuttle',
+        connectionNote: '15-min drive/bus between Waidring & Kössen',
+        km: 64,
+        elevation: '600 – 1,860 m',
+        isGlacier: false,
+        lat: 47.6145,
+        lng: 12.5685,
+        highlights: 'Wide sunny bowls on Steinplatte (cross-border with Winklmoosalm) and scenic runs overlooking Lake Chiemsee from Hochkössen.',
+        linkedIds: ['kp-stjohann']
+      },
+
+      // --- 17. OSTTIROL (EAST TYROL) ---
+      {
+        id: 'ot-grossglockner',
+        name: 'Großglockner Resort Kals – Matrei',
+        circuitId: 'osttirol',
+        region: 'Osttirol',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked between Matrei & Kals over Cimaross (2,421 m)',
+        km: 45,
+        elevation: '980 – 2,421 m',
+        isGlacier: false,
+        lat: 47.0015,
+        lng: 12.6025,
+        highlights: 'East Tyrol’s largest ski resort with uninterrupted views of Großglockner (3,798 m) and long 11 km valley descents.',
+        linkedIds: ['ot-stjakob', 'ot-lienz']
+      },
+      {
+        id: 'ot-stjakob',
+        name: 'Brunnalm – St. Jakob im Defereggental',
+        circuitId: 'osttirol',
+        region: 'Osttirol',
+        connectionType: 'shuttle',
+        connectionNote: '25-min scenic drive from Matrei in Osttirol',
+        km: 35,
+        elevation: '1,400 – 2,683 m',
+        isGlacier: false,
+        lat: 46.9245,
+        lng: 12.3412,
+        highlights: 'High-altitude Leppleskofel 6-pack chairlift (2,683 m) delivering pristine natural snow and zero lift lines.',
+        linkedIds: ['ot-grossglockner']
+      },
+      {
+        id: 'ot-sillian',
+        name: 'Sillian – Hochpustertal',
+        circuitId: 'osttirol',
+        region: 'Osttirol',
+        connectionType: 'shuttle',
+        connectionNote: '30-min drive from Lienz along the sunny Drau/Puster valley',
+        km: 22,
+        elevation: '1,100 – 2,407 m',
+        isGlacier: false,
+        lat: 46.7585,
+        lng: 12.4185,
+        highlights: 'Sunny south-facing carving slopes on Thurntaler facing the Sexten Dolomites on the Italian border.',
+        linkedIds: ['ot-lienz']
+      },
+      {
+        id: 'ot-lienz',
+        name: 'Lienzer Bergbahnen (Zettersfeld & Hochstein)',
+        circuitId: 'osttirol',
+        region: 'Osttirol',
+        connectionType: 'shuttle',
+        connectionNote: '10-min city ski bus between Zettersfeld & Hochstein in Lienz',
+        km: 21,
+        elevation: '686 – 2,278 m',
+        isGlacier: false,
+        lat: 46.8542,
+        lng: 12.7685,
+        highlights: 'Austria’s sunniest town: pair panoramic Zettersfeld with the steep FIS World Cup slopes on Hochstein.',
+        linkedIds: ['ot-grossglockner', 'ot-sillian']
+      },
+
+      // --- 18. STANDALONE FAVORITES ---
+      {
+        id: 'sa-kaunertal',
+        name: 'Kaunertaler Gletscher',
+        circuitId: 'standalone',
+        region: 'Tiroler Oberland',
+        connectionType: 'standalone',
+        connectionNote: 'Standalone high-alpine glacier road destination',
+        km: 55,
+        elevation: '2,150 – 3,113 m',
+        isGlacier: true,
+        lat: 46.8665,
+        lng: 10.7135,
+        highlights: 'Drive Austria’s most scenic glacier road straight to 2,750 m—wide uncrowded glacier highways and the steep Black Ibex piste.',
+        linkedIds: []
+      },
+      {
+        id: 'sa-wildkogel',
+        name: 'Wildkogel-Arena (Neukirchen / Bramberg)',
+        circuitId: 'standalone',
+        region: 'Kitzbühel Alps',
+        connectionType: 'standalone',
+        connectionNote: 'Included on Snow Card Tirol (just east of Gerlos/Pass Thurn)',
+        km: 75,
+        elevation: '820 – 2,150 m',
+        isGlacier: false,
+        lat: 47.2745,
+        lng: 12.2752,
+        highlights: '85% blue and red panoramic runs facing the 3,000 m peaks of Hohe Tauern National Park.',
+        linkedIds: []
+      },
+      {
+        id: 'sa-bergeralm',
+        name: 'Bergeralm – Steinach am Brenner',
+        circuitId: 'standalone',
+        region: 'Innsbruck & Surroundings',
+        connectionType: 'standalone',
+        connectionNote: '25 min south of Innsbruck right off the Brenner motorway',
+        km: 30,
+        elevation: '1,048 – 2,231 m',
+        isGlacier: false,
+        lat: 47.0865,
+        lng: 11.4685,
+        highlights: 'Fast gondola/chairlifts, great snow reliability in Wipptal, and Europe’s largest night-skiing arena.',
+        linkedIds: []
+      },
+      {
+        id: 'sa-venet',
+        name: 'Venet (Landeck – Zams – Fließ)',
+        circuitId: 'standalone',
+        region: 'Tiroler Oberland',
+        connectionType: 'standalone',
+        connectionNote: 'Standalone panoramic ridge above Landeck/Zams',
+        km: 16,
+        elevation: '780 – 2,212 m',
+        isGlacier: false,
+        lat: 47.1432,
+        lng: 10.6285,
+        highlights: '360° summit panorama over the Inn Valley with a 1,430 m continuous descent to Zams.',
+        linkedIds: []
+      },
+      {
+        id: 'sa-imst',
+        name: 'Imster Bergbahnen (Hoch-Imst)',
+        circuitId: 'standalone',
+        region: 'Tiroler Oberland',
+        connectionType: 'standalone',
+        connectionNote: 'Standalone sunny bowl 45 min west of Innsbruck',
+        km: 10,
+        elevation: '1,050 – 2,100 m',
+        isGlacier: false,
+        lat: 47.2585,
+        lng: 10.7185,
+        highlights: 'Modern 10-person gondolas serving wide, uncrowded carving slopes above Imst.',
+        linkedIds: []
+      },
+      {
+        id: 'sa-kellerjoch',
+        name: 'Kellerjochbahn (Schwaz – Pill)',
+        circuitId: 'standalone',
+        region: 'Innsbruck & Surroundings',
+        connectionType: 'standalone',
+        connectionNote: 'Standalone scenic gem above Schwaz in the Inn Valley',
+        km: 14,
+        elevation: '830 – 1,887 m',
+        isGlacier: false,
+        lat: 47.3265,
+        lng: 11.7345,
+        highlights: 'Classic local Tyrolean mountain with sweeping Inn Valley views and quiet tree-lined runs.',
+        linkedIds: []
+      }
+    ];
+
+    // =========================================================================
+    // 2. STATE MANAGEMENT, LOCALSTORAGE & INSTANT CLOUD SYNC
     // =========================================================================
     const STORAGE_KEY = 'snowCardTirol_3D_Tracker_v1';
     const SYNC_META_KEY = 'snowCardTirol_SyncMeta_v1';
@@ -609,7 +1677,6 @@
 
     function initPwaAssets() {
       try {
-        // Generate crisp 512x512 Alpine Mountain App Icon on Canvas for iPhone Home Screen
         const canvas = document.createElement('canvas');
         canvas.width = 512;
         canvas.height = 512;
@@ -621,7 +1688,6 @@
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, 512, 512);
 
-        // Mountain peaks
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
         ctx.moveTo(75, 390);
@@ -632,7 +1698,6 @@
         ctx.closePath();
         ctx.fill();
 
-        // Snow shadow facet
         ctx.fillStyle = '#e0f2fe';
         ctx.beginPath();
         ctx.moveTo(220, 145);
@@ -652,9 +1717,7 @@
           display: 'standalone',
           background_color: '#0f172a',
           theme_color: '#0f172a',
-          icons: [
-            { src: iconUrl, sizes: '512x512', type: 'image/png' }
-          ]
+          icons: [{ src: iconUrl, sizes: '512x512', type: 'image/png' }]
         };
         const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
         const manifestLink = document.getElementById('pwa-manifest');
@@ -846,9 +1909,975 @@
     }
 
     function showToast(msg) {
-// ... existing code ... -->
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.remove('translate-y-20', 'opacity-0');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        el.classList.add('translate-y-20', 'opacity-0');
+      }, 2400);
+    }
+
     // =========================================================================
-    // 9. BOOTSTRAP ON LOAD
+    // 3. MAPLIBRE GL JS 3D TERRAIN & OPENSNOWMAP PISTES/LIFTS ENGINE
+    // =========================================================================
+    let map;
+    let mapLoaded = false;
+    let mapMarkers = {};
+    let activePopup = null;
+
+    function buildMapStyle() {
+      return {
+        version: 8,
+        sources: {
+          // 100% Keyless Basemap Sources
+          'esri-satellite': {
+            type: 'raster',
+            tiles: [
+              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+            ],
+            tileSize: 256,
+            maxzoom: 18,
+            attribution: 'Tiles © Esri'
+          },
+          'esri-labels': {
+            type: 'raster',
+            tiles: [
+              'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
+            ],
+            tileSize: 256,
+            maxzoom: 18
+          },
+          'opentopomap': {
+            type: 'raster',
+            tiles: [
+              'https://a.tile.opentopomap.org/{z}/{x}/{y}.png',
+              'https://b.tile.opentopomap.org/{z}/{x}/{y}.png',
+              'https://c.tile.opentopomap.org/{z}/{x}/{y}.png'
+            ],
+            tileSize: 256,
+            maxzoom: 17,
+            attribution: '© OpenTopoMap (CC-BY-SA)'
+          },
+          'osm-streets': {
+            type: 'raster',
+            tiles: [
+              'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+            ],
+            tileSize: 256,
+            maxzoom: 19,
+            attribution: '© OpenStreetMap contributors'
+          },
+          // 100% Keyless AWS Terrarium 3D DEM Elevation Tiles
+          'terrain-dem': {
+            type: 'raster-dem',
+            tiles: [
+              'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'
+            ],
+            encoding: 'terrarium',
+            tileSize: 256,
+            maxzoom: 15
+          },
+          // Live OpenSnowMap Pistes, Trail Numbers & Ski Lifts Overlay
+          'opensnowmap-pistes': {
+            type: 'raster',
+            tiles: [
+              'https://tiles.opensnowmap.org/pistes/{z}/{x}/{y}.png'
+            ],
+            tileSize: 256,
+            maxzoom: 18,
+            attribution: 'Pistes & Lifts © OpenSnowMap.org'
+          }
+        },
+        layers: [
+          {
+            id: 'layer-satellite',
+            type: 'raster',
+            source: 'esri-satellite',
+            layout: { visibility: 'visible' }
+          },
+          {
+            id: 'layer-topo',
+            type: 'raster',
+            source: 'opentopomap',
+            layout: { visibility: 'none' }
+          },
+          {
+            id: 'layer-osm',
+            type: 'raster',
+            source: 'osm-streets',
+            layout: { visibility: 'none' }
+          },
+          {
+            id: 'layer-opensnowmap',
+            type: 'raster',
+            source: 'opensnowmap-pistes',
+            paint: {
+              'raster-opacity': 0.92
+            },
+            layout: { visibility: 'visible' }
+          },
+          {
+            id: 'layer-satellite-labels',
+            type: 'raster',
+            source: 'esri-labels',
+            layout: { visibility: 'visible' }
+          }
+        ],
+        terrain: {
+          source: 'terrain-dem',
+          exaggeration: state.exaggeration
+        }
+      };
+    }
+
+    function initMap() {
+      try {
+        map = new maplibregl.Map({
+          container: 'map',
+          style: buildMapStyle(),
+          center: [11.42, 47.26],
+          zoom: 8.6,
+          pitch: 54,
+          bearing: -8,
+          maxPitch: 78,
+          antialias: true
+        });
+
+        map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+
+        map.on('load', () => {
+          mapLoaded = true;
+          addConnectionSourcesAndLayers();
+          renderMapMarkers();
+        });
+      } catch (err) {
+        console.error('MapLibre initialization error:', err);
+      }
+    }
+
+    function buildConnectionGeoJSON() {
+      const skiFeatures = [];
+      const busFeatures = [];
+      const drawnPairs = new Set();
+
+      RESORTS.forEach(resort => {
+        if (!resort.linkedIds) return;
+        resort.linkedIds.forEach(targetId => {
+          const pairKey = [resort.id, targetId].sort().join('--');
+          if (drawnPairs.has(pairKey)) return;
+          drawnPairs.add(pairKey);
+
+          const target = RESORTS.find(r => r.id === targetId);
+          if (!target) return;
+
+          const isSki = resort.connectionType === 'ski-linked' && target.connectionType === 'ski-linked';
+          const feature = {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                [resort.lng, resort.lat],
+                [target.lng, target.lat]
+              ]
+            },
+            properties: {
+              from: resort.name,
+              to: target.name
+            }
+          };
+
+          if (isSki) skiFeatures.push(feature);
+          else busFeatures.push(feature);
+        });
+      });
+
+      return {
+        ski: { type: 'FeatureCollection', features: skiFeatures },
+        bus: { type: 'FeatureCollection', features: busFeatures }
+      };
+    }
+
+    function addConnectionSourcesAndLayers() {
+      if (!mapLoaded) return;
+      const geo = buildConnectionGeoJSON();
+
+      map.addSource('ski-links-src', { type: 'geojson', data: geo.ski });
+      map.addSource('bus-links-src', { type: 'geojson', data: geo.bus });
+
+      map.addLayer({
+        id: 'ski-links-casing',
+        type: 'line',
+        source: 'ski-links-src',
+        paint: {
+          'line-color': '#064e3b',
+          'line-width': 5.5,
+          'line-opacity': 0.75
+        }
+      });
+
+      map.addLayer({
+        id: 'ski-links-line',
+        type: 'line',
+        source: 'ski-links-src',
+        paint: {
+          'line-color': '#10b981',
+          'line-width': 3.2,
+          'line-opacity': 0.95
+        }
+      });
+
+      map.addLayer({
+        id: 'bus-links-line',
+        type: 'line',
+        source: 'bus-links-src',
+        paint: {
+          'line-color': '#f59e0b',
+          'line-width': 2.8,
+          'line-dasharray': [2.2, 2.2],
+          'line-opacity': 0.95
+        }
+      });
+    }
+
+    function renderMapMarkers() {
+      if (!map) return;
+      Object.values(mapMarkers).forEach(m => m.remove());
+      mapMarkers = {};
+
+      const visibleResorts = getFilteredResorts();
+      visibleResorts.forEach(resort => {
+        const isSkied = !!state.skied[resort.id]?.checked;
+        const colorHex =
+          resort.connectionType === 'ski-linked'
+            ? '#10b981'
+            : resort.connectionType === 'shuttle'
+            ? '#f59e0b'
+            : '#0ea5e9';
+
+        const sizePx = resort.km >= 140 ? 28 : resort.km >= 50 ? 24 : 20;
+
+        const el = document.createElement('div');
+        el.className = 'ml-resort-marker';
+
+        const pin = document.createElement('div');
+        pin.className = `ml-pin-circle ${isSkied ? 'ml-pin-skied' : ''}`;
+        pin.style.width = `${sizePx}px`;
+        pin.style.height = `${sizePx}px`;
+        pin.style.backgroundColor = colorHex;
+        pin.innerHTML = isSkied ? '✓' : resort.isGlacier ? '❄' : '';
+
+        const label = document.createElement('div');
+        label.className = 'ml-pin-label';
+        label.textContent = resort.name.split('(')[0].trim();
+        label.style.display = state.showPinLabels ? 'block' : 'none';
+
+        el.appendChild(pin);
+        el.appendChild(label);
+
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          openResortPopup(resort);
+          highlightSidebarCard(resort.id);
+        });
+
+        const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
+          .setLngLat([resort.lng, resort.lat])
+          .addTo(map);
+
+        mapMarkers[resort.id] = marker;
+      });
+    }
+
+    function openResortPopup(resort) {
+      if (!map) return;
+      if (activePopup) activePopup.remove();
+
+      const entry = state.skied[resort.id] || {};
+      const isSkied = !!entry.checked;
+      const gmapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resort.name + ' Austria')}`;
+
+      const badgeColor =
+        resort.connectionType === 'ski-linked'
+          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+          : resort.connectionType === 'shuttle'
+          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+          : 'bg-sky-500/20 text-sky-300 border-sky-500/40';
+
+      const html = `
+        <div class="bg-slate-900 text-white p-3.5 text-xs">
+          <div class="pr-5">
+            <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${badgeColor} mb-1">
+              ${resort.region} · ${resort.km} km
+            </span>
+            <h3 class="text-sm font-extrabold text-white leading-snug">${resort.name}</h3>
+            <p class="text-[11px] text-slate-400 mt-0.5">${resort.elevation}${resort.isGlacier ? ' · ❄️ Glacier' : ''}</p>
+          </div>
+          <p class="text-[11px] text-slate-200 mt-2 leading-relaxed">${resort.highlights}</p>
+          <div class="mt-2 p-2 rounded-lg bg-slate-800/90 border border-slate-700 text-[10px] text-sky-200">
+            <strong>Connection:</strong> ${resort.connectionNote}
+          </div>
+          <div class="mt-3 flex items-center gap-2">
+            <button onclick="toggleResortSkied('${resort.id}', true)" class="flex-1 py-2 px-3 rounded-xl font-bold text-xs transition ${
+              isSkied
+                ? 'bg-amber-400 text-slate-950 hover:bg-amber-300'
+                : 'bg-sky-600 text-white hover:bg-sky-500'
+            }">
+              ${isSkied ? '✓ Skied (Undo)' : '+ Mark as Skied'}
+            </button>
+            <a href="${gmapsUrl}" target="_blank" rel="noopener" class="py-2 px-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-[11px]">
+              Maps ↗
+            </a>
+          </div>
+        </div>
+      `;
+
+      activePopup = new maplibregl.Popup({ offset: 18, closeButton: true })
+        .setLngLat([resort.lng, resort.lat])
+        .setHTML(html)
+        .addTo(map);
+    }
+
+    // =========================================================================
+    // 4. 3D CAMERA & LAYER CONTROLS
+    // =========================================================================
+    function setBasemap(mode) {
+      state.basemap = mode;
+      ['hybrid', 'topo', 'osm'].forEach(key => {
+        const btn = document.getElementById(`bm-btn-${key}`);
+        const mobBtn = document.getElementById(`mob-bm-${key}`);
+        if (btn) {
+          btn.className =
+            key === mode
+              ? 'px-2.5 py-1.5 rounded-lg bg-sky-600 text-white transition'
+              : 'px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white transition';
+        }
+        if (mobBtn) {
+          mobBtn.className =
+            key === mode
+              ? 'px-2 py-1 rounded-lg bg-sky-600 text-white'
+              : 'px-2 py-1 rounded-lg text-slate-300';
+        }
+      });
+
+      if (!mapLoaded) return;
+      map.setLayoutProperty('layer-satellite', 'visibility', mode === 'hybrid' ? 'visible' : 'none');
+      map.setLayoutProperty('layer-satellite-labels', 'visibility', mode === 'hybrid' ? 'visible' : 'none');
+      map.setLayoutProperty('layer-topo', 'visibility', mode === 'topo' ? 'visible' : 'none');
+      map.setLayoutProperty('layer-osm', 'visibility', mode === 'osm' ? 'visible' : 'none');
+    }
+
+    function toggle3DMode() {
+      state.is3D = !state.is3D;
+      const btn = document.getElementById('btn-3d-toggle');
+      const lbl = document.getElementById('label-3d-toggle');
+      if (state.is3D) {
+        btn.className = 'px-2.5 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold flex items-center gap-1.5 transition';
+        lbl.textContent = '3D View ON';
+        if (mapLoaded) {
+          map.setTerrain({ source: 'terrain-dem', exaggeration: state.exaggeration });
+          map.easeTo({ pitch: 58, duration: 700 });
+        }
+      } else {
+        btn.className = 'px-2.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold flex items-center gap-1.5 transition';
+        lbl.textContent = '2D Top-Down';
+        if (mapLoaded) {
+          map.setTerrain(null);
+          map.easeTo({ pitch: 0, bearing: 0, duration: 700 });
+        }
+      }
+    }
+
+    function setExaggeration(val) {
+      state.exaggeration = val;
+      [1.0, 1.45, 1.8].forEach(v => {
+        const el = document.getElementById(`exag-${v.toFixed(1).replace('.0', '.0')}`);
+        if (el) {
+          el.className =
+            v === val
+              ? 'px-1.5 py-1 rounded-lg bg-emerald-600 text-white transition'
+              : 'px-1.5 py-1 rounded-lg text-slate-300 hover:text-white transition';
+        }
+      });
+      if (mapLoaded && state.is3D) {
+        map.setTerrain({ source: 'terrain-dem', exaggeration: val });
+      }
+    }
+
+    function rotateCamera(delta) {
+      if (!map) return;
+      map.easeTo({ bearing: map.getBearing() + delta, duration: 400 });
+    }
+
+    function resetNorth() {
+      if (!map) return;
+      map.easeTo({ bearing: 0, duration: 500 });
+    }
+
+    function togglePistesLayer(checked) {
+      state.showPistes = checked;
+      if (mapLoaded) {
+        map.setLayoutProperty('layer-opensnowmap', 'visibility', checked ? 'visible' : 'none');
+      }
+    }
+
+    function togglePinLabels(checked) {
+      state.showPinLabels = checked;
+      document.querySelectorAll('.ml-pin-label').forEach(el => {
+        el.style.display = checked ? 'block' : 'none';
+      });
+    }
+
+    function toggleConnectionLayers() {
+      if (!mapLoaded) return;
+      const showSki = document.getElementById('toggle-ski-lines').checked;
+      const showBus = document.getElementById('toggle-bus-lines').checked;
+      map.setLayoutProperty('ski-links-casing', 'visibility', showSki ? 'visible' : 'none');
+      map.setLayoutProperty('ski-links-line', 'visibility', showSki ? 'visible' : 'none');
+      map.setLayoutProperty('bus-links-line', 'visibility', showBus ? 'visible' : 'none');
+    }
+
+    function fitTyrol3D() {
+      if (!map) return;
+      map.flyTo({
+        center: [11.42, 47.26],
+        zoom: 8.6,
+        pitch: state.is3D ? 54 : 0,
+        bearing: -8,
+        duration: 1100
+      });
+    }
+
+    function flyToValley(key) {
+      if (!map) return;
+      const views = {
+        zillertal: { center: [11.88, 47.21], zoom: 11.2, pitch: 62, bearing: -15 },
+        kitz: { center: [12.31, 47.46], zoom: 11.0, pitch: 60, bearing: 12 },
+        paznaun: { center: [10.42, 47.01], zoom: 10.7, pitch: 62, bearing: -20 },
+        oetztal: { center: [11.05, 47.02], zoom: 10.4, pitch: 62, bearing: 10 },
+        osttirol: { center: [12.56, 46.92], zoom: 10.2, pitch: 60, bearing: -10 }
+      };
+      const v = views[key];
+      if (v) {
+        map.flyTo({
+          center: v.center,
+          zoom: v.zoom,
+          pitch: state.is3D ? v.pitch : 0,
+          bearing: v.bearing,
+          duration: 1200
+        });
+      }
+    }
+
+    function flyToResort(resortId) {
+      const resort = RESORTS.find(r => r.id === resortId);
+      if (!resort) return;
+      if (window.innerWidth < 768) setMobileTab('map');
+      if (map) {
+        map.flyTo({
+          center: [resort.lng, resort.lat],
+          zoom: 12.6,
+          pitch: state.is3D ? 64 : 0,
+          duration: 1100
+        });
+        setTimeout(() => openResortPopup(resort), 450);
+      }
+    }
+
+    // =========================================================================
+    // 5. CHECKLIST INTERACTION, FILTERING & STATS
+    // =========================================================================
+    function getFilteredResorts() {
+      const q = state.search.trim().toLowerCase();
+      return RESORTS.filter(r => {
+        const isSkied = !!state.skied[r.id]?.checked;
+        if (state.filter === 'skied' && !isSkied) return false;
+        if (state.filter === 'unskied' && isSkied) return false;
+        if (state.filter === 'ski-linked' && r.connectionType !== 'ski-linked') return false;
+        if (state.filter === 'shuttle' && r.connectionType !== 'shuttle') return false;
+        if (state.filter === 'glacier' && !r.isGlacier) return false;
+
+        if (q) {
+          const circuit = CIRCUITS.find(c => c.id === r.circuitId);
+          const hay = `${r.name} ${r.region} ${r.connectionNote} ${r.highlights} ${circuit ? circuit.name : ''}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    function toggleResortSkied(resortId, refreshPopup = false) {
+      const current = state.skied[resortId];
+      if (current && current.checked) {
+        delete state.skied[resortId];
+        showToast('Removed from skied list');
+      } else {
+        const today = new Date().toISOString().split('T')[0];
+        state.skied[resortId] = {
+          checked: true,
+          date: current?.date || today,
+          note: current?.note || ''
+        };
+        const resort = RESORTS.find(r => r.id === resortId);
+        showToast(`Checked off: ${resort ? resort.name.split('(')[0].trim() : 'Resort'}!`);
+      }
+      saveState();
+      updateStats();
+      renderSidebar();
+      renderMapMarkers();
+
+      if (refreshPopup) {
+        const resort = RESORTS.find(r => r.id === resortId);
+        if (resort) openResortPopup(resort);
+      }
+    }
+
+    function updateResortMeta(resortId, field, value) {
+      if (!state.skied[resortId]) {
+        state.skied[resortId] = { checked: true, date: '', note: '' };
+      }
+      state.skied[resortId][field] = value;
+      saveState();
+      updateStats();
+    }
+
+    function toggleResortDrawer(resortId) {
+      state.expandedResorts[resortId] = !state.expandedResorts[resortId];
+      renderSidebar();
+    }
+
+    function toggleClusterCollapse(clusterKey) {
+      state.collapsedClusters[clusterKey] = !state.collapsedClusters[clusterKey];
+      renderSidebar();
+    }
+
+    function highlightSidebarCard(resortId) {
+      const resort = RESORTS.find(r => r.id === resortId);
+      if (resort && state.groupMode === 'combos') {
+        state.collapsedClusters[resort.circuitId] = false;
+      }
+      state.expandedResorts[resortId] = true;
+      renderSidebar();
+      setTimeout(() => {
+        const card = document.getElementById(`card-${resortId}`);
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          card.classList.add('highlight-pulse');
+          setTimeout(() => card.classList.remove('highlight-pulse'), 1700);
+        }
+      }, 60);
+    }
+
+    function updateStats() {
+      const skiedIds = Object.keys(state.skied).filter(id => state.skied[id]?.checked);
+      const total = RESORTS.length;
+      const pct = total ? Math.round((skiedIds.length / total) * 100) : 0;
+
+      // Sum unique circuit/standalone km where at least one entry point is skied
+      let totalKm = 0;
+      const countedCircuits = new Set();
+      skiedIds.forEach(id => {
+        const r = RESORTS.find(item => item.id === id);
+        if (!r) return;
+        if (r.circuitId === 'standalone') {
+          totalKm += r.km;
+        } else if (!countedCircuits.has(r.circuitId)) {
+          countedCircuits.add(r.circuitId);
+          const c = CIRCUITS.find(item => item.id === r.circuitId);
+          totalKm += c ? c.totalKm : r.km;
+        }
+      });
+
+      const comboCircuits = CIRCUITS.filter(c => c.id !== 'standalone');
+      const completedCombos = comboCircuits.filter(c => {
+        const members = RESORTS.filter(r => r.circuitId === c.id);
+        return members.length > 0 && members.every(m => state.skied[m.id]?.checked);
+      }).length;
+
+      document.getElementById('stat-skied-count').textContent = skiedIds.length;
+      document.getElementById('stat-total-count').textContent = `/ ${total} Skied`;
+      document.getElementById('stat-progress-bar').style.width = `${pct}%`;
+      document.getElementById('stat-km-count').textContent = `${totalKm.toLocaleString()} km`;
+      document.getElementById('stat-circuits-count').textContent = `${completedCombos} / ${comboCircuits.length}`;
+    }
+
+    // =========================================================================
+    // 6. SIDEBAR RENDERING (SAME-DAY COMBOS, REGIONS, A-Z)
+    // =========================================================================
+    function renderResortCard(resort) {
+      const entry = state.skied[resort.id] || {};
+      const isSkied = !!entry.checked;
+      const isExpanded = !!state.expandedResorts[resort.id];
+      const gmapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resort.name + ' Austria')}`;
+
+      const badgeHtml =
+        resort.connectionType === 'ski-linked'
+          ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">🔗 Ski-Linked</span>`
+          : resort.connectionType === 'shuttle'
+          ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">🚌 Bus Combo</span>`
+          : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-700 border border-sky-200">🏔️ Standalone</span>`;
+
+      return `
+        <div id="card-${resort.id}" class="rounded-xl border transition-all ${
+          isSkied
+            ? 'bg-amber-50/60 border-amber-300 shadow-sm'
+            : 'bg-white border-slate-200 hover:border-slate-300'
+        }">
+          <div class="p-2.5 sm:p-3 flex items-start gap-2.5">
+            <!-- Custom Checkbox -->
+            <button
+              onclick="toggleResortSkied('${resort.id}')"
+              aria-label="Mark ${resort.name} as skied"
+              class="mt-0.5 w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition ${
+                isSkied
+                  ? 'bg-amber-400 border-amber-500 text-slate-950 shadow-sm'
+                  : 'bg-slate-50 border-slate-300 hover:border-sky-500 text-transparent'
+              }"
+            >
+              <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+            </button>
+
+            <!-- Main Resort Summary -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2">
+                <button onclick="flyToResort('${resort.id}')" class="text-left group">
+                  <h4 class="text-xs sm:text-sm font-bold leading-snug group-hover:text-sky-600 transition ${
+                    isSkied ? 'text-slate-900' : 'text-slate-800'
+                  }">
+                    ${resort.name}
+                  </h4>
+                </button>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button onclick="flyToResort('${resort.id}')" title="Fly to 3D Mountain View" class="p-1.5 rounded-lg bg-slate-100 hover:bg-sky-100 text-slate-600 hover:text-sky-700 transition">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button onclick="toggleResortDrawer('${resort.id}')" title="Details, Date & Trip Notes" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">
+                    <i data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Metadata Pills -->
+              <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                ${badgeHtml}
+                <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                  ${resort.km} km
+                </span>
+                <span class="text-[11px] text-slate-500">
+                  ${resort.elevation}
+                </span>
+                ${
+                  resort.isGlacier
+                    ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-100 text-sky-800">❄️ Glacier</span>`
+                    : ''
+                }
+                ${
+                  isSkied && entry.date
+                    ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-950">✓ ${entry.date}</span>`
+                    : ''
+                }
+              </div>
+
+              <!-- Quick Connection Line -->
+              <p class="text-[11px] text-slate-600 mt-1.5 leading-snug">
+                ${resort.connectionNote}
+              </p>
+            </div>
+          </div>
+
+          <!-- Expandable Details, Date & Personal Notes Drawer -->
+          ${
+            isExpanded
+              ? `
+            <div class="px-3 pb-3 pt-2 border-t border-slate-200/80 bg-slate-50/80 rounded-b-xl space-y-2.5 text-xs">
+              <p class="text-slate-700 leading-relaxed">${resort.highlights}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Date Skied</label>
+                  <input
+                    type="date"
+                    value="${entry.date || ''}"
+                    onchange="updateResortMeta('${resort.id}', 'date', this.value)"
+                    class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  />
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Trip Notes / Best Runs</label>
+                  <input
+                    type="text"
+                    value="${(entry.note || '').replace(/"/g, '&quot;')}"
+                    placeholder="e.g. Parked at Gondola, great powder..."
+                    oninput="updateResortMeta('${resort.id}', 'note', this.value)"
+                    class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  />
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-[11px] text-slate-500">Region: <strong>${resort.region}</strong></span>
+                <a href="${gmapsUrl}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[11px] font-semibold text-sky-600 hover:text-sky-800">
+                  Open in Google Maps <i data-lucide="external-link" class="w-3 h-3"></i>
+                </a>
+              </div>
+            </div>
+          `
+              : ''
+          }
+        </div>
+      `;
+    }
+
+    function renderSidebar() {
+      const container = document.getElementById('resort-list-container');
+      const filtered = getFilteredResorts();
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-2">
+            <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+              <i data-lucide="search-x" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800">No resorts match your filter</h3>
+            <p class="text-xs text-slate-500">Try clearing your search term or switching back to "All (56)".</p>
+            <button onclick="resetFilters()" class="mt-2 px-3.5 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-semibold">
+              Reset Filters
+            </button>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      if (state.groupMode === 'az') {
+        const sorted = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+        container.innerHTML = `<div class="space-y-2">${sorted.map(renderResortCard).join('')}</div>`;
+      } else if (state.groupMode === 'region') {
+        const regions = [...new Set(filtered.map(r => r.region))];
+        container.innerHTML = regions
+          .map(reg => {
+            const members = filtered.filter(r => r.region === reg);
+            const skiedCount = members.filter(r => state.skied[r.id]?.checked).length;
+            const collapsed = !!state.collapsedClusters[`reg-${reg}`];
+            return `
+              <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                <button onclick="toggleClusterCollapse('reg-${reg.replace(/'/g, "\\'")}')" class="w-full px-3.5 py-2.5 bg-slate-900 text-white flex items-center justify-between text-left">
+                  <div>
+                    <h3 class="text-xs sm:text-sm font-extrabold">${reg}</h3>
+                    <p class="text-[11px] text-slate-400">${skiedCount} / ${members.length} skied</p>
+                  </div>
+                  <i data-lucide="${collapsed ? 'chevron-down' : 'chevron-up'}" class="w-4 h-4 text-slate-400"></i>
+                </button>
+                ${
+                  collapsed
+                    ? ''
+                    : `<div class="p-2.5 space-y-2 bg-slate-50/60">${members.map(renderResortCard).join('')}</div>`
+                }
+              </div>
+            `;
+          })
+          .join('');
+      } else {
+        // Default: Same-Day Interconnected Circuits & Bus Combos
+        container.innerHTML = CIRCUITS.map(circuit => {
+          const members = filtered.filter(r => r.circuitId === circuit.id);
+          if (members.length === 0) return '';
+          const skiedCount = members.filter(r => state.skied[r.id]?.checked).length;
+          const collapsed = !!state.collapsedClusters[circuit.id];
+
+          const headerAccent =
+            circuit.type === 'ski-linked'
+              ? 'border-l-4 border-l-emerald-500'
+              : circuit.type === 'shuttle'
+              ? 'border-l-4 border-l-amber-500'
+              : 'border-l-4 border-l-sky-500';
+
+          return `
+            <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm ${headerAccent}">
+              <div onclick="toggleClusterCollapse('${circuit.id}')" class="p-3 bg-slate-900 text-white cursor-pointer select-none">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1 ${
+                      circuit.type === 'ski-linked'
+                        ? 'bg-emerald-500/20 text-emerald-300'
+                        : circuit.type === 'shuttle'
+                        ? 'bg-amber-500/20 text-amber-300'
+                        : 'bg-sky-500/20 text-sky-300'
+                    }">
+                      ${circuit.badge}
+                    </span>
+                    <h3 class="text-xs sm:text-sm font-extrabold leading-snug">${circuit.name}</h3>
+                  </div>
+                  <div class="flex items-center gap-2 shrink-0">
+                    <span class="text-xs font-extrabold px-2 py-0.5 rounded-lg bg-slate-800 text-amber-400 border border-slate-700">
+                      ${skiedCount}/${members.length}
+                    </span>
+                    <i data-lucide="${collapsed ? 'chevron-down' : 'chevron-up'}" class="w-4 h-4 text-slate-400"></i>
+                  </div>
+                </div>
+                <p class="text-[11px] text-slate-300 mt-1.5 leading-relaxed">${circuit.summary}</p>
+                <div class="mt-2 px-2.5 py-1.5 rounded-xl bg-slate-800/90 border border-slate-700/80 text-[11px] text-sky-200">
+                  💡 ${circuit.connectionTip}
+                </div>
+              </div>
+              ${
+                collapsed
+                  ? ''
+                  : `<div class="p-2.5 space-y-2 bg-slate-50/70">${members.map(renderResortCard).join('')}</div>`
+              }
+            </div>
+          `;
+        }).join('');
+      }
+
+      lucide.createIcons();
+    }
+
+    // =========================================================================
+    // 7. FILTER, SEARCH, MOBILE TABS & BACKUP CONTROLS
+    // =========================================================================
+    function setGroupMode(mode) {
+      state.groupMode = mode;
+      ['combos', 'region', 'az'].forEach(m => {
+        const btn = document.getElementById(`mode-${m}`);
+        if (btn) {
+          btn.className =
+            m === mode
+              ? 'py-1.5 px-2 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition flex items-center justify-center gap-1'
+              : 'py-1.5 px-2 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition flex items-center justify-center gap-1';
+        }
+      });
+      renderSidebar();
+    }
+
+    function setFilter(f) {
+      state.filter = f;
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-sky-500', 'bg-slate-900', 'text-white');
+      });
+      const active = document.getElementById(`filter-${f}`);
+      if (active) {
+        if (f === 'all') {
+          active.classList.add('bg-slate-900', 'text-white');
+        } else {
+          active.classList.add('ring-2', 'ring-sky-500');
+        }
+      }
+      renderSidebar();
+      renderMapMarkers();
+    }
+
+    function handleSearch(val) {
+      state.search = val;
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (val.trim()) clearBtn.classList.remove('hidden');
+      else clearBtn.classList.add('hidden');
+      renderSidebar();
+      renderMapMarkers();
+    }
+
+    function clearSearch() {
+      document.getElementById('search-input').value = '';
+      handleSearch('');
+    }
+
+    function resetFilters() {
+      clearSearch();
+      setFilter('all');
+    }
+
+    function setMobileTab(tab) {
+      const sidebar = document.getElementById('sidebar-panel');
+      const mapPanel = document.getElementById('map-panel');
+      const tabList = document.getElementById('mob-tab-list');
+      const tabMap = document.getElementById('mob-tab-map');
+
+      if (tab === 'list') {
+        sidebar.classList.remove('hidden');
+        mapPanel.classList.add('hidden');
+        tabList.className = 'flex-1 py-2 text-xs font-semibold flex items-center justify-center gap-1.5 border-b-2 border-sky-400 text-sky-300 bg-slate-800/50';
+        tabMap.className = 'flex-1 py-2 text-xs font-semibold flex items-center justify-center gap-1.5 border-b-2 border-transparent text-slate-400';
+      } else {
+        sidebar.classList.add('hidden');
+        mapPanel.classList.remove('hidden');
+        tabMap.className = 'flex-1 py-2 text-xs font-semibold flex items-center justify-center gap-1.5 border-b-2 border-sky-400 text-sky-300 bg-slate-800/50';
+        tabList.className = 'flex-1 py-2 text-xs font-semibold flex items-center justify-center gap-1.5 border-b-2 border-transparent text-slate-400';
+        if (map) setTimeout(() => map.resize(), 60);
+      }
+    }
+
+    function toggleSidebarCollapse() {
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+      const sidebar = document.getElementById('sidebar-panel');
+      const icon = document.getElementById('collapse-icon');
+      if (state.sidebarCollapsed) {
+        sidebar.classList.add('md:hidden');
+        icon.setAttribute('data-lucide', 'panel-left-open');
+      } else {
+        sidebar.classList.remove('md:hidden');
+        icon.setAttribute('data-lucide', 'panel-left-close');
+      }
+      lucide.createIcons();
+      if (map) setTimeout(() => map.resize(), 120);
+    }
+
+    function exportProgress() {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        season: '2026/27',
+        skied: state.skied
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `snow-card-tirol-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Exported JSON backup!');
+    }
+
+    function importProgress(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed && typeof parsed.skied === 'object') {
+            state.skied = parsed.skied;
+            saveState();
+            updateStats();
+            renderSidebar();
+            renderMapMarkers();
+            showToast('Backup imported successfully!');
+          }
+        } catch (err) {
+          showToast('Invalid JSON backup file');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function openResetModal() {
+      document.getElementById('reset-modal').classList.remove('hidden');
+    }
+
+    function closeResetModal() {
+      document.getElementById('reset-modal').classList.add('hidden');
+    }
+
+    function confirmResetProgress() {
+      state.skied = {};
+      saveState();
+      updateStats();
+      renderSidebar();
+      renderMapMarkers();
+      closeResetModal();
+      showToast('All skied progress cleared');
+    }
+
+    // =========================================================================
+    // 8. BOOTSTRAP ON LOAD
     // =========================================================================
     window.addEventListener('DOMContentLoaded', () => {
       initPwaAssets();
