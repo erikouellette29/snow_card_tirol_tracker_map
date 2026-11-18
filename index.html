@@ -160,7 +160,7 @@
             Snow Card Tirol 2026/27 — 3D Piste &amp; Circuit Tracker
           </h1>
           <span class="hidden xl:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-            66 Audited Peaks &bull; Winter Sat 3D + Slope DEM
+            <span id="header-peak-count">66</span>&nbsp;Audited Peaks &bull; Winter Sat 3D + Slope DEM
           </span>
         </div>
         <p class="text-[11px] text-slate-400 hidden sm:block truncate">
@@ -2921,6 +2921,10 @@
 
       document.getElementById('stat-skied-count').textContent = skiedCount;
       document.getElementById('stat-total-count').textContent = `/ ${totalCount} Skied`;
+      const headerCount = document.getElementById('header-peak-count');
+      if (headerCount) headerCount.textContent = totalCount;
+      const allPill = document.getElementById('pill-filter-all');
+      if (allPill) allPill.textContent = `All (${totalCount})`;
       document.getElementById('stat-progress-bar').style.width = `${pct}%`;
 
       const countedCircuits = new Set();
