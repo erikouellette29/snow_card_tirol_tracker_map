@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Snow Card Tirol 2026/27 — 3D Piste &amp; Circuit Tracker</title>
 
+  <!-- Browser Tab Favicon (Replaces the generic grey globe icon with the Tyrolean Red/White Eagle Crest) -->
+  <link id="favicon-svg" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23dc2626'/%3E%3Cpath fill='%23ffffff' d='M32 9l-2.6 3.2-2.4-2v4.3h10v-4.3l-2.4 2L32 9zm-5.2 7.2c-1.8 0-3.8.8-4.8 2.2l3.8 1.1c-.4 1.3-.3 2.8.4 4.2-3.4-2.8-8.2-6.1-14.2-7.5l2.5 4.2-4.8-.3 3.7 3.8-4.7.8 4.4 3.1-4.1 1.7 5.2 2-3.3 2.5 5.6.8-2.2 3.1 6-.5c1.8 1.5 4 2.4 6.1 2.7l-3.6 5.2-4.2-.6 2.6 2.8-3.6 1.5 4.5.9-1.2 3.6 4.4-2.4 2.7-4.8c.5.1 1 .2 1.5.2l-2.1 6.2 2.1-1.6L32 56l2.1-2.8 2.1 1.6-2.1-6.2c.5 0 1-.1 1.5-.2l2.7 4.8 4.4 2.4-1.2-3.6 4.5-.9-3.6-1.5 2.6-2.8-4.2.6-3.6-5.2c2.1-.3 4.3-1.2 6.1-2.7l6 .5-2.2-3.1 5.6-.8-3.3-2.5 5.2-2-4.1-1.7 4.4-3.1-4.7-.8 3.7-3.8-4.8.3 2.5-4.2c-6 1.4-10.8 4.7-14.2 7.5.7-1.4.8-2.9.4-4.2l1.8-.5c.9-.3 1.4-1.2 1.1-2.1-.4-1.3-1.8-2.2-3.7-2.2h-4.6z'/%3E%3C/svg%3E" />
+
   <!-- iOS & Android Home Screen App Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -144,10 +147,12 @@
 
   <!-- TOP HEADER BAR -->
   <header class="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-5 py-2.5 bg-slate-900 border-b border-slate-800 z-30 shrink-0">
-    <!-- Brand & Title -->
+    <!-- Brand & Title (Snow Card Tirol Red & White Eagle Emblem) -->
     <div class="flex items-center gap-2.5 min-w-0">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-400 via-blue-500 to-emerald-400 flex items-center justify-center shadow-lg shadow-sky-500/20 shrink-0">
-        <i data-lucide="mountain-snow" class="w-5 h-5 text-slate-950 stroke-[2.4]"></i>
+      <div class="w-9 h-9 rounded-xl bg-red-600 border border-red-400/50 flex items-center justify-center shadow-lg shadow-red-600/25 shrink-0 p-1">
+        <svg viewBox="0 0 64 64" class="w-full h-full" aria-hidden="true">
+          <path fill="#ffffff" d="M32 7l-2.7 3.3-2.5-2.1v4.5h10.4v-4.5l-2.5 2.1L32 7zm-5.4 7.5c-1.9 0-4 .8-5 2.3l4 1.1c-.4 1.4-.3 2.9.4 4.4-3.5-2.9-8.5-6.4-14.8-7.8l2.6 4.4-5-.3 3.9 4-4.9.8 4.6 3.2-4.3 1.8 5.4 2.1-3.4 2.6 5.8.8-2.3 3.2 6.2-.5c1.9 1.6 4.2 2.5 6.4 2.8l-3.7 5.4-4.4-.6 2.7 2.9-3.7 1.6 4.7.9-1.3 3.8 4.6-2.5 2.8-5c.5.1 1 .2 1.6.2l-2.2 6.5 2.2-1.7L32 57l2.2-2.9 2.2 1.7-2.2-6.5c.6 0 1.1-.1 1.6-.2l2.8 5 4.6 2.5-1.3-3.8 4.7-.9-3.7-1.6 2.7-2.9-4.4.6-3.7-5.4c2.2-.3 4.5-1.2 6.4-2.8l6.2.5-2.3-3.2 5.8-.8-3.4-2.6 5.4-2.1-4.3-1.8 4.6-3.2-4.9-.8 3.9-4-5 .3 2.6-4.4c-6.3 1.4-11.3 4.9-14.8 7.8.7-1.5.8-3 .4-4.4l1.9-.5c.9-.3 1.5-1.3 1.1-2.2-.4-1.4-1.9-2.3-3.8-2.3h-4.8z"/>
+        </svg>
       </div>
       <div class="min-w-0">
         <div class="flex items-center gap-2">
@@ -513,32 +518,26 @@
 
   <script>
     // =========================================================================
-    // 1. GENERATE IOS HOME SCREEN ICON (DYNAMIC PNG DATA URL FOR APPLE-TOUCH-ICON)
+    // 1. GENERATE TYROLEAN RED/WHITE EAGLE ICON (FAVICON + IOS HOME SCREEN ICON)
     // =========================================================================
     (function generateAppIcon() {
       try {
-        const c = document.createElement('canvas');
-        c.width = 180;
-        c.height = 180;
-        const ctx = c.getContext('2d');
-        const grad = ctx.createLinearGradient(0, 0, 180, 180);
-        grad.addColorStop(0, '#0284c7');
-        grad.addColorStop(1, '#10b981');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 180, 180);
-
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.moveTo(28, 140);
-        ctx.lineTo(78, 52);
-        ctx.lineTo(112, 102);
-        ctx.lineTo(132, 74);
-        ctx.lineTo(156, 140);
-        ctx.closePath();
-        ctx.fill();
-
-        const link = document.getElementById('apple-touch-icon');
-        if (link) link.href = c.toDataURL('image/png');
+        const svgDataUrl = document.getElementById('favicon-svg')?.href;
+        if (!svgDataUrl) return;
+        const img = new Image();
+        img.onload = () => {
+          const c = document.createElement('canvas');
+          c.width = 180;
+          c.height = 180;
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#dc2626';
+          ctx.fillRect(0, 0, 180, 180);
+          ctx.drawImage(img, 12, 12, 156, 156);
+          const pngUrl = c.toDataURL('image/png');
+          const appleLink = document.getElementById('apple-touch-icon');
+          if (appleLink) appleLink.href = pngUrl;
+        };
+        img.src = svgDataUrl;
       } catch (e) {}
     })();
 
