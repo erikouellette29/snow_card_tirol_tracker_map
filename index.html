@@ -1854,7 +1854,7 @@
     const STORAGE_KEY = 'snowCardTirol_2026_27_tracker_v1';
     const PASSPHRASE_KEY = 'snowCardTirol_2026_27_passphrase_v1';
     const DEFAULT_PASSPHRASE = 'erik26';
-    const CLOUD_BUCKET_URL = 'https://kvdb.io/A2m9XkP7vQ4nR8tL3wZ6yB';
+    const CLOUD_SYNC_HOST = 'https://ntfy.sh';
 
     let userProgress = loadProgress();
     let syncPassphrase = localStorage.getItem(PASSPHRASE_KEY) || DEFAULT_PASSPHRASE;
@@ -1876,18 +1876,18 @@
       return { skied: {}, deleted: {}, updatedAt: 0 };
     }
 
-    async function deriveBucketKey(phrase) {
+    async function deriveSyncTopic(phrase) {
       const normalized = (phrase || DEFAULT_PASSPHRASE).trim().toLowerCase();
       if (window.crypto && crypto.subtle) {
-        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('sct2026::' + normalized));
-        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('snowcardtirol2026::' + normalized));
+        return 'sct26-' + Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 28);
       }
       let h = 2166136261;
       for (let i = 0; i < normalized.length; i++) {
         h ^= normalized.charCodeAt(i);
         h = Math.imul(h, 16777619);
       }
-      return 'sct_' + (h >>> 0).toString(16);
+      return 'sct26-' + (h >>> 0).toString(16);
     }
 
     function saveProgress(skipCloudPush = false) {
@@ -1916,7 +1916,7 @@
       if (!syncPassphrase) return;
       setSyncDotState('syncing');
       clearTimeout(syncTimer);
-      syncTimer = setTimeout(() => pushToCloud(), 800);
+      syncTimer = setTimeout(() => pushToCloud(), 650);
     }
 
     function mergeProgressStates(localState, remoteState) {
@@ -1954,10 +1954,13 @@
       if (!syncPassphrase) return;
       try {
         setSyncDotState('syncing');
-        const key = await deriveBucketKey(syncPassphrase);
-        const res = await fetch(`${CLOUD_BUCKET_URL}/${key}`, {
+        const topic = await deriveSyncTopic(syncPassphrase);
+        const res = await fetch(`${CLOUD_SYNC_HOST}/${topic}`, {
           method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
+          headers: {
+            'Content-Type': 'text/plain',
+            'Title': 'SCT26 Sync'
+          },
           body: JSON.stringify(userProgress)
         });
         if (!res.ok) throw new Error('Push failed');
@@ -1975,32 +1978,48 @@
       if (!syncPassphrase) return;
       try {
         setSyncDotState('syncing');
-        const key = await deriveBucketKey(syncPassphrase);
-        const res = await fetch(`${CLOUD_BUCKET_URL}/${key}?t=${Date.now()}`);
-        if (res.status === 404) {
-          await pushToCloud();
-          if (!silent) showToast(`Synced "${syncPassphrase}"!`);
-          return;
-        }
+        const topic = await deriveSyncTopic(syncPassphrase);
+        const res = await fetch(`${CLOUD_SYNC_HOST}/${topic}/json?poll=1&since=all`);
         if (!res.ok) throw new Error('Pull failed');
-        const remote = await res.json();
-        if (remote && typeof remote === 'object') {
+        const text = await res.text();
+        const lines = text.trim().split('\n').filter(Boolean);
+
+        let latestRemote = null;
+        for (let i = lines.length - 1; i >= 0; i--) {
+          try {
+            const evt = JSON.parse(lines[i]);
+            if (evt && evt.event === 'message' && evt.message) {
+              const parsed = JSON.parse(evt.message);
+              if (parsed && typeof parsed === 'object' && parsed.skied) {
+                latestRemote = parsed;
+                break;
+              }
+            }
+          } catch (err) {}
+        }
+
+        if (latestRemote) {
           const beforeStr = JSON.stringify(userProgress.skied || {});
-          userProgress = mergeProgressStates(userProgress, remote);
+          userProgress = mergeProgressStates(userProgress, latestRemote);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
           updateStats();
           updateMarkerStyles();
           renderSidebar();
-          if (JSON.stringify(remote.skied || {}) !== JSON.stringify(userProgress.skied || {}) || beforeStr !== JSON.stringify(remote.skied || {})) {
+          if (JSON.stringify(latestRemote.skied || {}) !== JSON.stringify(userProgress.skied || {}) || beforeStr !== JSON.stringify(userProgress.skied || {})) {
             await pushToCloud();
           }
+        } else if (Object.keys(userProgress.skied || {}).length > 0) {
+          await pushToCloud();
         }
+
         setSyncDotState('synced');
         const statusEl = document.getElementById('sync-modal-status');
         if (statusEl) statusEl.textContent = `Synced (${syncPassphrase}) at ` + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         if (!silent) showToast(`Synced (${syncPassphrase})!`);
       } catch (e) {
         setSyncDotState('error');
+        const statusEl = document.getElementById('sync-modal-status');
+        if (statusEl) statusEl.textContent = 'Offline — saved locally';
         if (!silent) showToast('Offline — saved locally until back online.');
       }
     }
