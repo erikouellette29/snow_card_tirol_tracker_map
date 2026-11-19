@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Snow Card Tirol 2026/27 — 3D Piste &amp; Circuit Tracker</title>
 
-  <!-- Browser Tab Favicon (Replaces the generic grey globe icon with the Tyrolean Red/White Eagle Crest) -->
+  <!-- Browser Tab Favicon (Tyrolean Red/White Eagle Crest) -->
   <link id="favicon-svg" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23dc2626'/%3E%3Cpath fill='%23ffffff' d='M32 9l-2.6 3.2-2.4-2v4.3h10v-4.3l-2.4 2L32 9zm-5.2 7.2c-1.8 0-3.8.8-4.8 2.2l3.8 1.1c-.4 1.3-.3 2.8.4 4.2-3.4-2.8-8.2-6.1-14.2-7.5l2.5 4.2-4.8-.3 3.7 3.8-4.7.8 4.4 3.1-4.1 1.7 5.2 2-3.3 2.5 5.6.8-2.2 3.1 6-.5c1.8 1.5 4 2.4 6.1 2.7l-3.6 5.2-4.2-.6 2.6 2.8-3.6 1.5 4.5.9-1.2 3.6 4.4-2.4 2.7-4.8c.5.1 1 .2 1.5.2l-2.1 6.2 2.1-1.6L32 56l2.1-2.8 2.1 1.6-2.1-6.2c.5 0 1-.1 1.5-.2l2.7 4.8 4.4 2.4-1.2-3.6 4.5-.9-3.6-1.5 2.6-2.8-4.2.6-3.6-5.2c2.1-.3 4.3-1.2 6.1-2.7l6 .5-2.2-3.1 5.6-.8-3.3-2.5 5.2-2-4.1-1.7 4.4-3.1-4.7-.8 3.7-3.8-4.8.3 2.5-4.2c-6 1.4-10.8 4.7-14.2 7.5.7-1.4.8-2.9.4-4.2l1.8-.5c.9-.3 1.4-1.2 1.1-2.1-.4-1.3-1.8-2.2-3.7-2.2h-4.6z'/%3E%3C/svg%3E" />
 
   <!-- iOS & Android Home Screen App Meta Tags -->
@@ -18,7 +18,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- MapLibre GL JS 4.7.1 (100% Keyless WebGL 3D Terrain & Blob-Safe URL Resolution) -->
+  <!-- MapLibre GL JS 4.7.1 -->
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
 
   <!-- Lucide Icons -->
@@ -41,7 +41,6 @@
       padding: 0;
     }
 
-    /* Custom Scrollbars */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: 9999px; }
@@ -50,7 +49,6 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* MapLibre Marker & Popup Customization */
     .maplibregl-popup-content {
       background: rgba(15, 23, 42, 0.96) !important;
       backdrop-filter: blur(14px);
@@ -74,7 +72,6 @@
       background: transparent !important;
     }
 
-    /* 3D Resort Pin Markers */
     .resort-pin-wrap {
       display: flex;
       flex-direction: column;
@@ -117,7 +114,6 @@
     .map-zoomed-out .resort-pin-label { display: none !important; }
     .map-zoomed-out .resort-pin-wrap:hover .resort-pin-label { display: block !important; }
 
-    /* Pulsing active selection ring */
     @keyframes pulseRing {
       0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.75); }
       70% { box-shadow: 0 0 0 11px rgba(56, 189, 248, 0); }
@@ -129,7 +125,6 @@
       transform: scale(1.18);
     }
 
-    /* MapLibre Navigation Controls Dark Styling */
     .maplibregl-ctrl-group {
       background: rgba(15, 23, 42, 0.9) !important;
       border: 1px solid rgba(148, 163, 184, 0.25) !important;
@@ -147,7 +142,6 @@
 
   <!-- TOP HEADER BAR -->
   <header class="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-5 py-2.5 bg-slate-900 border-b border-slate-800 z-30 shrink-0">
-    <!-- Brand & Title (Snow Card Tirol Red & White Eagle Emblem) -->
     <div class="flex items-center gap-2.5 min-w-0">
       <div class="w-9 h-9 rounded-xl bg-red-600 border border-red-400/50 flex items-center justify-center shadow-lg shadow-red-600/25 shrink-0 p-1">
         <svg viewBox="0 0 64 64" class="w-full h-full" aria-hidden="true">
@@ -160,7 +154,7 @@
             Snow Card Tirol 2026/27 — 3D Piste &amp; Circuit Tracker
           </h1>
           <span class="hidden xl:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-            <span id="header-peak-count">66</span>&nbsp;Audited Peaks &bull; Winter Sat 3D + Slope DEM
+            <span id="header-peak-count">73</span>&nbsp;Audited Peaks &bull; Winter Sat 3D + Slope DEM
           </span>
         </div>
         <p class="text-[11px] text-slate-400 hidden sm:block truncate">
@@ -169,14 +163,12 @@
       </div>
     </div>
 
-    <!-- Progress Counters + Layer & Sync Controls -->
     <div class="flex items-center gap-2 sm:gap-3 ml-auto">
-      <!-- Progress Pill -->
       <div class="flex items-center gap-2.5 bg-slate-800/90 border border-slate-700/80 rounded-xl px-3 py-1.5">
         <div>
           <div class="flex items-baseline gap-1">
             <span id="stat-skied-count" class="text-sm sm:text-base font-extrabold text-amber-400">0</span>
-            <span id="stat-total-count" class="text-xs text-slate-400">/ 66 Skied</span>
+            <span id="stat-total-count" class="text-xs text-slate-400">/ 73 Skied</span>
           </div>
           <div class="w-20 sm:w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden mt-1">
             <div id="stat-progress-bar" class="h-full bg-gradient-to-r from-amber-400 to-emerald-400 rounded-full transition-all duration-300" style="width: 0%"></div>
@@ -194,7 +186,6 @@
         </div>
       </div>
 
-      <!-- Base Layer Switcher (Desktop — Winter Sat 3D First) -->
       <div class="hidden md:flex items-center bg-slate-800/90 border border-slate-700/80 rounded-xl p-1 text-xs font-medium">
         <button onclick="setBaseStyle('wintersat')" id="btn-style-wintersat" class="px-2.5 py-1 rounded-lg bg-sky-500 text-slate-950 font-semibold transition">
           &#10052; Winter Sat
@@ -210,12 +201,11 @@
         </button>
       </div>
 
-      <!-- Cloud Sync & Backup Controls -->
       <div class="flex items-center gap-1">
-        <button onclick="openSyncModal()" id="btn-sync-status" title="Sync Progress Across Phone & Computer" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-xs font-semibold transition">
+        <button onclick="openSyncModal()" id="btn-sync-status" title="Auto Cloud Sync (erik26)" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-xs font-semibold transition">
           <i data-lucide="cloud" class="w-4 h-4"></i>
           <span class="hidden sm:inline">Sync</span>
-          <span id="sync-dot" class="w-2 h-2 rounded-full bg-slate-500"></span>
+          <span id="sync-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
         </button>
         <button onclick="exportProgress()" title="Download Progress Backup (JSON)" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition">
           <i data-lucide="download" class="w-4 h-4"></i>
@@ -244,12 +234,9 @@
   <!-- MAIN WORKSPACE SPLIT -->
   <main class="flex-1 flex overflow-hidden relative">
 
-    <!-- LEFT SIDEBAR: SEARCH, FILTERS, SAME-DAY CIRCUITS & CHECKLIST -->
+    <!-- LEFT SIDEBAR -->
     <aside id="sidebar-panel" class="w-full md:w-[430px] lg:w-[465px] bg-slate-50 text-slate-900 flex flex-col border-r border-slate-200/80 z-20 shrink-0 h-full">
-
-      <!-- Search & Filter Controls -->
       <div class="p-3 bg-white border-b border-slate-200 space-y-2.5 shrink-0">
-        <!-- Search Input -->
         <div class="relative">
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
           <input
@@ -264,7 +251,6 @@
           </button>
         </div>
 
-        <!-- Grouping Tabs -->
         <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
           <button onclick="setGroupMode('circuits')" id="tab-group-circuits" class="flex-1 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition">
             Same-Day Combos
@@ -277,10 +263,9 @@
           </button>
         </div>
 
-        <!-- Status & Connection Filter Pills -->
         <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar text-[11px] font-semibold">
           <button onclick="setFilterMode('all')" id="pill-filter-all" class="px-2.5 py-1 rounded-full bg-slate-900 text-white whitespace-nowrap transition">
-            All (66)
+            All (73)
           </button>
           <button onclick="setFilterMode('unskied')" id="pill-filter-unskied" class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 whitespace-nowrap transition">
             Unskied
@@ -300,17 +285,13 @@
         </div>
       </div>
 
-      <!-- Scrollable Resort & Combo List -->
-      <div id="resort-list-container" class="flex-1 overflow-y-auto p-3 space-y-3">
-        <!-- Populated dynamically by JS -->
-      </div>
+      <div id="resort-list-container" class="flex-1 overflow-y-auto p-3 space-y-3"></div>
     </aside>
 
-    <!-- RIGHT PANEL: FULL 3D TERRAIN + WINTER SATELLITE VIEWPORT -->
+    <!-- RIGHT PANEL: 3D TERRAIN VIEWPORT -->
     <section id="map-panel" class="hidden md:block flex-1 relative h-full bg-slate-950">
       <div id="map" class="w-full h-full"></div>
 
-      <!-- Map Error Diagnostic Banner (Hidden unless WebGL/Network fails) -->
       <div id="map-error-banner" class="hidden absolute inset-0 z-30 bg-slate-950/90 flex items-center justify-center p-6 text-center">
         <div class="max-w-sm bg-slate-900 border border-slate-700 rounded-2xl p-5 space-y-2">
           <p class="text-sm font-bold text-rose-400">3D Map Initialization Notice</p>
@@ -318,7 +299,7 @@
         </div>
       </div>
 
-      <!-- Top-Left Valley Quick-Jump Bar (Scrollable on Mobile) -->
+      <!-- Top-Left Valley Quick-Jump Bar -->
       <div class="absolute top-3 left-3 right-14 z-10 flex items-center gap-1.5 overflow-x-auto no-scrollbar pointer-events-auto">
         <button onclick="flyToOverview()" class="px-3 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white border border-slate-700/80 text-xs font-semibold shadow-lg backdrop-blur-md flex items-center gap-1.5 transition shrink-0">
           <i data-lucide="maximize-2" class="w-3.5 h-3.5 text-sky-400"></i> All Tyrol 3D
@@ -340,7 +321,7 @@
         </button>
       </div>
 
-      <!-- Mobile Map Layer Switcher (Winter Sat First) -->
+      <!-- Mobile Map Layer Switcher -->
       <div class="md:hidden absolute bottom-16 right-3 z-10 flex items-center bg-slate-900/90 border border-slate-700/80 rounded-xl p-1 text-[11px] font-semibold backdrop-blur-md shadow-xl">
         <button onclick="setBaseStyle('wintersat')" id="mob-style-wintersat" class="px-2 py-1 rounded-lg bg-sky-500 text-slate-950">Winter</button>
         <button onclick="setBaseStyle('satellite')" id="mob-style-satellite" class="px-2 py-1 rounded-lg text-slate-300">Sat</button>
@@ -374,13 +355,11 @@
 
       <!-- Bottom-Left Collapsible Legend & Overlay Toggles -->
       <div class="absolute bottom-4 left-3 z-10">
-        <!-- Collapsed Pill -->
         <button onclick="toggleLegend()" id="legend-collapsed-pill" class="hidden items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-xs font-semibold text-slate-200 shadow-xl backdrop-blur-md transition">
           <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-400"></i>
           <span>Key &amp; Overlays</span>
         </button>
 
-        <!-- Expanded Panel -->
         <div id="legend-panel" class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-3 shadow-xl backdrop-blur-md max-w-[300px] text-xs space-y-2">
           <div class="flex items-center justify-between gap-2">
             <span class="font-bold text-slate-200 uppercase tracking-wider text-[10px]">3D Overlays &amp; Piste Key</span>
@@ -390,7 +369,6 @@
             </button>
           </div>
 
-          <!-- Interactive Layer Checkboxes -->
           <div class="grid grid-cols-2 gap-1.5 pt-0.5 text-[11px]">
             <label class="flex items-center gap-1.5 cursor-pointer text-slate-200 hover:text-white">
               <input type="checkbox" id="chk-pistes" checked onchange="toggleLayerVisibility('pistes')" class="rounded accent-sky-500" />
@@ -420,7 +398,6 @@
             </div>
           </div>
 
-          <!-- CalTopo Avalanche Slope Angle Key (Visible in Slope Mode) -->
           <div id="slope-legend-box" class="hidden border-t border-slate-700/70 pt-2 space-y-1 text-[11px] text-slate-300">
             <div class="font-semibold text-amber-300 text-[10px] uppercase tracking-wider flex items-center justify-between">
               <span>Avalanche Slope Steepness</span>
@@ -461,7 +438,7 @@
     </section>
   </main>
 
-  <!-- CLOUD SYNC MODAL (DESKTOP <-> IPHONE SYNC) -->
+  <!-- AUTO CLOUD SYNC MODAL ('erik26') -->
   <div id="sync-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-4">
       <div class="flex items-center justify-between">
@@ -470,8 +447,8 @@
             <i data-lucide="cloud" class="w-4 h-4"></i>
           </div>
           <div>
-            <h3 class="text-sm font-extrabold text-white">Cross-Device Cloud Sync</h3>
-            <p class="text-[11px] text-slate-400">Sync checkmarks between Computer &amp; iPhone</p>
+            <h3 class="text-sm font-extrabold text-white">Auto Cloud Sync</h3>
+            <p class="text-[11px] text-slate-400">Synced automatically across all your bookmarks</p>
           </div>
         </div>
         <button onclick="closeSyncModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800">
@@ -479,31 +456,24 @@
         </button>
       </div>
 
-      <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-3 space-y-2">
-        <div class="text-[11px] font-semibold text-slate-300">Your Personal Sync Code:</div>
+      <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-3 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <label for="sync-passphrase-input" class="text-[11px] font-semibold text-slate-200">Active Sync Passphrase:</label>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">Auto-Sync ON</span>
+        </div>
         <div class="flex items-center gap-2">
-          <input id="sync-code-display" type="text" readonly class="flex-1 px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-xs font-mono text-sky-300 select-all outline-none" />
-          <button onclick="copySyncCode()" class="px-3 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold transition">
-            Copy
+          <input id="sync-passphrase-input" type="text" value="erik26" placeholder="erik26" class="flex-1 px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 focus:border-sky-500 text-xs font-mono text-sky-300 outline-none" />
+          <button onclick="savePassphraseAndSync()" class="px-3 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold transition">
+            Save
           </button>
         </div>
         <p class="text-[10.5px] text-slate-400 leading-relaxed">
-          Paste this same Sync Code on your other device so checkmarks, dates, and notes stay synced automatically.
+          Pre-set to <code class="text-sky-300 font-mono">erik26</code>. Every device with this page bookmarked automatically pulls and merges your checkmarks on load and whenever you check off a peak.
         </p>
       </div>
 
-      <div class="border-t border-slate-800 pt-3 space-y-2">
-        <label class="block text-[11px] font-semibold text-slate-300">Link an Existing Sync Code from Another Device:</label>
-        <div class="flex items-center gap-2">
-          <input id="sync-code-input" type="text" placeholder="Paste code (e.g. TIROL-XXXX-XXXX)..." class="flex-1 px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 focus:border-sky-500 text-xs font-mono text-white outline-none" />
-          <button onclick="linkSyncCode()" class="px-3 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition">
-            Link
-          </button>
-        </div>
-      </div>
-
       <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-[11px]">
-        <span id="sync-modal-status" class="text-slate-400">Ready</span>
+        <span id="sync-modal-status" class="text-emerald-400">Connected to erik26</span>
         <button onclick="forceCloudPushPull()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition">
           Sync Now
         </button>
@@ -542,127 +512,125 @@
     })();
 
     // =========================================================================
-    // 2. AUDITED SNOW CARD TIROL 2026/27 DATASET — 66 IN-BOUNDS LIFT SUMMIT PINS
-    //    (Fieberbrunn removed: Skicircus / Ski ALPIN CARD only; Zugspitzbahn
-    //     clarified as gondola-only; all pins verified on upper lift stations)
+    // 2. AUDITED SNOW CARD TIROL 2026/27 DATASET — ALL 73 IN-BOUNDS PEAKS
     // =========================================================================
     const CIRCUITS = [
       {
         id: 'skiwelt',
-        title: 'SkiWelt Wilder Kaiser – Brixental (100% Ski-Linked)',
-        badge: '270 km Lift-Linked Circuit',
+        title: 'SkiWelt Wilder Kaiser – Brixental (7 Sectors)',
+        badge: '100% Ski-Linked',
         badgeColor: 'emerald',
-        summary: 'All SkiWelt villages connect seamlessly on skis via Choralpe, Hohe Salve, Hartkaiser & Brandstadl—plus a fast 3-min shuttle across Westendorf to KitzSki.'
+        summary: 'Austria’s largest interconnected ski area (270 km): ski non-stop across Söll, Hopfgarten, Itter, Brixen, Westendorf, Scheffau & Ellmau–Going.'
       },
       {
         id: 'kitzski',
         title: 'KitzSki Kitzbühel – Kirchberg – Pass Thurn',
-        badge: '233 km Lift-Linked Circuit',
+        badge: '100% Ski-Linked',
         badgeColor: 'emerald',
-        summary: 'Continuous lift-and-piste safari from Kirchberg & Hahnenkamm across Pengelstein, Jochberg, and Resterhöhe to Pass Thurn.'
+        summary: '233 km linked via the 3S tri-cable gondola from Hahnenkamm & Pengelstein across Jochberg to Pass Thurn, plus 3-min shuttle to SkiWelt Ki-West.'
       },
       {
         id: 'mayrhofen-tux',
-        title: 'Mayrhofen (Penken & Ahorn) – Finkenberg – Hintertux',
+        title: 'Mayrhofen (Penken & Ahorn) – Tux – Hintertux',
         badge: 'Ski-Linked + Glacier Bus',
         badgeColor: 'emerald',
-        summary: 'Mayrhofen Penken, Finkenberg, Rastkogel & Eggalm form a 142 km ski-linked circuit, while Ahorn sits across the valley and Hintertux connects via free Greenline bus.'
+        summary: 'Penken, Finkenberg, Rastkogel & Eggalm form a 142 km ski-linked circuit; Ahorn sits across Mayrhofen valley and Hintertux is 10 min up-valley.'
       },
       {
         id: 'zillertal-arena',
-        title: 'Zillertal Arena (Zell – Gerlos – Königsleiten – Hochkrimml)',
-        badge: '150 km Lift-Linked Safari',
+        title: 'Zillertal Arena: Zell am Ziller – Gerlos – Königsleiten – Hochkrimml',
+        badge: '100% Ski-Linked',
         badgeColor: 'emerald',
-        summary: 'Continuous valley-to-valley ski safari from Zell am Ziller over Übergangsjoch and Isskogel to Königsleiten & Gerlosplatte.'
+        summary: '150 km continuous ski circuit crossing Übergangsjoch (2,500 m) from Zell am Ziller through Gerlos to Königsleiten & Gerlosplatte.'
       },
       {
         id: 'hochzillertal-spieljoch',
-        title: 'Hochzillertal – Hochfügen & Spieljoch Fügen',
-        badge: '93 km Linked + 10m Bus',
+        title: 'Hochzillertal – Hochfügen & Spieljoch',
+        badge: 'Ski-Linked + 10m Bus',
         badgeColor: 'emerald',
-        summary: 'Kaltenbach and Hochfügen are 100% lift-linked via Marchkopf; Spieljoch Fügen sits 10 minutes down the valley via free ski bus.'
+        summary: '93 km ski-linked across Kaltenbach and Hochfügen over Marchkopf, paired with Spieljoch Fügen 10 minutes away.'
       },
       {
         id: 'skijuwel',
-        title: 'Ski Juwel Alpbachtal Wildschönau',
-        badge: '113 km Lift-Linked Circuit',
+        title: 'Ski Juwel Alpbachtal – Wildschönau & Kellerjoch',
+        badge: '100% Ski-Linked',
         badgeColor: 'emerald',
-        summary: 'Connected over the Schatzberg summit gondola between Inneralpbach/Wiedersbergerhorn and Auffach/Markbachjoch.'
+        summary: '113 km linked via the Verbindungsbahn gondola between Wiedersbergerhorn (Alpbach) and Schatzberg (Wildschönau), plus Niederau Markbachjoch.'
       },
       {
         id: 'silvretta-paznaun',
-        title: 'Paznaun Valley: Ischgl/Samnaun, Kappl, See & Galtür',
-        badge: '239 km + Valley Ski Bus',
+        title: 'Ischgl–Samnaun & Paznaun Valley Circuit',
+        badge: 'Cross-Border + Valley Bus',
         badgeColor: 'amber',
-        summary: 'Ischgl links on skis across the Swiss border to Samnaun (100% included on Snow Card Tirol); free Paznaun ski buses connect See, Kappl, Ischgl, and Galtür.'
+        summary: '239 km cross-border ski-link into Swiss Samnaun, plus free Paznaun ski buses linking Kappl, See & Galtür.'
       },
       {
         id: 'sfl-kaunertal',
-        title: 'Serfaus–Fiss–Ladis, Nauders, Fendels & Kaunertal Glacier',
-        badge: '214 km Linked + Glacier Bus',
-        badgeColor: 'emerald',
-        summary: 'Serfaus, Fiss, and Ladis form a 214 km ski-linked plateau; Nauders, Fendels, and Kaunertal Glacier connect via regional ski bus.'
+        title: 'Serfaus–Fiss–Ladis, Nauders & Kaunertal Glacier',
+        badge: '214 km Linked + Oberland',
+        badgeColor: 'amber',
+        summary: 'Massive 214 km sun plateau circuit in Serfaus–Fiss–Ladis combined with Fendels, Nauders & Kaunertal Glacier.'
       },
       {
         id: 'oetztal',
-        title: 'Ötztal Valley: Sölden, Gurgl, Hochoetz & Kühtai',
-        badge: 'Glacier Link + Valley Bus',
+        title: 'Sölden BIG3, Obergurgl, Hochgurgl, Kühtai & Hochoetz',
+        badge: 'BIG3 Glaciers + 15m Bus',
         badgeColor: 'amber',
-        summary: 'Sölden links Giggijoch, Gaislachkogl & Rettenbach/Tiefenbach glaciers; Gurgl is 15 min up-valley, and Hochoetz–Kühtai share a free shuttle.'
+        summary: 'Sölden’s ski-linked BIG3 peaks & glaciers paired 15 min up-valley with Obergurgl & Hochgurgl, plus the Kühtai–Hochoetz shuttle duo.'
       },
       {
         id: 'pitztal',
-        title: 'Pitztal Glacier, Rifflsee & Hochzeiger',
-        badge: 'Glacier Ski-Link + Valley Bus',
+        title: 'Pitztal Glacier – Rifflsee & Hochzeiger',
+        badge: 'Ski-Linked + 20m Bus',
         badgeColor: 'emerald',
-        summary: 'Pitztal Glacier and Rifflsee connect directly on skis via the Sunna Alm run; Hochzeiger sits 20 min down-valley on the free Pitztal bus.'
+        summary: 'Rifflsee is ski-linked straight down to the Pitztal Glacier base (3,440 m summit), with Hochzeiger 20 min down-valley.'
       },
       {
         id: 'stubai',
-        title: 'Stubai Glacier, Schlick 2000, Elfer & Serles',
-        badge: '4-Resort Free Valley Bus',
+        title: 'Stubaital (Glacier, Schlick 2000, Elfer & Serles)',
+        badge: 'Stubai Ski Bus Loop',
         badgeColor: 'amber',
-        summary: 'All four Stubaital peaks (Stubai Glacier, Schlick 2000, Elferbahnen Neustift & Serlesbahnen Mieders) sit along one free valley ski bus.'
+        summary: 'Four distinct Stubai mountains connected along the free valley ski bus route from Neustift & Fulpmes to Stubaier Gletscher.'
       },
       {
         id: 'innsbruck',
-        title: 'Innsbruck SKI+CITY Peaks (Axamer, Mutterer, Rangger, Patscher, Glungezer, Nordkette)',
-        badge: '6 Peaks on Free City Ski Bus',
+        title: 'Innsbruck Olympia SkiWorld (6 Mountains)',
+        badge: 'City Ski Bus Circuit',
         badgeColor: 'amber',
-        summary: 'Six distinct peaks ringing Innsbruck, each pinned at its upper lift station and linked by free city ski buses.'
+        summary: 'Axamer Lizum, Muttereralm, Rangger Köpfl, Patscherkofel, Glungezer & Nordkette around the Tyrolean capital.'
       },
       {
         id: 'zugspitz-arena',
-        title: 'Tiroler Zugspitz Arena (Ehrwald, Wetterstein, Lermoos, Berwang, Zugspitzbahn)',
-        badge: '5 Peaks on Free Rundbus',
+        title: 'Tiroler Zugspitz Arena (Ehrwald, Wetterstein, Biberwier, Lermoos & Berwang)',
+        badge: 'Free Rundbus + Train',
         badgeColor: 'amber',
-        summary: 'Ehrwalder Alm, Wetterstein/Biberwier, Lermoos Grubigstein, Berwang, and Tiroler Zugspitzbahn (gondola up/down only) connect via free Rundbus.'
+        summary: 'Ehrwalder Alm, Wettersteinbahnen, Marienberg Biberwier, Lermoos Grubigstein & Berwang–Bichlbach linked by the free Rundbus (plus Zugspitze gondola).'
       },
       {
         id: 'seefeld-tannheim',
-        title: 'Seefeld (Rosshütte & Gschwandtkopf) & Tannheimer Tal',
-        badge: 'Plateau & Valley Bus Combos',
+        title: 'Seefeld Plateau, Reutte & Tannheimer Tal',
+        badge: 'Village & Valley Buses',
         badgeColor: 'amber',
-        summary: 'Rosshütte and Gschwandtkopf sit on opposite sides of Seefeld (5-min bus); Tannheimer Tal links 4 peaks by valley bus.'
+        summary: 'Rosshütte & Gschwandtkopf in Seefeld, plus Hahnenkamm Reutte, Füssener Jöchle Grän & Neunerköpfle Tannheim.'
       },
       {
         id: 'achensee-pillerseetal',
-        title: 'Achensee (Christlum & Rofan), St. Johann, Buchensteinwand, Steinplatte & Hochkössen',
-        badge: 'Lakeside & Kitz Alps Combos',
+        title: 'Achensee, St. Johann, Pillerseetal & Kaiserwinkl',
+        badge: '10–15m Regional Combos',
         badgeColor: 'amber',
-        summary: 'Split into individual in-bounds summit pins: Christlum vs. Rofan across Achensee, plus St. Johann, Buchensteinwand, Steinplatte & Hochkössen.'
+        summary: 'Christlum & Rofan on Lake Achensee, plus St. Johann, Buchensteinwand, Steinplatte Waidring & Hochkössen.'
       },
       {
         id: 'osttirol',
-        title: 'Osttirol: Großglockner Resort Kals–Matrei, St. Jakob, Sillian & Lienz',
-        badge: 'Linked Peak + Osttirol Bus',
-        badgeColor: 'emerald',
-        summary: 'Kals and Matrei connect over Cimaross; St. Jakob, Hochpustertal Sillian, Lienzer Bergbahnen & Kartitsch lie within short drives/buses.'
+        title: 'Osttirol (Kals–Matrei, St. Jakob, Sillian, Lienz & Obertilliach)',
+        badge: 'East Tyrol Circuit',
+        badgeColor: 'amber',
+        summary: 'Großglockner Resort Kals–Matrei (ski-linked), Brunnalm St. Jakob, Hochpustertal Sillian, Lienz Zettersfeld & Obertilliach Golzentipp.'
       }
     ];
 
     const RESORTS = [
-      // --- 1. SKIWELT WILDER KAISER – BRIXENTAL ---
+      // --- 1. SKIWELT WILDER KAISER – BRIXENTAL (7) ---
       {
         id: 'sw-soell',
         name: 'SkiWelt Söll (Hohe Salve)',
@@ -769,7 +737,7 @@
         linkedIds: ['sw-hopfgarten', 'sw-soell']
       },
 
-      // --- 2. KITZSKI KITZBÜHEL ---
+      // --- 2. KITZSKI KITZBÜHEL (3) ---
       {
         id: 'ks-kitzbuehel',
         name: 'KitzSki Kitzbühel (Hahnenkamm)',
@@ -816,7 +784,7 @@
         linkedIds: ['ks-kitzbuehel', 'ks-kirchberg']
       },
 
-      // --- 3. MAYRHOFEN – TUX – HINTERTUX ---
+      // --- 3. MAYRHOFEN – TUX – HINTERTUX (6) ---
       {
         id: 'mh-penken',
         name: 'Mayrhofen: Penken (Penkenjoch)',
@@ -908,7 +876,7 @@
         linkedIds: ['mh-eggalm']
       },
 
-      // --- 4. ZILLERTAL ARENA ---
+      // --- 4. ZILLERTAL ARENA & WILDKOGEL (5) ---
       {
         id: 'za-zell',
         name: 'Zillertal Arena: Zell am Ziller (Übergangsjoch)',
@@ -941,7 +909,7 @@
       },
       {
         id: 'za-koenigsleiten',
-        name: 'Zillertal Arena: Königsleiten & Gerlosplatte',
+        name: 'Zillertal Arena: Königsleiten (Königsleitenspitze)',
         circuitId: 'zillertal-arena',
         region: 'Zillertal',
         connectionType: 'ski-linked',
@@ -952,10 +920,40 @@
         lat: 47.2618,
         lng: 12.1185,
         highlights: 'In-bounds pin at Königsleitenspitze summit (2,315 m): high-altitude alpine bowls linking into Hochkrimml.',
-        linkedIds: ['za-gerlos']
+        linkedIds: ['za-gerlos', 'za-hochkrimml']
+      },
+      {
+        id: 'za-hochkrimml',
+        name: 'Zillertal Arena: Hochkrimml (Gerlosplatte)',
+        circuitId: 'zillertal-arena',
+        region: 'Zillertal',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked to Königsleiten & Gerlos',
+        km: 150,
+        elevation: '1,640 – 2,040 m',
+        isGlacier: false,
+        lat: 47.2392,
+        lng: 12.1425,
+        highlights: 'In-bounds pin at Plattenkogel X-Press II top station (2,040 m): wide sunny carving bowls on the Gerlosplatte.',
+        linkedIds: ['za-koenigsleiten']
+      },
+      {
+        id: 'wk-wildkogel',
+        name: 'Wildkogel-Arena (Neukirchen / Bramberg)',
+        circuitId: 'zillertal-arena',
+        region: 'Zillertal',
+        connectionType: 'standalone',
+        connectionNote: 'Included on Snow Card Tirol; 15 min east of Gerlosplatte',
+        km: 75,
+        elevation: '820 – 2,150 m',
+        isGlacier: false,
+        lat: 47.2665,
+        lng: 12.2945,
+        highlights: 'In-bounds pin at Pfeifferköpfl / Wildkogel summit (2,150 m): sunny south-facing bowl facing the Großvenediger.',
+        linkedIds: []
       },
 
-      // --- 5. HOCHZILLERTAL – HOCHFÜGEN & SPIELJOCH ---
+      // --- 5. HOCHZILLERTAL – HOCHFÜGEN & SPIELJOCH (3) ---
       {
         id: 'hz-kaltenbach',
         name: 'Hochzillertal – Kaltenbach (Kristallhütte)',
@@ -1002,7 +1000,7 @@
         linkedIds: ['hz-kaltenbach']
       },
 
-      // --- 6. SKI JUWEL ALPBACHTAL WILDSCHÖNAU ---
+      // --- 6. SKI JUWEL ALPBACHTAL WILDSCHÖNAU & KELLERJOCH (4) ---
       {
         id: 'sj-alpbach',
         name: 'Ski Juwel: Alpbach (Wiedersbergerhorn)',
@@ -1024,14 +1022,29 @@
         circuitId: 'skijuwel',
         region: 'SkiWelt & Kitzbühel Alps',
         connectionType: 'ski-linked',
-        connectionNote: '100% ski-linked over Schatzberg to Alpbach',
+        connectionNote: '100% ski-linked over Schatzberg to Alpbach + 10-min bus to Markbachjoch',
         km: 113,
         elevation: '830 – 1,903 m',
         isGlacier: false,
         lat: 47.3878,
         lng: 12.0085,
         highlights: 'In-bounds pin at Schatzberg summit station (1,903 m): wide carving slopes linking Auffach with Alpbachtal.',
-        linkedIds: ['sj-alpbach']
+        linkedIds: ['sj-alpbach', 'sj-markbachjoch']
+      },
+      {
+        id: 'sj-markbachjoch',
+        name: 'Ski Juwel: Niederau (Markbachjoch)',
+        circuitId: 'skijuwel',
+        region: 'SkiWelt & Kitzbühel Alps',
+        connectionType: 'shuttle',
+        connectionNote: '10-min free Ski Juwel bus from Auffach Schatzberg',
+        km: 20,
+        elevation: '828 – 1,500 m',
+        isGlacier: false,
+        lat: 47.4342,
+        lng: 12.0675,
+        highlights: 'In-bounds pin at Markbachjoch top station (1,500 m): steep training slopes and sunny views above Niederau.',
+        linkedIds: ['sj-wildschoenau']
       },
       {
         id: 'sj-kellerjoch',
@@ -1048,23 +1061,8 @@
         highlights: 'In-bounds pin at Hecherhaus top station (1,887 m): dramatic sunset views across the Karwendel range.',
         linkedIds: []
       },
-      {
-        id: 'wk-wildkogel',
-        name: 'Wildkogel-Arena (Neukirchen / Bramberg)',
-        circuitId: 'zillertal-arena',
-        region: 'Zillertal',
-        connectionType: 'standalone',
-        connectionNote: 'Included on Snow Card Tirol; 15 min east of Gerlosplatte',
-        km: 75,
-        elevation: '820 – 2,150 m',
-        isGlacier: false,
-        lat: 47.2665,
-        lng: 12.2945,
-        highlights: 'In-bounds pin at Pfeifferköpfl / Wildkogel summit (2,150 m): sunny south-facing bowl facing the Großvenediger.',
-        linkedIds: []
-      },
 
-      // --- 7. PAZNAUN VALLEY ---
+      // --- 7. PAZNAUN VALLEY (4) ---
       {
         id: 'pz-ischgl',
         name: 'Ischgl – Samnaun (Silvretta Arena / Idalp)',
@@ -1126,7 +1124,7 @@
         linkedIds: ['pz-ischgl']
       },
 
-      // --- 8. SERFAUS–FISS–LADIS, NAUDERS & KAUNERTAL ---
+      // --- 8. SERFAUS–FISS–LADIS, NAUDERS, VENET & KAUNERTAL (5) ---
       {
         id: 'sfl-serfaus',
         name: 'Serfaus–Fiss–Ladis (Schönjoch / Masnerkopf)',
@@ -1203,7 +1201,7 @@
         linkedIds: []
       },
 
-      // --- 9. ÖTZTAL VALLEY ---
+      // --- 9. ÖTZTAL VALLEY: SÖLDEN, OBERGURGL, HOCHGURGL, HOCHOETZ & KÜHTAI (5) ---
       {
         id: 'oe-soelden',
         name: 'Sölden (Gaislachkogl & BIG3 Glaciers)',
@@ -1217,22 +1215,37 @@
         lat: 46.9425,
         lng: 10.9685,
         highlights: 'In-bounds pin at Gaislachkogl summit (3,058 m / 007 Elements): connects Giggijoch with Rettenbach & Tiefenbach Glaciers.',
-        linkedIds: ['oe-gurgl']
+        linkedIds: ['oe-obergurgl']
       },
       {
-        id: 'oe-gurgl',
-        name: 'Gurgl – Obergurgl / Hochgurgl (Hohe Mut)',
+        id: 'oe-obergurgl',
+        name: 'Obergurgl (Hohe Mut)',
         circuitId: 'oetztal',
         region: 'Ötztal',
-        connectionType: 'shuttle',
-        connectionNote: '15-min free Ötztal ski bus up-valley from Sölden',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked via Top Express gondola to Hochgurgl + 15-min bus to Sölden',
         km: 112,
         elevation: '1,800 – 3,080 m',
         isGlacier: false,
         lat: 46.8545,
         lng: 11.0465,
-        highlights: 'In-bounds pin at Hohe Mut Alm summit (2,670 m): "Diamond of the Alps" with ski-in/ski-out high-alpine runs up to 3,080 m.',
-        linkedIds: ['oe-soelden']
+        highlights: 'In-bounds pin at Hohe Mut Alm summit (2,670 m): sunny high-alpine ridge linking via Top Express to Hochgurgl.',
+        linkedIds: ['oe-soelden', 'oe-hochgurgl']
+      },
+      {
+        id: 'oe-hochgurgl',
+        name: 'Hochgurgl (Wurmkogl / Top Mountain Star)',
+        circuitId: 'oetztal',
+        region: 'Ötztal',
+        connectionType: 'ski-linked',
+        connectionNote: '100% ski-linked via Top Express gondola to Obergurgl',
+        km: 112,
+        elevation: '1,793 – 3,082 m',
+        isGlacier: false,
+        lat: 46.8365,
+        lng: 11.0772,
+        highlights: 'In-bounds pin at Wurmkogl II / Top Mountain Star summit (3,082 m): panoramic 360° ridge overlooking the Dolomites.',
+        linkedIds: ['oe-obergurgl']
       },
       {
         id: 'oe-hochoetz',
@@ -1265,7 +1278,7 @@
         linkedIds: ['oe-hochoetz', 'ibk-axamer']
       },
 
-      // --- 10. PITZTAL VALLEY ---
+      // --- 10. PITZTAL VALLEY & IMST (4) ---
       {
         id: 'pt-glacier',
         name: 'Pitztal Glacier (Wildspitzbahn 3,440 m)',
@@ -1327,7 +1340,7 @@
         linkedIds: []
       },
 
-      // --- 11. STUBAITAL ---
+      // --- 11. STUBAITAL & WIPPTAL (5) ---
       {
         id: 'st-glacier',
         name: 'Stubaier Gletscher (Schaufeljoch 3,170 m)',
@@ -1388,8 +1401,23 @@
         highlights: 'In-bounds pin at Koppeneck top station (1,605 m) beneath the Serles pyramid: quiet panoramic cruising.',
         linkedIds: ['st-elfer', 'st-schlick']
       },
+      {
+        id: 'wb-bergeralm',
+        name: 'Bergeralm – Steinach am Brenner (Nösslachjoch)',
+        circuitId: 'stubai',
+        region: 'Innsbruck & Surroundings',
+        connectionType: 'standalone',
+        connectionNote: 'Easy 20-min train/car ride south of Innsbruck in the Wipptal valley',
+        km: 29,
+        elevation: '1,048 – 2,231 m',
+        isGlacier: false,
+        lat: 47.0815,
+        lng: 11.4465,
+        highlights: 'In-bounds pin at Nösslachjoch / Hoher Turm summit (2,231 m): wide Wipptal carving runs and night skiing.',
+        linkedIds: []
+      },
 
-      // --- 12. INNSBRUCK & SURROUNDINGS ---
+      // --- 12. INNSBRUCK & SURROUNDINGS (6) ---
       {
         id: 'ibk-axamer',
         name: 'Axamer Lizum (Hoadl 2,340 m)',
@@ -1480,23 +1508,8 @@
         highlights: 'In-bounds pin at Hafelekar top station (2,334 m): steepest ski route in Europe (70% gradient) directly above Innsbruck.',
         linkedIds: ['ibk-patscherkofel']
       },
-      {
-        id: 'wb-bergeralm',
-        name: 'Bergeralm – Steinach am Brenner (Nösslachjoch)',
-        circuitId: 'stubai',
-        region: 'Innsbruck & Surroundings',
-        connectionType: 'standalone',
-        connectionNote: 'Easy 20-min train/car ride south of Innsbruck in the Wipptal valley',
-        km: 29,
-        elevation: '1,048 – 2,231 m',
-        isGlacier: false,
-        lat: 47.0815,
-        lng: 11.4465,
-        highlights: 'In-bounds pin at Nösslachjoch / Hoher Turm summit (2,231 m): wide Wipptal carving runs and night skiing.',
-        linkedIds: []
-      },
 
-      // --- 13. TIROLER ZUGSPITZ ARENA ---
+      // --- 13. TIROLER ZUGSPITZ ARENA (6) ---
       {
         id: 'za-ehrwald',
         name: 'Ehrwalder Almbahn (Issentalkopf)',
@@ -1514,18 +1527,33 @@
       },
       {
         id: 'za-wetterstein',
-        name: 'Wettersteinbahnen Ehrwald & Marienberg Biberwier',
+        name: 'Wettersteinbahnen Ehrwald (Sonnenhang)',
         circuitId: 'zugspitz-arena',
         region: 'Tiroler Zugspitz Arena',
         connectionType: 'shuttle',
-        connectionNote: '5-min free Rundbus across Ehrwald basin to Ehrwalder Alm & Lermoos',
+        connectionNote: '5-min free Rundbus across Ehrwald to Ehrwalder Alm & Biberwier',
         km: 23,
+        elevation: '1,000 – 1,530 m',
+        isGlacier: false,
+        lat: 47.4055,
+        lng: 10.9345,
+        highlights: 'In-bounds pin at Sonnenhang Sunracer top station (1,530 m): sunny carving slopes on the north-west side of Ehrwald.',
+        linkedIds: ['za-ehrwald', 'za-biberwier']
+      },
+      {
+        id: 'za-biberwier',
+        name: 'Marienbergbahnen Biberwier (Marienbergjoch)',
+        circuitId: 'zugspitz-arena',
+        region: 'Tiroler Zugspitz Arena',
+        connectionType: 'shuttle',
+        connectionNote: '5-min free Rundbus to Ehrwald & Lermoos',
+        km: 12,
         elevation: '1,000 – 1,820 m',
         isGlacier: false,
-        lat: 47.3615,
-        lng: 10.9165,
-        highlights: 'In-bounds pin at Sonnenhang / Marienbergjoch ridge (1,820 m): sunny carving slopes on the southern rim of Ehrwald.',
-        linkedIds: ['za-ehrwald', 'za-lermoos']
+        lat: 47.3675,
+        lng: 10.8765,
+        highlights: 'In-bounds pin at Marienbergjoch top station (1,820 m): wide sunny family & carving runs at the Fernpass.',
+        linkedIds: ['za-wetterstein', 'za-lermoos']
       },
       {
         id: 'za-lermoos',
@@ -1540,7 +1568,7 @@
         lat: 47.3915,
         lng: 10.8485,
         highlights: 'In-bounds pin at Grubigstein summit station (2,100 m): 1,100 m vertical drop directly facing the Zugspitze massif.',
-        linkedIds: ['za-berwang', 'za-ehrwald', 'za-wetterstein']
+        linkedIds: ['za-berwang', 'za-ehrwald', 'za-biberwier']
       },
       {
         id: 'za-berwang',
@@ -1573,7 +1601,7 @@
         linkedIds: ['za-ehrwald']
       },
 
-      // --- 14. SEEFELD & TANNHEIMER TAL ---
+      // --- 14. SEEFELD, REUTTE & TANNHEIMER TAL (5) ---
       {
         id: 'sf-rosshuette',
         name: 'Seefeld: Rosshütte (Seefelder Joch 2,064 m)',
@@ -1587,7 +1615,7 @@
         lat: 47.3385,
         lng: 11.2185,
         highlights: 'In-bounds pin at Seefelder Joch / Härmelekopf top station (2,064 m): steep sunny runs on the east side of Seefeld.',
-        linkedIds: ['sf-gschwandtkopf', 'tt-tannheim']
+        linkedIds: ['sf-gschwandtkopf']
       },
       {
         id: 'sf-gschwandtkopf',
@@ -1605,22 +1633,52 @@
         linkedIds: ['sf-rosshuette']
       },
       {
-        id: 'tt-tannheim',
-        name: 'Tannheimer Tal (Füssener Jöchle & Neunerköpfle)',
+        id: 'tt-reutte',
+        name: 'Bergwelt Hahnenkamm – Reutte (Höfen)',
         circuitId: 'seefeld-tannheim',
         region: 'Seefeld & Außerfern',
         connectionType: 'shuttle',
-        connectionNote: '5–10 min free Tannheimer Tal valley bus + Hahnenkamm Reutte',
-        km: 52,
-        elevation: '1,080 – 1,886 m',
+        connectionNote: '15-min bus into Tannheimer Tal (Grän & Tannheim)',
+        km: 16,
+        elevation: '930 – 1,900 m',
+        isGlacier: false,
+        lat: 47.4865,
+        lng: 10.6485,
+        highlights: 'In-bounds pin at Hahnenkamm top station (1,900 m) above Reutte: sunny panoramic runs and natural snow bowls.',
+        linkedIds: ['tt-graen']
+      },
+      {
+        id: 'tt-graen',
+        name: 'Füssener Jöchle – Grän (Tannheimer Tal)',
+        circuitId: 'seefeld-tannheim',
+        region: 'Seefeld & Außerfern',
+        connectionType: 'shuttle',
+        connectionNote: '5-min free Tannheimer Tal bus to Neunerköpfle Tannheim',
+        km: 15,
+        elevation: '1,206 – 1,821 m',
         isGlacier: false,
         lat: 47.5165,
         lng: 10.5485,
-        highlights: 'In-bounds pin at Füssener Jöchle summit (1,821 m): connects Grän, Tannheim Neunerköpfle, Schattwald–Zöblen & Reutte.',
-        linkedIds: ['sf-rosshuette']
+        highlights: 'In-bounds pin at Füssener Jöchle summit station (1,821 m): sunny high-valley runs above Haldensee and Grän.',
+        linkedIds: ['tt-reutte', 'tt-tannheim']
+      },
+      {
+        id: 'tt-tannheim',
+        name: 'Neunerköpfle – Tannheim & Schattwald–Zöblen',
+        circuitId: 'seefeld-tannheim',
+        region: 'Seefeld & Außerfern',
+        connectionType: 'shuttle',
+        connectionNote: '5-min free Tannheimer Tal bus to Füssener Jöchle Grän',
+        km: 22,
+        elevation: '1,080 – 1,862 m',
+        isGlacier: false,
+        lat: 47.4845,
+        lng: 10.5125,
+        highlights: 'In-bounds pin at Neunerköpfle / Vogelhorn summit station (1,862 m): scenic cruising above Tannheim and Zöblen.',
+        linkedIds: ['tt-graen']
       },
 
-      // --- 15. ACHENSEE, ST. JOHANN & PILLERSEETAL ---
+      // --- 15. ACHENSEE, ST. JOHANN, PILLERSEETAL & KAISERWINKL (6) ---
       {
         id: 'ac-christlum',
         name: 'Christlum – Achenkirch (Christlumkopf 1,800 m)',
@@ -1712,7 +1770,7 @@
         linkedIds: ['kp-steinplatte']
       },
 
-      // --- 16. OSTTIROL ---
+      // --- 16. OSTTIROL (5) ---
       {
         id: 'ot-ggresort',
         name: 'Großglockner Resort Kals–Matrei (Cimaross 2,421 m)',
@@ -1791,14 +1849,16 @@
     ];
 
     // =========================================================================
-    // 3. STATE MANAGEMENT & CROSS-DEVICE CLOUD SYNC
+    // 3. STATE MANAGEMENT & CROSS-DEVICE AUTO CLOUD SYNC ('erik26')
     // =========================================================================
     const STORAGE_KEY = 'snowCardTirol_2026_27_tracker_v1';
-    const SYNC_ID_KEY = 'snowCardTirol_2026_27_syncId_v1';
-    const CLOUD_SYNC_ENDPOINT = 'https://jsonblob.com/api/jsonBlob';
+    const PASSPHRASE_KEY = 'snowCardTirol_2026_27_passphrase_v1';
+    const DEFAULT_PASSPHRASE = 'erik26';
+    const CLOUD_BUCKET_URL = 'https://kvdb.io/A2m9XkP7vQ4nR8tL3wZ6yB';
 
     let userProgress = loadProgress();
-    let syncCode = localStorage.getItem(SYNC_ID_KEY) || '';
+    let syncPassphrase = localStorage.getItem(PASSPHRASE_KEY) || DEFAULT_PASSPHRASE;
+    localStorage.setItem(PASSPHRASE_KEY, syncPassphrase);
     let syncTimer = null;
     let groupMode = 'circuits';
     let filterMode = 'all';
@@ -1813,7 +1873,21 @@
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) return JSON.parse(raw);
       } catch (e) {}
-      return { skied: {}, updatedAt: 0 };
+      return { skied: {}, deleted: {}, updatedAt: 0 };
+    }
+
+    async function deriveBucketKey(phrase) {
+      const normalized = (phrase || DEFAULT_PASSPHRASE).trim().toLowerCase();
+      if (window.crypto && crypto.subtle) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('sct2026::' + normalized));
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
+      }
+      let h = 2166136261;
+      for (let i = 0; i < normalized.length; i++) {
+        h ^= normalized.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return 'sct_' + (h >>> 0).toString(16);
     }
 
     function saveProgress(skipCloudPush = false) {
@@ -1823,7 +1897,7 @@
       } catch (e) {}
       updateStats();
       updateMarkerStyles();
-      if (!skipCloudPush && syncCode) {
+      if (!skipCloudPush && syncPassphrase) {
         scheduleCloudPush();
       }
     }
@@ -1839,136 +1913,122 @@
     }
 
     function scheduleCloudPush() {
-      if (!syncCode) return;
+      if (!syncPassphrase) return;
       setSyncDotState('syncing');
       clearTimeout(syncTimer);
-      syncTimer = setTimeout(() => pushToCloud(), 900);
+      syncTimer = setTimeout(() => pushToCloud(), 800);
     }
 
-    async function createCloudBlob() {
-      const res = await fetch(CLOUD_SYNC_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(userProgress)
+    function mergeProgressStates(localState, remoteState) {
+      const mergedSkied = {};
+      const mergedDeleted = { ...(localState.deleted || {}), ...(remoteState.deleted || {}) };
+      const allIds = new Set([
+        ...Object.keys(localState.skied || {}),
+        ...Object.keys(remoteState.skied || {})
+      ]);
+
+      allIds.forEach(id => {
+        const lItem = localState.skied?.[id];
+        const rItem = remoteState.skied?.[id];
+        const delTs = mergedDeleted[id] || 0;
+        const lTs = lItem?.ts || localState.updatedAt || 1;
+        const rTs = rItem?.ts || remoteState.updatedAt || 1;
+        const newestCheckTs = Math.max(lItem ? lTs : 0, rItem ? rTs : 0);
+
+        if (delTs > newestCheckTs) return;
+        if (lItem && rItem) {
+          mergedSkied[id] = lTs >= rTs ? lItem : rItem;
+        } else {
+          mergedSkied[id] = lItem || rItem;
+        }
       });
-      if (!res.ok) throw new Error('Cloud init failed');
-      const loc = res.headers.get('Location') || res.headers.get('X-jsonblob');
-      const blobId = loc ? loc.split('/').pop() : '';
-      if (!blobId) throw new Error('No sync ID returned');
-      syncCode = 'TIROL-' + blobId;
-      localStorage.setItem(SYNC_ID_KEY, syncCode);
-      return syncCode;
-    }
 
-    function extractBlobId(code) {
-      return code.trim().replace(/^TIROL-/i, '');
+      return {
+        skied: mergedSkied,
+        deleted: mergedDeleted,
+        updatedAt: Math.max(localState.updatedAt || 0, remoteState.updatedAt || 0, Date.now())
+      };
     }
 
     async function pushToCloud() {
-      if (!syncCode) return;
+      if (!syncPassphrase) return;
       try {
         setSyncDotState('syncing');
-        const blobId = extractBlobId(syncCode);
-        const res = await fetch(`${CLOUD_SYNC_ENDPOINT}/${blobId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        const key = await deriveBucketKey(syncPassphrase);
+        const res = await fetch(`${CLOUD_BUCKET_URL}/${key}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify(userProgress)
         });
         if (!res.ok) throw new Error('Push failed');
         setSyncDotState('synced');
         const statusEl = document.getElementById('sync-modal-status');
-        if (statusEl) statusEl.textContent = 'Synced at ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (statusEl) statusEl.textContent = `Synced (${syncPassphrase}) at ` + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       } catch (e) {
         setSyncDotState('error');
+        const statusEl = document.getElementById('sync-modal-status');
+        if (statusEl) statusEl.textContent = 'Offline — saved locally';
       }
     }
 
     async function pullFromCloud(silent = false) {
-      if (!syncCode) return;
+      if (!syncPassphrase) return;
       try {
         setSyncDotState('syncing');
-        const blobId = extractBlobId(syncCode);
-        const res = await fetch(`${CLOUD_SYNC_ENDPOINT}/${blobId}`, {
-          headers: { 'Accept': 'application/json' }
-        });
+        const key = await deriveBucketKey(syncPassphrase);
+        const res = await fetch(`${CLOUD_BUCKET_URL}/${key}?t=${Date.now()}`);
+        if (res.status === 404) {
+          await pushToCloud();
+          if (!silent) showToast(`Synced "${syncPassphrase}"!`);
+          return;
+        }
         if (!res.ok) throw new Error('Pull failed');
         const remote = await res.json();
-        if (remote && remote.skied) {
-          const merged = { ...(remote.skied || {}), ...(userProgress.skied || {}) };
-          if ((remote.updatedAt || 0) >= (userProgress.updatedAt || 0)) {
-            userProgress.skied = { ...(userProgress.skied || {}), ...(remote.skied || {}) };
-          } else {
-            userProgress.skied = merged;
-          }
-          userProgress.updatedAt = Math.max(remote.updatedAt || 0, userProgress.updatedAt || 0);
+        if (remote && typeof remote === 'object') {
+          const beforeStr = JSON.stringify(userProgress.skied || {});
+          userProgress = mergeProgressStates(userProgress, remote);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(userProgress));
           updateStats();
           updateMarkerStyles();
           renderSidebar();
-          if ((userProgress.updatedAt || 0) > (remote.updatedAt || 0)) {
+          if (JSON.stringify(remote.skied || {}) !== JSON.stringify(userProgress.skied || {}) || beforeStr !== JSON.stringify(remote.skied || {})) {
             await pushToCloud();
           }
         }
         setSyncDotState('synced');
         const statusEl = document.getElementById('sync-modal-status');
-        if (statusEl) statusEl.textContent = 'Synced at ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        if (!silent) showToast('Cloud progress synced!');
+        if (statusEl) statusEl.textContent = `Synced (${syncPassphrase}) at ` + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (!silent) showToast(`Synced (${syncPassphrase})!`);
       } catch (e) {
         setSyncDotState('error');
-        if (!silent) showToast('Could not reach sync server—using local save.');
+        if (!silent) showToast('Offline — saved locally until back online.');
       }
     }
 
-    async function openSyncModal() {
+    function openSyncModal() {
       const modal = document.getElementById('sync-modal');
-      const display = document.getElementById('sync-code-display');
+      const input = document.getElementById('sync-passphrase-input');
       const statusEl = document.getElementById('sync-modal-status');
       modal.classList.remove('hidden');
-      if (!syncCode) {
-        display.value = 'Generating Sync Code...';
-        try {
-          await createCloudBlob();
-          display.value = syncCode;
-          setSyncDotState('synced');
-          statusEl.textContent = 'Cloud Sync active';
-        } catch (e) {
-          display.value = 'Offline — use JSON backup';
-          statusEl.textContent = 'Offline mode';
-        }
-      } else {
-        display.value = syncCode;
-        pullFromCloud(true);
-      }
+      if (input) input.value = syncPassphrase;
+      if (statusEl) statusEl.textContent = `Connected to "${syncPassphrase}"`;
+      pullFromCloud(true);
     }
 
     function closeSyncModal() {
       document.getElementById('sync-modal').classList.add('hidden');
     }
 
-    function copySyncCode() {
-      const input = document.getElementById('sync-code-display');
-      input.select();
-      document.execCommand('copy');
-      showToast('Sync Code copied! Paste it on your other device.');
-    }
-
-    async function linkSyncCode() {
-      const raw = document.getElementById('sync-code-input').value.trim();
-      if (!raw) return;
-      syncCode = raw.startsWith('TIROL-') ? raw : 'TIROL-' + raw;
-      localStorage.setItem(SYNC_ID_KEY, syncCode);
-      document.getElementById('sync-code-display').value = syncCode;
-      document.getElementById('sync-code-input').value = '';
+    async function savePassphraseAndSync() {
+      const input = document.getElementById('sync-passphrase-input');
+      const phrase = (input?.value || '').trim() || DEFAULT_PASSPHRASE;
+      syncPassphrase = phrase;
+      localStorage.setItem(PASSPHRASE_KEY, syncPassphrase);
       await pullFromCloud(false);
     }
 
     async function forceCloudPushPull() {
-      if (!syncCode) {
-        await openSyncModal();
-        return;
-      }
       await pullFromCloud(false);
-      await pushToCloud();
     }
 
     // =========================================================================
@@ -2303,45 +2363,12 @@
               }
             },
             layers: [
-              {
-                id: 'layer-wintersat',
-                type: 'raster',
-                source: 'winter-satellite',
-                layout: { visibility: 'visible' }
-              },
-              {
-                id: 'layer-satellite',
-                type: 'raster',
-                source: 'esri-satellite',
-                layout: { visibility: 'none' }
-              },
-              {
-                id: 'layer-streets',
-                type: 'raster',
-                source: 'osm-keyless',
-                layout: { visibility: 'none' }
-              },
-              {
-                id: 'layer-slope',
-                type: 'raster',
-                source: 'avalanche-slope',
-                layout: { visibility: 'none' },
-                paint: { 'raster-opacity': 0.85 }
-              },
-              {
-                id: 'layer-boundaries',
-                type: 'raster',
-                source: 'esri-boundaries',
-                layout: { visibility: 'visible' },
-                paint: { 'raster-opacity': 0.88 }
-              },
-              {
-                id: 'layer-pistes',
-                type: 'raster',
-                source: 'opensnowmap-pistes',
-                layout: { visibility: 'visible' },
-                paint: { 'raster-opacity': 0.96 }
-              }
+              { id: 'layer-wintersat', type: 'raster', source: 'winter-satellite', layout: { visibility: 'visible' } },
+              { id: 'layer-satellite', type: 'raster', source: 'esri-satellite', layout: { visibility: 'none' } },
+              { id: 'layer-streets', type: 'raster', source: 'osm-keyless', layout: { visibility: 'none' } },
+              { id: 'layer-slope', type: 'raster', source: 'avalanche-slope', layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.85 } },
+              { id: 'layer-boundaries', type: 'raster', source: 'esri-boundaries', layout: { visibility: 'visible' }, paint: { 'raster-opacity': 0.88 } },
+              { id: 'layer-pistes', type: 'raster', source: 'opensnowmap-pistes', layout: { visibility: 'visible' }, paint: { 'raster-opacity': 0.96 } }
             ],
             terrain: {
               source: 'terrain-dem',
@@ -2614,12 +2641,16 @@
 
       if (userProgress.skied[resortId]) {
         delete userProgress.skied[resortId];
+        if (!userProgress.deleted) userProgress.deleted = {};
+        userProgress.deleted[resortId] = Date.now();
         showToast(`Unmarked ${resort.name}`);
       } else {
         userProgress.skied[resortId] = {
           date: new Date().toISOString().split('T')[0],
-          note: ''
+          note: '',
+          ts: Date.now()
         };
+        if (userProgress.deleted) delete userProgress.deleted[resortId];
         showToast(`Marked ${resort.name} as Skied!`);
       }
 
@@ -2634,10 +2665,12 @@
       if (!userProgress.skied[resortId]) {
         userProgress.skied[resortId] = {
           date: new Date().toISOString().split('T')[0],
-          note: ''
+          note: '',
+          ts: Date.now()
         };
       }
       userProgress.skied[resortId][field] = value;
+      userProgress.skied[resortId].ts = Date.now();
       saveProgress();
       renderSidebar();
       showToast('Saved ski log details');
@@ -3158,7 +3191,10 @@
     }
 
     function executeReset() {
-      userProgress = { skied: {}, updatedAt: Date.now() };
+      const now = Date.now();
+      const deleted = { ...(userProgress.deleted || {}) };
+      Object.keys(userProgress.skied || {}).forEach(id => { deleted[id] = now; });
+      userProgress = { skied: {}, deleted, updatedAt: now };
       saveProgress();
       renderSidebar();
       if (activePopup) activePopup.remove();
@@ -3187,8 +3223,12 @@
       updateStats();
       renderSidebar();
       initMap();
-      if (syncCode) {
-        setSyncDotState('synced');
+      setSyncDotState('synced');
+      pullFromCloud(true);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && syncPassphrase) {
         pullFromCloud(true);
       }
     });
